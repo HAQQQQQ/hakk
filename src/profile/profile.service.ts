@@ -7,4 +7,8 @@ export class ProfileService {
         return 'User profile data';
     }
 
+    getSetayesh(): string {
+        return 'Kevin Setayesh';
+    }
+
 }
