@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { SupabaseService } from './supabase.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { SupabaseService } from "./supabase.service";
 
-describe('SupabaseService', () => {
-  let service: SupabaseService;
+describe("SupabaseService", () => {
+	let service: SupabaseService;
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [SupabaseService],
-    }).compile();
+	beforeEach(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [SupabaseService],
+		}).compile();
 
-    service = module.get<SupabaseService>(SupabaseService);
-  });
+		service = module.get<SupabaseService>(SupabaseService);
+	});
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
+	it("should be defined", () => {
+		expect(service).toBeDefined();
+	});
 });

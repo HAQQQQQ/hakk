@@ -1,13 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
-import { ProfileService } from './profile.service';
+import { Controller, Get } from "@nestjs/common";
+import { ProfileService } from "./profile.service";
 
-@Controller('profile')
+@Controller("profile")
 export class ProfileController {
-    constructor(private readonly profileService: ProfileService) {}
+	constructor(private readonly profileService: ProfileService) {}
 
-    @Get()
-    getProfile(): string {
-      return this.profileService.getProfile();
-    }
-
+	@Get()
+	getProfile(): string {
+		return this.profileService.getProfile();
+	}
 }
