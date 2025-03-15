@@ -1,11 +1,18 @@
+# Node modules and build output
 node_modules/
 dist/
+
+# Environment variables
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
+.env.test
+.env.example  # Added for sharing environment variable structure without keys
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -31,9 +38,37 @@ yarn-debug.log*
 coverage/
 
 # Optional: PM2 logs
-pm2/logs
+pm2/logs/
 
 # Optional: SQLite database (if using locally)
 data/*.sqlite
 data/*.sqlite-journal
 
+# Docker-specific
+.dockerignore
+docker-compose.override.yml
+*.dockerfile
+*.tar
+*.tar.gz
+
+# Docker Volumes (Database & Cache)
+pgdata/
+supabase-data/   # Added for Supabase database persistence (if applicable)
+redis-data/      # Added if using Redis in your project
+
+# Ignore IDE-specific workspace settings
+.webstorm/
+.idea/
+*.sublime-workspace
+
+# Ignore build artifacts and NPM cache
+.npm/
+.yarn/
+.pnp.*
+
+# Ignore npm logs
+npm-debug.log*
+
+# Ignore lockfiles (Optional if you prefer consistency over flexibility)
+package-lock.json
+yarn.lock

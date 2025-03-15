@@ -1,0 +1,21 @@
+# Base Image
+FROM node:20-slim
+
+# Set Working Directory
+WORKDIR /app
+
+# Copy Package Files and Install Dependencies
+COPY package*.json ./
+RUN npm install --omit=dev --ignore-scripts
+
+# Copy Only Source Code (Optimized for Caching)
+COPY . .
+
+# Build the Application
+RUN npm run build
+
+# Expose Port
+EXPOSE 3000
+
+# Start Command
+CMD ["node", "dist/main.js"]
