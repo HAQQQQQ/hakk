@@ -56,6 +56,10 @@ pgdata/
 supabase-data/   # Added for Supabase database persistence (if applicable)
 redis-data/      # Added if using Redis in your project
 
+# Supabase CLI temp files
+supabase/.branches/
+supabase/.temp/
+
 # Ignore IDE-specific workspace settings
 .webstorm/
 .idea/
