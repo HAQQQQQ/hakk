@@ -112,6 +112,14 @@ export default function Home() {
 
 			<body>
 				<SignedIn>
+					<div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+						<h2>
+							Welcome, {user?.firstName} {user?.lastName}!
+						</h2>
+						<p>
+							Please start by filling out this questionnaire to meet your perfect match.
+						</p>
+					</div>
 					<SurveyForm />
 				</SignedIn>
 			</body>
