@@ -2,7 +2,6 @@ import { Injectable } from "@nestjs/common";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { Preference } from "../types/common.types";
 
-
 @Injectable()
 export class SupabaseService {
 	private supabase: SupabaseClient;
@@ -29,7 +28,7 @@ export class SupabaseService {
 		const { data: user, error } = await this.supabase
 			.from("profiles")
 			.select("user_id")
-			.eq("id", userId)
+			.eq("user_id", userId)
 			.single();
 
 		if (error || !user) {
@@ -40,21 +39,18 @@ export class SupabaseService {
 	async addPreference(userId: string, preference: Preference): Promise<any> {
 		// Ensure the user exists by calling the new method
 		await this.checkUserExists(userId);
-
-		const SAMPLE_PREFERENCE = {
-			music: ["lil b", "a boogie", "taylor swift"],
-			movie: ["shawshank", "home alone", "jab we met"],
-			hobby: ["rock climbing", "parkour", "vacation"],
-		};
-
+		
 		// Insert the preference for the user into the 'preferences' table.
 		// Here, the entire preference object is stored in a JSONB column named "data".
-		const { data, error } = await this.supabase.from("preferences").insert([
-			{
-				user_id: userId,
-				preference: SAMPLE_PREFERENCE, // Stores the entire preference object
-			},
-		]);
+		const { data, error } = await this.supabase.from("preferences").upsert(
+			[
+				{
+					user_id: userId,
+					preference: preference, // Stores the entire preference object
+				},
+			],
+			{ onConflict: "user_id" },
+		);
 
 		if (error) throw error;
 		return data;
