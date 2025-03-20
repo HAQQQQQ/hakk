@@ -16,7 +16,7 @@ export class SupabaseService {
 		this.supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 	}
 
-	async getUsers() {
+	async getUsers(): Promise<any> {
 		console.log("Fetching users from Supabase...");
 		const { data, error } = await this.supabase.from("users").select("*");
 		if (error) throw error;
