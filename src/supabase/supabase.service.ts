@@ -39,7 +39,7 @@ export class SupabaseService {
 	async addPreference(userId: string, preference: Preference): Promise<any> {
 		// Ensure the user exists by calling the new method
 		await this.checkUserExists(userId);
-		
+
 		// Insert the preference for the user into the 'preferences' table.
 		// Here, the entire preference object is stored in a JSONB column named "data".
 		const { data, error } = await this.supabase.from("preferences").upsert(
