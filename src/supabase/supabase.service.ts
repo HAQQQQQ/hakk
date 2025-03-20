@@ -55,4 +55,15 @@ export class SupabaseService {
 		if (error) throw error;
 		return data;
 	}
+
+	async getPreferences(userIds: string[]): Promise<Preference[]> {
+		const { data, error } = await this.supabase
+			.from("preferences")
+			.select("preference")
+			.in("user_id", userIds);
+
+		if (error) throw error;
+
+		return data.map((item: { preference: Preference }) => item.preference);
+	}
 }

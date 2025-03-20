@@ -13,6 +13,17 @@ export class TestController {
 	@Post("add-preferences")
 	async addPreferences(@Body() body: { userId: string; preference: Preference }): Promise<any> {
 		const { userId, preference } = body;
-		return await this.supabaseService.addPreference(userId, preference);
+
+		// Add or update the preference
+		await this.supabaseService.addPreference(userId, preference);
+
+		// Fetch the updated preference for the user
+		const updatedPreference: Preference[] = await this.supabaseService.getPreferences([userId]);
+
+		// Log the fetched preferences to the console
+		console.log("Updated Preference:", updatedPreference);
+
+		// Return the updated preference to the client
+		return updatedPreference;
 	}
 }
