@@ -17,5 +17,10 @@
         "noImplicitAny": false,
         "strictBindCallApply": false,
         "noFallthroughCasesInSwitch": false
-    }
+    },
+	"include": ["src/**/*.ts"],  // only include Nest files
+	"exclude": [
+		"node_modules",
+		"frontend"   // exclude your Next.js app folder
+	]
 }
