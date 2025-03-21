@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "strict": true,
+        "strict": false,
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
@@ -10,12 +10,35 @@
         "strictNullChecks": true,
         "resolveJsonModule": true,
         "moduleResolution": "node",
-        "isolatedModules": true
+        "isolatedModules": true,
+        "target": "ES2021", // Common Target
+        "baseUrl": ".", // Workspace-wide base URL
+        "paths": {
+            "@/*": [
+                "packages/server/src/*"
+            ],
+            "@app/*": [
+                "packages/server/src/app/*"
+            ],
+            "@config/*": [
+                "packages/server/src/config/*"
+            ],
+            "@modules/*": [
+                "packages/server/src/modules/*"
+            ],
+            "@common/*": [
+                "packages/server/src/common/*"
+            ],
+            "@frontend/*": [
+                "packages/frontend/src/*"
+            ] // Frontend alias added
+        }
     },
     "exclude": [
         "node_modules"
     ],
     "include": [
-        "packages/*/tsconfig.json"
+        "packages/*/src/**/*",
+        "packages/*/next-env.d.ts"
     ]
 }

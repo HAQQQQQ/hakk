@@ -8,7 +8,6 @@
         "packages/*"
     ],
     "scripts": {
-        "build:server": "npm run build --workspace=packages/server",
         "lint": "npm run lint --workspaces",
         "test": "npm run test --workspaces",
         "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
@@ -22,17 +21,6 @@
         "docker:clean": "docker-compose down && docker system prune -af && docker volume prune -f",
         "supabase:start": "npx supabase start",
         "supabase:stop": "npx supabase stop"
-    },
-    "dependencies": {
-        "@nestjs/common": "^11.0.1",
-        "@nestjs/core": "^11.0.1",
-        "@nestjs/platform-express": "^11.0.1",
-        "@supabase/supabase-js": "^2.49.1",
-        "dotenv": "^16.4.7",
-        "openai": "^4.89.0",
-        "reflect-metadata": "^0.2.2",
-        "rxjs": "^7.8.1",
-        "supabase": "^2.19.7"
     },
     "devDependencies": {
         "concurrently": "^8.2.0",

@@ -1,28 +1,23 @@
 {
+    "extends": "../../tsconfig.json", // Inherits common settings
     "compilerOptions": {
-        "target": "ES2017",
+        "target": "ES2017", // Specific for Next.js
         "lib": [
             "dom",
             "dom.iterable",
             "esnext"
-        ],
-        "allowJs": true,
-        "skipLibCheck": true,
-        "strict": true,
-        "noEmit": true,
-        "esModuleInterop": true,
-        "module": "esnext",
-        "moduleResolution": "bundler",
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "jsx": "preserve",
-        "incremental": false,
+        ], // Next.js requires DOM support
+        "allowJs": true, // Supports JavaScript files
+        "noEmit": true, // Ensures no `.js` files are generated
+        "module": "esnext", // Ensures modern module syntax
+        "moduleResolution": "bundler", // Best for Next.js bundling
+        "jsx": "preserve", // Required for Next.js JSX support
+        "incremental": false, // Useful for development speed
         "paths": {
             "@/*": [
                 "./src/*"
-            ]
-        },
-        "baseUrl": "."
+            ] // Frontend-specific path alias
+        }
     },
     "include": [
         "next-env.d.ts",
