@@ -8,6 +8,7 @@
 		"packages/*"
 	],
 	"scripts": {
+		"prepare": "husky install",
 		"lint": "npm run lint --workspaces",
 		"test": "npm run test --workspaces",
 		"format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
