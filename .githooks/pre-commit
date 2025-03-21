@@ -1,0 +1,9 @@
+#!/bin/sh
+# This script runs Prettier on all relevant files before committing.
+
+echo "Running Prettier on staged files..."
+# Format files using Prettier. Adjust the glob to match your project’s file types.
+npx prettier --write "**/*.{ts,tsx,js,jsx,json,md}"
+# Re-add any changes that were formatted.
+git add .
+
