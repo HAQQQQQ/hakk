@@ -1,8 +1,8 @@
-import { Preference } from "../types/common.types";
+import { Preference } from "@/types/common.types";
 
 export function generatePrompt(inputObj: Preference): string {
-	const inputString = JSON.stringify(inputObj, null, 2);
-	return `
+    const inputString = JSON.stringify(inputObj, null, 2);
+    return `
 		Given the following input object:
 
 		${inputString}
