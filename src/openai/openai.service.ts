@@ -1,6 +1,6 @@
 // src/openai/openai.service.ts
 import { Injectable, Inject } from "@nestjs/common";
-import { OpenAI } from "openai"; // Adjust if needed
+import { OpenAI } from "openai";
 
 @Injectable()
 export class OpenAIService {
