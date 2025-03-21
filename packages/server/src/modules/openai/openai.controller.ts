@@ -8,8 +8,7 @@ export class OpenAIController {
 
 	@Post("complete")
 	async completePrompt(@Body() body: { prompt: string }): Promise<{ completion: string }> {
-		const
-			completion = await this.openaiService.completePrompt(body.prompt);
+		const completion = await this.openaiService.completePrompt(body.prompt);
 		return { completion };
 	}
 }
