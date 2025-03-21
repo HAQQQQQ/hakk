@@ -2,7 +2,7 @@
     "name": "hakk",
     "version": "1.0.0",
     "private": true,
-    "description": "Monorepo for hakk project with Next.js frontend and NestJS backend",
+    "description": "Monorepo for hakk project with Next.js client and NestJS backend",
     "license": "UNLICENSED",
     "workspaces": [
         "packages/*"

@@ -29,9 +29,9 @@
             "@common/*": [
                 "packages/server/src/common/*"
             ],
-            "@frontend/*": [
-                "packages/frontend/src/*"
-            ] // Frontend alias added
+            "@client/*": [
+                "packages/client/src/*"
+            ] // client alias added
         }
     },
     "exclude": [
