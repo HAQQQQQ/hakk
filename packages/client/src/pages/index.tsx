@@ -11,6 +11,8 @@ import {
     UserButton,
 } from '@clerk/nextjs';
 import { createClient } from '@supabase/supabase-js';
+import UserPreferencesForm from "./UserPreferencesForm";
+
 
 export default function Home() {
     // Get Clerk session and user details
@@ -120,6 +122,7 @@ export default function Home() {
                             Please start by filling out this questionnaire to meet your perfect match.
                         </p>
                     </div>
+                    <UserPreferencesForm />
                     <SurveyForm />
                 </SignedIn>
             </body>
