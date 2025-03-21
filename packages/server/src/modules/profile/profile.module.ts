@@ -1,9 +1,11 @@
 import { Module } from "@nestjs/common";
 import { ProfileController } from "./profile.controller";
 import { ProfileService } from "./profile.service";
+import { OpenAIModule } from "../openai/openai.module";
 
 @Module({
-	controllers: [ProfileController],
-	providers: [ProfileService],
+    imports: [OpenAIModule],
+    controllers: [ProfileController],
+    providers: [ProfileService],
 })
-export class ProfileModule {}
+export class ProfileModule { }
