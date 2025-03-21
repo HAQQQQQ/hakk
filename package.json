@@ -1,33 +1,46 @@
 {
-    "name": "hakk",
-    "version": "1.0.0",
-    "private": true,
-    "description": "Monorepo for hakk project with Next.js client and NestJS backend",
-    "license": "UNLICENSED",
-    "workspaces": [
-        "packages/*"
-    ],
-    "scripts": {
-        "lint": "npm run lint --workspaces",
-        "test": "npm run test --workspaces",
-        "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-        "docker:ps": "docker-compose ps",
-        "docker:build": "docker-compose build",
-        "docker:up": "docker-compose up -d",
-        "docker:down": "docker-compose down",
-        "docker:logs": "docker-compose logs -f",
-        "docker:restart": "docker-compose restart",
-        "docker:prune": "docker system prune -f",
-        "docker:clean": "docker-compose down && docker system prune -af && docker volume prune -f",
-        "supabase:start": "npx supabase start",
-        "supabase:stop": "npx supabase stop"
-    },
-    "devDependencies": {
-        "concurrently": "^8.2.0",
-        "prettier": "^3.5.3",
-        "rimraf": "^6.0.1"
-    },
-    "engines": {
-        "node": ">=20.0.0"
-    }
+	"name": "hakk",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Monorepo for hakk project with Next.js client and NestJS backend",
+	"license": "UNLICENSED",
+	"workspaces": [
+		"packages/*"
+	],
+	"scripts": {
+		"lint": "npm run lint --workspaces",
+		"test": "npm run test --workspaces",
+		"format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+		"docker:ps": "docker-compose ps",
+		"docker:build": "docker-compose build",
+		"docker:up": "docker-compose up -d",
+		"docker:down": "docker-compose down",
+		"docker:logs": "docker-compose logs -f",
+		"docker:restart": "docker-compose restart",
+		"docker:prune": "docker system prune -f",
+		"docker:clean": "docker-compose down && docker system prune -af && docker volume prune -f",
+		"supabase:start": "npx supabase start",
+		"supabase:stop": "npx supabase stop"
+	},
+	"devDependencies": {
+		"concurrently": "^8.2.0",
+		"prettier": "^3.5.3",
+		"rimraf": "^6.0.1",
+		"husky": "^8.0.0",
+		"lint-staged": "^13.0.0"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
+	"lint-staged": {
+		"**/*.{ts,tsx,js,jsx,json,md}": [
+			"prettier --write",
+			"git add"
+		]
+	},
+	"engines": {
+		"node": ">=20.0.0"
+	}
 }
