@@ -15,7 +15,7 @@ packages/*/package-lock.json
 # yarn.lock
 
 # Environment variables
-.env
+packages/server/.env
 .env.local
 .env.*.local
 .env.development
@@ -23,7 +23,7 @@ packages/*/package-lock.json
 .env.test
 .env.example
 # Ignore all .env files in all directories
-**/.env
+packages/frontend/.env
 **/.env.*
 
 # Logs
