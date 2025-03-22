@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { TextField, Button, Box, Typography, Container, Grid, Paper } from "@mui/material";
+import { useUser } from "@clerk/nextjs";
 
 export default function SurveyForm() {
+	const { user } = useUser();
+
 	const [formData, setFormData] = useState({
 		movies: ["", "", ""],
 		artists: ["", "", ""],
@@ -17,10 +20,16 @@ export default function SurveyForm() {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		const response = await fetch("/api/user-preferences", {
+
+		const payload = {
+			userId: user?.id,
+			preference: formData,
+		};
+
+		const response = await fetch("/api/preferences", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(formData),
+			body: JSON.stringify(payload),
 		});
 		if (response.ok) alert("Preferences saved!");
 		else alert("Error saving preferences.");
