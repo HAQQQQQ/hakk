@@ -7,9 +7,10 @@ import { UsersController } from "./modules/users/users.controller";
 import { SupabaseService } from "./modules/supabase/supabase.service";
 import { TestModule } from "../test/test.module";
 import { InterestsModule } from "./modules/interests/interests.module";
+import { PreferencesModule } from '@modules/preferences/preferences.module';
 
 @Module({
-	imports: [ProfileModule, TestModule, OpenAIModule, InterestsModule],
+	imports: [ProfileModule, TestModule, OpenAIModule, InterestsModule, PreferencesModule],
 	controllers: [AppController, UsersController],
 	providers: [AppService, SupabaseService],
 	exports: [SupabaseService],
