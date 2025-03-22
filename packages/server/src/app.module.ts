@@ -7,10 +7,18 @@ import { UsersController } from "./modules/users/users.controller";
 import { SupabaseService } from "./modules/supabase/supabase.service";
 import { TestModule } from "../test/test.module";
 import { InterestsModule } from "./modules/interests/interests.module";
-import { PreferencesModule } from '@modules/preferences/preferences.module';
+import { PreferencesModule } from "@modules/preferences/preferences.module";
+import { RedisClientModule } from "./modules/redis-client/redis-client.module";
 
 @Module({
-	imports: [ProfileModule, TestModule, OpenAIModule, InterestsModule, PreferencesModule],
+	imports: [
+		ProfileModule,
+		TestModule,
+		OpenAIModule,
+		InterestsModule,
+		PreferencesModule,
+		RedisClientModule,
+	],
 	controllers: [AppController, UsersController],
 	providers: [AppService, SupabaseService],
 	exports: [SupabaseService],

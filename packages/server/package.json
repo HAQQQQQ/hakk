@@ -23,16 +23,17 @@
 		"postinstall": "git config core.hooksPath .githooks"
 	},
 	"dependencies": {
+		"@hakk/types": "1.0.0",
 		"@nestjs/common": "^11.0.1",
 		"@nestjs/core": "^11.0.1",
 		"@nestjs/platform-express": "^11.0.1",
 		"@supabase/supabase-js": "^2.49.1",
+		"axios": "^1.8.4",
 		"dotenv": "^16.4.7",
 		"openai": "^4.89.0",
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.8.1",
-		"supabase": "^2.19.7",
-		"@hakk/types": "1.0.0"
+		"supabase": "^2.19.7"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3.2.0",

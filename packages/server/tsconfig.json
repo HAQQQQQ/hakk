@@ -1,23 +1,17 @@
 {
-    "extends": "../../tsconfig.json", // Inherit from the root config
-    "compilerOptions": {
-        "module": "NodeNext", // ✅ ESM + CJS Support
-        "moduleResolution": "NodeNext", // ✅ Correct `.d.ts` file resolution
-        "declaration": true, // For .d.ts generation (common for library/server)
-        "removeComments": true, // Cleaner build output
-        "emitDecoratorMetadata": true, // Required for NestJS
-        "experimentalDecorators": true, // Required for NestJS
-        "useDefineForClassFields": false, // Matches best practice with NestJS
-        "allowSyntheticDefaultImports": true, // Useful for compatibility
-        "outDir": "./dist", // Server-specific output directory
-        "rootDir": "./" // Server-specific root directory
-    },
-    "include": [
-        "src/**/*"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist",
-        "test"
-    ]
+	"extends": "../../tsconfig.json", // Inherit from the root config
+	"compilerOptions": {
+		"module": "NodeNext", // ✅ ESM + CJS Support
+		"moduleResolution": "NodeNext", // ✅ Correct `.d.ts` file resolution
+		"declaration": true, // For .d.ts generation (common for library/server)
+		"removeComments": true, // Cleaner build output
+		"emitDecoratorMetadata": true, // Required for NestJS
+		"experimentalDecorators": true, // Required for NestJS
+		"useDefineForClassFields": false, // Matches best practice with NestJS
+		"allowSyntheticDefaultImports": true, // Useful for compatibility
+		"outDir": "./dist", // Server-specific output directory
+		"rootDir": "./" // Server-specific root directory
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist", "test"]
 }

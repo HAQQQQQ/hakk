@@ -10,6 +10,7 @@
 	"scripts": {
 		"start:client": "npm run start --workspace=packages/client",
 		"start:server": "npm run start --workspace=packages/server",
+		"start:redis_service": "npm run start --workspace=packages/redis-service",
 		"start": "concurrently \"npm run start:server\" \"npm run start:client\"",
 		"build": "npm run build --workspaces",
 		"prepare": "husky install",
