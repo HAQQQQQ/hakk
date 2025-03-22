@@ -1,28 +1,23 @@
-import {
-    CallHandler,
-    ExecutionContext,
-    Injectable,
-    NestInterceptor,
-} from '@nestjs/common';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
-import { IBaseResponse, ResponseStatus } from '@hakk/types';
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from "@nestjs/common";
+import { map } from "rxjs/operators";
+import { Observable } from "rxjs";
+import { IBaseResponse, ResponseStatus } from "@hakk/types";
 
 @Injectable()
 export class ResponseInterceptor<T> implements NestInterceptor<T, IBaseResponse<T>> {
-    intercept(context: ExecutionContext, next: CallHandler): Observable<IBaseResponse<T>> {
-        const ctx = context.switchToHttp();
-        const request = ctx.getRequest();
+	intercept(context: ExecutionContext, next: CallHandler): Observable<IBaseResponse<T>> {
+		const ctx = context.switchToHttp();
+		const request = ctx.getRequest();
 
-        return next.handle().pipe(
-            map((data) => ({
-                status: ResponseStatus.SUCCESS,
-                data,
-                meta: {
-                    timestamp: new Date().toISOString(),
-                    path: request.url,
-                },
-            }))
-        );
-    }
+		return next.handle().pipe(
+			map((data) => ({
+				status: ResponseStatus.SUCCESS,
+				data,
+				meta: {
+					timestamp: new Date().toISOString(),
+					path: request.url,
+				},
+			})),
+		);
+	}
 }

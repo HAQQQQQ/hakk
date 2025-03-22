@@ -1,16 +1,14 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-        "target": "ES2021",
-        "module": "ESNext",
-        "declaration": true,
-        "declarationMap": true,
-        "esModuleInterop": true,
-        "moduleResolution": "node",
-        "outDir": "./dist/esm",
-        "rootDir": "./src"
-    },
-    "include": [
-        "src/**/*"
-    ]
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"target": "ES2021",
+		"module": "ESNext",
+		"declaration": true,
+		"declarationMap": true,
+		"esModuleInterop": true,
+		"moduleResolution": "node",
+		"outDir": "./dist/esm",
+		"rootDir": "./src"
+	},
+	"include": ["src/**/*"]
 }

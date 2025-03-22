@@ -1,5 +1,5 @@
 export type Preference = {
-    music: string[];
-    movie: string[];
-    hobby: string[];
+	music: string[];
+	movie: string[];
+	hobby: string[];
 };

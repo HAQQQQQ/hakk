@@ -1,26 +1,25 @@
-import { Controller, Get, InternalServerErrorException, Req } from '@nestjs/common';
-
+import { Controller, Get, InternalServerErrorException, Req } from "@nestjs/common";
 
 export interface InterestResponseDto {
-    id: number;
-    name: string;
-};
+	id: number;
+	name: string;
+}
 
-@Controller('interests')
+@Controller("interests")
 export class InterestsController {
-    private interests: InterestResponseDto[] = [
-        { id: 1, name: 'Fitness' },
-        { id: 2, name: 'Music' },
-    ];
+	private interests: InterestResponseDto[] = [
+		{ id: 1, name: "Fitness" },
+		{ id: 2, name: "Music" },
+	];
 
-    @Get()
-    getAllInterests(): InterestResponseDto[] {
-        return this.interests;
-    }
+	@Get()
+	getAllInterests(): InterestResponseDto[] {
+		return this.interests;
+	}
 
-    // ❌ Simulated "Internal Server Error"
-    @Get('server-error')
-    triggerServerError(): void {
-        throw new InternalServerErrorException('Simulated internal error for testing.');
-    }
+	// ❌ Simulated "Internal Server Error"
+	@Get("server-error")
+	triggerServerError(): void {
+		throw new InternalServerErrorException("Simulated internal error for testing.");
+	}
 }

@@ -1,7 +1,7 @@
 export function generatePrompt(inputString: string): string {
-    // Preference): string {
-    // const inputString = JSON.stringify(inputObj, null, 2);
-    return `
+	// Preference): string {
+	// const inputString = JSON.stringify(inputObj, null, 2);
+	return `
 		Given the following input object:
 
 		${inputString}

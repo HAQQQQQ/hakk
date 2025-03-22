@@ -1,17 +1,17 @@
 {
-    "status": "success",
-    "data": [
-        {
-            "id": 1,
-            "name": "Fitness"
-        },
-        {
-            "id": 2,
-            "name": "Music"
-        }
-    ],
-    "meta": {
-        "timestamp": "2025-03-22T18:26:59.788Z",
-        "path": "/interests"
-    }
+	"status": "success",
+	"data": [
+		{
+			"id": 1,
+			"name": "Fitness"
+		},
+		{
+			"id": 2,
+			"name": "Music"
+		}
+	],
+	"meta": {
+		"timestamp": "2025-03-22T18:26:59.788Z",
+		"path": "/interests"
+	}
 }
