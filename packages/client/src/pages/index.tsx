@@ -123,98 +123,98 @@ export default function Home() {
                         </p>
                     </div>
                     <UserPreferencesForm />
-                    <SurveyForm />
+                   
                 </SignedIn>
             </body>
         </div>
     );
 }
 
-function SurveyForm() {
-    const [answers, setAnswers] = useState({
-        q1: '',
-        q2: '',
-        q3: '',
-        q4: '',
-        q5: '',
-    });
+// function SurveyForm() {
+//     const [answers, setAnswers] = useState({
+//         q1: '',
+//         q2: '',
+//         q3: '',
+//         q4: '',
+//         q5: '',
+//     });
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setAnswers((prev) => ({ ...prev, [name]: value }));
-    };
+//     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//         const { name, value } = e.target;
+//         setAnswers((prev) => ({ ...prev, [name]: value }));
+//     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log('Submitted answers:', answers);
-        // Here you can add additional logic to handle the submitted answers,
-        // such as saving them to Supabase.
-    };
+//     const handleSubmit = (e: React.FormEvent) => {
+//         e.preventDefault();
+//         console.log('Submitted answers:', answers);
+//         // Here you can add additional logic to handle the submitted answers,
+//         // such as saving them to Supabase.
+//     };
 
-    return (
-        <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{
-                marginTop: '2rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 2,
-                width: '100%',
-                maxWidth: 600,
-                mx: 'auto',
-                p: 3,
-                border: '1px solid #ccc',
-                borderRadius: 2,
-                boxShadow: 3,
-            }}
-        >
-            <Typography variant="h6" component="h2" align="center" gutterBottom>
-                Dating Survey
-            </Typography>
-            <TextField
-                label="1. What's your favorite movie?"
-                variant="outlined"
-                name="q1"
-                value={answers.q1}
-                onChange={handleChange}
-                required
-            />
-            <TextField
-                label="2. Who is your favorite actor or actress?"
-                variant="outlined"
-                name="q2"
-                value={answers.q2}
-                onChange={handleChange}
-                required
-            />
-            <TextField
-                label="3. What genre of movies do you prefer?"
-                variant="outlined"
-                name="q3"
-                value={answers.q3}
-                onChange={handleChange}
-                required
-            />
-            <TextField
-                label="4. What's the last movie you watched?"
-                variant="outlined"
-                name="q4"
-                value={answers.q4}
-                onChange={handleChange}
-                required
-            />
-            <TextField
-                label="5. Would you recommend your favorite movie to others?"
-                variant="outlined"
-                name="q5"
-                value={answers.q5}
-                onChange={handleChange}
-                required
-            />
-            <Button type="submit" variant="contained" sx={{ mt: 2 }}>
-                Submit
-            </Button>
-        </Box>
-    );
-}
+//     return (
+//         <Box
+//             component="form"
+//             onSubmit={handleSubmit}
+//             sx={{
+//                 marginTop: '2rem',
+//                 display: 'flex',
+//                 flexDirection: 'column',
+//                 gap: 2,
+//                 width: '100%',
+//                 maxWidth: 600,
+//                 mx: 'auto',
+//                 p: 3,
+//                 border: '1px solid #ccc',
+//                 borderRadius: 2,
+//                 boxShadow: 3,
+//             }}
+//         >
+//             <Typography variant="h6" component="h2" align="center" gutterBottom>
+//                 Dating Survey
+//             </Typography>
+//             <TextField
+//                 label="1. What's your favorite movie?"
+//                 variant="outlined"
+//                 name="q1"
+//                 value={answers.q1}
+//                 onChange={handleChange}
+//                 required
+//             />
+//             <TextField
+//                 label="2. Who is your favorite actor or actress?"
+//                 variant="outlined"
+//                 name="q2"
+//                 value={answers.q2}
+//                 onChange={handleChange}
+//                 required
+//             />
+//             <TextField
+//                 label="3. What genre of movies do you prefer?"
+//                 variant="outlined"
+//                 name="q3"
+//                 value={answers.q3}
+//                 onChange={handleChange}
+//                 required
+//             />
+//             <TextField
+//                 label="4. What's the last movie you watched?"
+//                 variant="outlined"
+//                 name="q4"
+//                 value={answers.q4}
+//                 onChange={handleChange}
+//                 required
+//             />
+//             <TextField
+//                 label="5. Would you recommend your favorite movie to others?"
+//                 variant="outlined"
+//                 name="q5"
+//                 value={answers.q5}
+//                 onChange={handleChange}
+//                 required
+//             />
+//             <Button type="submit" variant="contained" sx={{ mt: 2 }}>
+//                 Submit
+//             </Button>
+//         </Box>
+//     );
+// }
