@@ -6,11 +6,12 @@ import { OpenAIModule } from "./modules/openai/openai.module";
 import { UsersController } from "./modules/users/users.controller";
 import { SupabaseService } from "./modules/supabase/supabase.service";
 import { TestModule } from "../test/test.module";
+import { InterestsModule } from './modules/interests/interests.module';
 
 @Module({
-	imports: [ProfileModule, TestModule, OpenAIModule],
-	controllers: [AppController, UsersController],
-	providers: [AppService, SupabaseService],
-	exports: [SupabaseService],
+    imports: [ProfileModule, TestModule, OpenAIModule, InterestsModule],
+    controllers: [AppController, UsersController],
+    providers: [AppService, SupabaseService],
+    exports: [SupabaseService],
 })
-export class AppModule {}
+export class AppModule { }

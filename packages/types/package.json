@@ -1,18 +1,26 @@
 {
     "name": "@hakk/types",
     "version": "1.0.0",
-    "description": "Shared TypeScript types and interfaces for hakk",
-    "main": "dist/index.js",
+    "description": "",
+    "main": "dist/cjs/index.js",
+    "module": "dist/esm/index.js",
     "types": "dist/index.d.ts",
-    "private": true,
     "scripts": {
-        "build": "tsc",
-        "clean": "rimraf dist",
-        "prebuild": "npm run clean",
-        "dev": "tsc --watch"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc && tsc --project tsconfig.cjs.json"
     },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {},
     "devDependencies": {
-        "rimraf": "^6.0.1",
-        "typescript": "^5.4.2"
+        "@types/node": "^20.11.17",
+        "typescript": "^5.3.3"
+    },
+    "exports": {
+        ".": {
+            "import": "./dist/esm/index.js",
+            "require": "./dist/cjs/index.js"
+        }
     }
 }
