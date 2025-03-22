@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { SupabaseService } from "@/modules/supabase/supabase.service";
-import { Preference } from "@/types/common.types";
+import { Preference } from '@hakk/types';
 import { TestService } from "./test.service";
 
 @Controller("test")

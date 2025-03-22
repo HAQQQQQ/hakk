@@ -5,7 +5,7 @@ import { TestService } from "./test.service";
 import { SupabaseService } from "@/modules/supabase/supabase.service";
 
 @Module({
-    controllers: [TestController],
-    providers: [TestService, SupabaseService],
+	controllers: [TestController],
+	providers: [TestService, SupabaseService],
 })
-export class TestModule { }
+export class TestModule {}

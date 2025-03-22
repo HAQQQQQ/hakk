@@ -4,8 +4,8 @@ import { ProfileService } from "./profile.service";
 import { OpenAIModule } from "../openai/openai.module";
 
 @Module({
-    imports: [OpenAIModule],
-    controllers: [ProfileController],
-    providers: [ProfileService],
+	imports: [OpenAIModule],
+	controllers: [ProfileController],
+	providers: [ProfileService],
 })
-export class ProfileModule { }
+export class ProfileModule {}

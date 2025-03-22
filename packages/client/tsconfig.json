@@ -1,32 +1,18 @@
 {
-    "extends": "../../tsconfig.json", // Inherits common settings
-    "compilerOptions": {
-        "target": "ES2017", // Specific for Next.js
-        "lib": [
-            "dom",
-            "dom.iterable",
-            "esnext"
-        ], // Next.js requires DOM support
-        "allowJs": true, // Supports JavaScript files
-        "noEmit": true, // Ensures no `.js` files are generated
-        "module": "esnext", // Ensures modern module syntax
-        "moduleResolution": "bundler", // Best for Next.js bundling
-        "jsx": "preserve", // Required for Next.js JSX support
-        "incremental": false, // Useful for development speed
-        "paths": {
-            "@/*": [
-                "./src/*"
-            ] // client-specific path alias
-        }
-    },
-    "include": [
-        "next-env.d.ts",
-        "src/**/*.ts",
-        "src/**/*.tsx"
-    ],
-    "exclude": [
-        "node_modules",
-        ".next",
-        "out"
-    ]
+	"extends": "../../tsconfig.json", // Inherits common settings
+	"compilerOptions": {
+		"target": "ES2017", // Specific for Next.js
+		"lib": ["dom", "dom.iterable", "esnext"], // Next.js requires DOM support
+		"allowJs": true, // Supports JavaScript files
+		"noEmit": true, // Ensures no `.js` files are generated
+		"module": "esnext", // Ensures modern module syntax
+		"moduleResolution": "bundler", // Best for Next.js bundling
+		"jsx": "preserve", // Required for Next.js JSX support
+		"incremental": false, // Useful for development speed
+		"paths": {
+			"@/*": ["./src/*"] // client-specific path alias
+		}
+	},
+	"include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["node_modules", ".next", "out"]
 }

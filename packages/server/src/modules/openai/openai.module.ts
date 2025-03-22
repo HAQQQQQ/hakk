@@ -5,8 +5,8 @@ import { OpenAIController } from "./openai.controller";
 import { OpenAIProviders } from "./openai.provider";
 
 @Module({
-    providers: [OpenAIService, ...OpenAIProviders],
-    controllers: [OpenAIController],
-    exports: [OpenAIService],
+	providers: [OpenAIService, ...OpenAIProviders],
+	controllers: [OpenAIController],
+	exports: [OpenAIService],
 })
-export class OpenAIModule { }
+export class OpenAIModule {}
