@@ -6,9 +6,7 @@ import { Preference } from "@hakk/types";
 export class PreferencesService {
 	constructor(private readonly supabaseService: SupabaseService) {}
 
-	async addPreference(
-        userId: string, preference: Preference
-    ): Promise<string> {
+	async addPreference(userId: string, preference: Preference): Promise<string> {
 		return this.supabaseService.addPreference(userId, preference);
 	}
 }
