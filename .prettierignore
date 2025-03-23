@@ -1,0 +1,23 @@
+# .prettierignore
+
+# Next.js build files
+.next/
+out/
+
+# Node stuff
+node_modules/
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Generated files
+*.nft.json
+*.map
+
+# Ignore the whole .git directory
+.git/
+
