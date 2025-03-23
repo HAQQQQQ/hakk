@@ -1,16 +1,16 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { Preference } from "@hakk/types";
-import { SupabaseService } from "@modules/supabase/supabase.service";
+import { PreferencesService } from "./preferences.service";
 
 @Controller("preferences")
 export class PreferencesController {
-	constructor(private readonly supabaseService: SupabaseService) {}
+	constructor(private readonly preferencesService: PreferencesService) {}
 
 	@Post()
 	async savePreferences(
 		@Body() body: { userId: string; preference: Preference },
-	): Promise<{ message: string }> {
-		await this.supabaseService.addPreference(body.userId, body.preference);
-		return { message: "Preferences saved successfully" };
+	): Promise<{ message: string, data:any }> {
+		let data = await this.preferencesService.addPreference(body.userId, body.preference);
+		return { message: "Preferences saved successfully", data:data };
 	}
 }
