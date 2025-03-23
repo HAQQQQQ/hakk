@@ -3,11 +3,12 @@ import { AppModule } from './app.module';
 import { config } from 'dotenv';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { AppConfig } from './config/app.config';
 
-config();
+// config();
 
 async function bootstrap() {
-    const port = process.env.PORT ?? 3001;
+    const port = AppConfig.port;
     console.log(`---Server running on port: ${port}---`);
     const app = await NestFactory.create(AppModule);
 
@@ -22,20 +23,12 @@ async function bootstrap() {
 
     configureGlobalMiddleware();
 
-    const useNginx = isEnvTrue(process.env.USE_NGINX);
-    // Restricts API to localhost-only by binding to 127.0.0.1
-    if (useNginx) {
-        await app.listen(port, '127.0.0.1');  // Ensures the API only listens on localhost
-    }
-    else {
-        await app.listen(port);  // Ensures the API only listens on localhost
+    if (AppConfig.useNginx) {
+        await app.listen(AppConfig.port, '127.0.0.1');
+    } else {
+        await app.listen(AppConfig.port);
     }
 
 }
 
 bootstrap();
-
-
-export const isEnvTrue = (value?: string): boolean => {
-    return value?.toLowerCase() === 'true';
-};
