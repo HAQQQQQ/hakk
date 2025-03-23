@@ -1,5 +1,4 @@
 import { Controller, Delete, Get, InternalServerErrorException, Param } from "@nestjs/common";
-import { InterestsService } from "../interests/interests.service";
 import { RedisTestService } from "./redis-test.service";
 
 export interface InterestResponseDto {

@@ -3,4 +3,4 @@
 1) npm run supabase:start                              # Start Supabase (ensures database is ready)
 2) npm run docker:up                                   # Start API once Supabase is running
 3) npm run docker:ps                                   # Make sure Api is up and running
-4) curl -X GET http://localhost:3000/users             # hit users endpoint to get all users from Supabase
+4) curl -X GET http://localhost:3001/api/users         # hit users endpoint to get all users from Supabase
