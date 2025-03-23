@@ -8,7 +8,7 @@ export class ProfileController {
 	constructor(private readonly profileService: ProfileService) {}
 
 	@Get()
-	getProfile(): Promise<string> {
+	async getProfile(): Promise<string> {
 		return this.profileService.getProfile();
 	}
 }
