@@ -6,9 +6,9 @@ export default function SurveyForm() {
 	const { user } = useUser();
 
 	const [formData, setFormData] = useState({
-		movies: ["", "", ""],
-		artists: ["", "", ""],
-		hobbies: ["", "", ""],
+		movies: ["Inception", "Spirited Away", "The Matrix"],
+		artists: ["Taylor Swift", "Kendrick Lamar", "Adele"],
+		hobbies: ["Hiking", "Painting", "Chess"],
 	});
 
 	const handleChange = (category: string, index: number, value: string) => {
@@ -18,6 +18,7 @@ export default function SurveyForm() {
 		}));
 	};
 
+	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
@@ -26,13 +27,27 @@ export default function SurveyForm() {
 			preference: formData,
 		};
 
-		const response = await fetch("/api/preferences", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(payload),
-		});
-		if (response.ok) alert("Preferences saved!");
-		else alert("Error saving preferences.");
+		try {
+			console.log("Sending to:", apiUrl);
+			console.log("Payload:", payload);
+
+			const response = await fetch(`${apiUrl}/api/preferences`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(payload),
+			});
+
+			if (response.ok) {
+				alert("Preferences saved!");
+			} else {
+				const errorText = await response.text();
+				console.error("Server error:", errorText);
+				alert("Error saving preferences.");
+			}
+		} catch (error) {
+			console.error("Fetch failed:", error);
+			alert("Network error. Please try again.");
+		}
 	};
 
 	return (

@@ -31,7 +31,7 @@ export default function Home() {
 				</SignedIn>
 			</header>
 
-			<body>
+			<main>
 				<SignedIn>
 					<div style={{ textAlign: "center", marginBottom: "1rem" }}>
 						<h2>
@@ -44,7 +44,7 @@ export default function Home() {
 					</div>
 					<SurveyForm />
 				</SignedIn>
-			</body>
+			</main>
 		</div>
 	);
 }

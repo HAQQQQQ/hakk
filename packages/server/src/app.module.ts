@@ -13,26 +13,26 @@ import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
 import { isEnvTrue } from "./main";
 
 @Module({
-    imports: [
-        ProfileModule,
-        TestModule,
-        OpenAIModule,
-        InterestsModule,
-        PreferencesModule,
-        RedisClientModule,
-    ],
-    controllers: [AppController, UsersController],
-    providers: [AppService, SupabaseService],
-    exports: [SupabaseService],
+	imports: [
+		ProfileModule,
+		TestModule,
+		OpenAIModule,
+		InterestsModule,
+		PreferencesModule,
+		RedisClientModule,
+	],
+	controllers: [AppController, UsersController],
+	providers: [AppService, SupabaseService],
+	exports: [SupabaseService],
 })
 export class AppModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        // Apply the ApiAuthMiddleware to all routes  
+	configure(consumer: MiddlewareConsumer) {
+		// Apply the ApiAuthMiddleware to all routes
 
-        const useNginx = isEnvTrue(process.env.USE_NGINX);
-        if (useNginx) {
-            consumer.apply(ApiAuthMiddleware).forRoutes('*');
-        }
-        // consumer.apply(ApiAuthMiddleware).forRoutes('*');
-    }
+		const useNginx = isEnvTrue(process.env.USE_NGINX);
+		if (useNginx) {
+			consumer.apply(ApiAuthMiddleware).forRoutes("*");
+		}
+		// consumer.apply(ApiAuthMiddleware).forRoutes('*');
+	}
 }
