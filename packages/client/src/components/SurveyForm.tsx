@@ -1,9 +1,11 @@
+"use client";
+
 import { useState } from "react";
 import { TextField, Button, Box, Typography, Container, Grid, Paper } from "@mui/material";
 import { useUser } from "@clerk/nextjs";
 
 export default function SurveyForm() {
-	const { user } = useUser();
+	//const { user } = useUser();
 
 	const [formData, setFormData] = useState({
 		movies: ["", "", ""],
@@ -22,7 +24,7 @@ export default function SurveyForm() {
 		e.preventDefault();
 
 		const payload = {
-			userId: user?.id,
+			// userId: user?.id,
 			preference: formData,
 		};
 
