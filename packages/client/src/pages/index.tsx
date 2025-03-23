@@ -12,26 +12,15 @@ export default function Home() {
 
 	return (
 		<div>
-			<header
+			<main
 				style={{
-					display: "flex",
-					justifyContent: "flex-end",
-					alignItems: "center",
-					padding: "1rem",
+					minHeight: "100vh",
+					backgroundImage: 'url("/static/anandsHomeland.jpg")',
+					backgroundSize: "cover",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat",
 				}}
 			>
-				{/* Show sign-in button if the user is not signed in */}
-				<SignedOut>
-					<SignInButton />
-				</SignedOut>
-
-				{/* Show user button (and sign-out option) if the user is signed in */}
-				<SignedIn>
-					<UserButton />
-				</SignedIn>
-			</header>
-
-			<main>
 				<SignedIn>
 					<div style={{ textAlign: "center", marginBottom: "1rem" }}>
 						<h2>

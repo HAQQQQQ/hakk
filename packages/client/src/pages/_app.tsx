@@ -3,11 +3,13 @@ import { ClerkProvider } from "@clerk/nextjs";
 import type { AppProps } from "next/app";
 import ReactQueryProvider from "../lib/ReactQueryProvider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import Header from "../components/Header";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<ClerkProvider {...pageProps}>
 			<ReactQueryProvider>
+				<Header />
 				<Component {...pageProps} />
 				<ReactQueryDevtools initialIsOpen={true} />
 			</ReactQueryProvider>
