@@ -4,7 +4,7 @@ import axios from "axios";
 
 @Injectable()
 export class RedisClientService {
-    private readonly redisServiceUrl = `http://localhost:${AppConfig.redisServicePort ?? 3002}`;
+    private readonly redisServiceUrl = `http://localhost:${AppConfig.redisServicePort}`;
 
     async setKey(key: string, value: string, ttl?: number): Promise<string> {
         try {
