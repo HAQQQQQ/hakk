@@ -22,8 +22,20 @@ async function bootstrap() {
 
     configureGlobalMiddleware();
 
+    const useNginx = isEnvTrue(process.env.USE_NGINX);
     // Restricts API to localhost-only by binding to 127.0.0.1
-    await app.listen(port, '127.0.0.1');  // Ensures the API only listens on localhost
+    if (useNginx) {
+        await app.listen(port, '127.0.0.1');  // Ensures the API only listens on localhost
+    }
+    else {
+        await app.listen(port);  // Ensures the API only listens on localhost
+    }
+
 }
 
 bootstrap();
+
+
+export const isEnvTrue = (value?: string): boolean => {
+    return value?.toLowerCase() === 'true';
+};
