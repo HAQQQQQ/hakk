@@ -9,10 +9,12 @@ config();
  * Provides type-safe access to environment variables with sensible defaults
  */
 export class AppConfig {
-
     // Server configuration
-    static readonly port: number = parseInt(process.env.PORT ?? '3001', 10);
-    
+    static readonly port: number = (() => {
+        const defaultPort = AppConfig.useNginx ? '8080' : '3001';
+        return parseInt(process.env.PORT ?? defaultPort, 10);
+    })();
+
     static readonly useNginx: boolean = (() => {
         const value = process.env.USE_NGINX;
         return value?.toLowerCase() === 'true';
@@ -20,7 +22,6 @@ export class AppConfig {
 
     // Supabase configuration
     static readonly supabaseUrl: string = process.env.SUPABASE_URL ?? '';
-    
     static readonly supabaseKey: string = process.env.SUPABASE_KEY ?? '';
 
     // Redis configuration
@@ -63,4 +64,5 @@ export class AppConfig {
     //         throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
     //     }
     // }
+
 }
