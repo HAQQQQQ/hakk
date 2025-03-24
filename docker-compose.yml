@@ -1,17 +1,26 @@
-version: '3.8'
-
 services:
-  hakk-api:
+  nginx:
     build:
-      context: .
-      dockerfile: DockerFile
+      context: ./nginx # Updated to point to the nginx directory
+      dockerfile: Dockerfile
+    container_name: nginx-proxy
     ports:
-      - "3000:3000"
+      - "8080:8080"
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./nginx/config:/etc/nginx/conf.d
+      - ./logs/nginx:/var/log/nginx
+    env_file:
+      - ./.env # Reference to root .env file
     environment:
-      - NODE_ENV=development
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-    restart: always
+      - NGINX_HEADER_NAME=${NGINX_HEADER_NAME}
+      - NGINX_SECURE_KEY=${NGINX_SECURE_KEY}
+      - SERVER_PORT=${SERVER_PORT:-3001}
+      - CLIENT_PORT=${CLIENT_PORT:-3000}
+    networks:
+      - app-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  app-network:
+    driver: bridge
