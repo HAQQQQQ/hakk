@@ -1,6 +1,5 @@
 import { Provider } from "@nestjs/common";
 import OpenAI from "openai";
-import { AppConfig } from "@/config/app.config";
 import { Config } from "@/config/config";
 
 /**

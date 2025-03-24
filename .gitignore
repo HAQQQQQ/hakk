@@ -16,6 +16,7 @@ packages/*/package-lock.json
 
 # Environment variables
 packages/server/.env
+.env
 .env.local
 .env.*.local
 .env.development
@@ -27,6 +28,8 @@ packages/client/.env
 **/.env.*
 nginx/.env
 
+# Nginx generated config files
+nginx/config/default.conf
 
 # Logs
 logs/
