@@ -3,9 +3,22 @@
 import { useState } from "react";
 import { TextField, Button, Box, Typography, Container, Grid, Paper } from "@mui/material";
 import { useUser } from "@clerk/nextjs";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export default function SurveyForm() {
 	//const { user } = useUser();
+
+	/*
+	Build an interactive 3x3 preference selector:
+
+	- Auto-select 3 artists, 3 music genres, and 3 hobbies using ChatGPT
+	- Display them visually using circular image cards (sourced dynamically)
+	- Prompt the user to select the most relevant option from each row
+	  - Add a 3-second timer per selection
+	- Based on each user choice, fetch and display related images for the next round
+	- Once the 3x3 grid is finalized through selections, enable a final "Submit" action
+	*/
 
 	const [formData, setFormData] = useState({
 		movies: ["Inception", "Spirited Away", "The Matrix"],
@@ -21,35 +34,40 @@ export default function SurveyForm() {
 	};
 
 	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
 
+	const savePreferences = async () => {
 		const payload = {
 			// userId: user?.id,
 			preference: formData,
 		};
 
-		try {
-			console.log("Sending to:", apiUrl);
-			console.log("Payload:", payload);
+		const response = await fetch(`${apiUrl}/api/preferences`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload),
+		});
 
-			const response = await fetch(`${apiUrl}/api/preferences`, {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(payload),
-			});
-
-			if (response.ok) {
-				alert("Preferences saved!");
-			} else {
-				const errorText = await response.text();
-				console.error("Server error:", errorText);
-				alert("Error saving preferences.");
-			}
-		} catch (error) {
-			console.error("Fetch failed:", error);
-			alert("Network error. Please try again.");
+		if (!response.ok) {
+			const errorText = await response.text();
+			throw new Error(errorText || "Failed to save preferences.");
 		}
+
+		return response.json();
+	};
+
+	const { mutate, isPending } = useMutation({
+		mutationFn: savePreferences,
+		onSuccess: () => {
+			toast.success("Preferences saved!");
+		},
+		onError: (error: any) => {
+			toast.error("Error:", error.message);
+		},
+	});
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		mutate();
 	};
 
 	return (
@@ -81,8 +99,14 @@ export default function SurveyForm() {
 							</Grid>
 						</Box>
 					))}
-					<Button type="submit" variant="contained" color="primary" fullWidth>
-						Submit
+					<Button
+						type="submit"
+						variant="contained"
+						color="primary"
+						fullWidth
+						disabled={isPending}
+					>
+						{isPending ? "Submitting..." : "Submit"}
 					</Button>
 				</Box>
 			</Paper>

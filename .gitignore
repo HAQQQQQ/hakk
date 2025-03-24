@@ -23,8 +23,10 @@ packages/server/.env
 .env.test
 .env.example
 # Ignore all .env files in all directories
-packages/frontend/.env
+packages/client/.env
 **/.env.*
+nginx/.env
+
 
 # Logs
 logs/

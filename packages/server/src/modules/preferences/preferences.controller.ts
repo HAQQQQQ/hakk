@@ -9,8 +9,8 @@ export class PreferencesController {
 	@Post()
 	async savePreferences(
 		@Body() body: { userId: string; preference: Preference },
-	): Promise<{ message: string, data:any }> {
+	): Promise<{ message: string; data: any }> {
 		let data = await this.preferencesService.addPreference(body.userId, body.preference);
-		return { message: "Preferences saved successfully", data:data };
+		return { message: "Preferences saved successfully", data: data };
 	}
 }

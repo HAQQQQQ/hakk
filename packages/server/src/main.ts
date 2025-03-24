@@ -1,11 +1,11 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { config } from 'dotenv';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { ResponseInterceptor } from './common/interceptors/response.interceptor';
-import { AppConfig } from './config/app.config';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
+import { ResponseInterceptor } from "./common/interceptors/response.interceptor";
+import { AppConfig } from "./config/app.config";
 
-// config();
+// Validate critical environment variables before starting the app
+AppConfig.validate();
 
 async function bootstrap() {
     const port = AppConfig.port;
@@ -13,7 +13,11 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
     // Set global prefix for all routes
-    app.setGlobalPrefix('api');
+    app.setGlobalPrefix("api");
+    app.enableCors({
+        origin: "http://localhost:3000",
+        credentials: true, // if you're using cookies or auth headers
+    });
 
     // Apply global interceptors and filters
     const configureGlobalMiddleware = () => {
@@ -24,11 +28,10 @@ async function bootstrap() {
     configureGlobalMiddleware();
 
     if (AppConfig.useNginx) {
-        await app.listen(AppConfig.port, '127.0.0.1');
+        await app.listen(AppConfig.port, "127.0.0.1");
     } else {
         await app.listen(AppConfig.port);
     }
-
 }
 
 bootstrap();
