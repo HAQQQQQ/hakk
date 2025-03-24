@@ -25,6 +25,7 @@
 	"dependencies": {
 		"@hakk/types": "1.0.0",
 		"@nestjs/common": "^11.0.1",
+		"@nestjs/config": "^4.0.1",
 		"@nestjs/core": "^11.0.1",
 		"@nestjs/platform-express": "^11.0.1",
 		"@supabase/supabase-js": "^2.49.1",
