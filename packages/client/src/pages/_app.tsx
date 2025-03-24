@@ -4,6 +4,7 @@ import type { AppProps } from "next/app";
 import ReactQueryProvider from "../lib/ReactQueryProvider";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Header from "../components/Header";
+import { ToastContainer } from "react-toastify";
 
 function MyApp({ Component, pageProps }: AppProps) {
 	return (
@@ -11,6 +12,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<ReactQueryProvider>
 				<Header />
 				<Component {...pageProps} />
+				<ToastContainer position="bottom-right" autoClose={3000} />
 				<ReactQueryDevtools initialIsOpen={true} />
 			</ReactQueryProvider>
 		</ClerkProvider>

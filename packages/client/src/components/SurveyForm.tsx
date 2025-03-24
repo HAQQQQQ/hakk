@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TextField, Button, Box, Typography, Container, Grid, Paper } from "@mui/material";
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 export default function SurveyForm() {
 	const { user } = useUser();
@@ -44,11 +45,10 @@ export default function SurveyForm() {
 	const { mutate, isPending } = useMutation({
 		mutationFn: savePreferences,
 		onSuccess: () => {
-			alert("Preferences saved!");
+			toast.success("Preferences saved!");
 		},
 		onError: (error: any) => {
-			console.error("Error:", error.message);
-			alert("Something went wrong while saving preferences.");
+			toast.error("Error:", error.message);
 		},
 	});
 
