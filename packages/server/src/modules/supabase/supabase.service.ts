@@ -66,4 +66,25 @@ export class SupabaseService {
 
 		return data.map((item: { preference: Preference }) => item.preference);
 	}
+
+	async addInterest(userId: string, interests: string): Promise<any> {
+
+		await this.checkUserExists(userId);
+		
+		const { data, error } = await this.supabase.from("preferences").upsert(
+			[
+				{
+					user_id: userId,
+					interests: interests
+				}
+			]
+		)
+
+		if (error){
+			return error;
+		}
+
+		return data;
+
+	}
 }
