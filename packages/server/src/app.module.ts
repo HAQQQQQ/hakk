@@ -10,6 +10,8 @@ import { InterestsModule } from "./modules/interests/interests.module";
 import { PreferencesModule } from "@modules/preferences/preferences.module";
 import { RedisClientModule } from "./modules/redis-client/redis-client.module";
 import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
+import * as path from "path";
+import { ConfigModule } from "@nestjs/config";
 import { AppConfig } from "./config/app.config";
 
 @Module({
@@ -20,6 +22,18 @@ import { AppConfig } from "./config/app.config";
 		InterestsModule,
 		PreferencesModule,
 		RedisClientModule,
+
+		// **** Tech Debt: Maybe use NesJs ConfigModule to fetch env stuff ****
+		// ConfigModule.forRoot({
+		//     // Order matters - later files override earlier ones
+		//     envFilePath: [
+		//         // Server-specific .env (higher priority)
+		//         path.resolve(),
+		//         // Root .env (lower priority)
+		//         path.resolve(__dirname, '../../../../../.env'),
+		//     ],
+		//     isGlobal: true,
+		// }),
 	],
 	controllers: [AppController, UsersController],
 	providers: [AppService, SupabaseService],
