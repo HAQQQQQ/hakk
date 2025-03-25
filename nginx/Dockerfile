@@ -21,7 +21,7 @@ RUN chmod 644 /etc/nginx/conf.d/*.template && \
 # 🔹 PORT EXPOSURE
 # =========================
 # Expose port 8080 for NGINX to match your `docker-compose.yml`
-EXPOSE 8080
+# EXPOSE 8080
 
 # =========================
 # 🔹 HEALTH CHECK (Optional but Recommended)
