@@ -18,6 +18,17 @@ export default function SurveyForm() {
 	- Once the 3x3 grid is finalized through selections, enable a final "Submit" action
 	*/
 
+	/*
+	Build an interactive 3x3 preference selector:
+
+	- Auto-select 3 artists, 3 music genres, and 3 hobbies using ChatGPT
+	- Display them visually using circular image cards (sourced dynamically)
+	- Prompt the user to select the most relevant option from each row
+	  - Add a 3-second timer per selection
+	- Based on each user choice, fetch and display related images for the next round
+	- Once the 3x3 grid is finalized through selections, enable a final "Submit" action
+	*/
+
 	const [formData, setFormData] = useState({
 		movies: ["Inception", "Spirited Away", "The Matrix"],
 		artists: ["Taylor Swift", "Kendrick Lamar", "Adele"],
@@ -55,8 +66,9 @@ export default function SurveyForm() {
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: savePreferences,
-		onSuccess: () => {
+		onSuccess: (data) => {
 			toast.success("Preferences saved!");
+			console.log(data);
 		},
 		onError: (error: any) => {
 			toast.error("Error:", error.message);

@@ -18,7 +18,10 @@ export class OpenAIService {
 			temperature: this.temperature,
 		});
 
+		console.log("Got response from chatgpt: ", response);
+
 		const messageContent = response.choices[0].message.content;
+		console.log("messageContent:", messageContent);
 		// Return an empty string if the content is null; you can also throw an error if desired.
 		return messageContent ?? "";
 	}
