@@ -2,7 +2,7 @@
 "use client";
 
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { Box, AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
+import { Box, AppBar, Toolbar, Button, Container } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
 import Image from "next/image";
 
