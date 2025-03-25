@@ -80,14 +80,14 @@ export default function Home() {
 								position: "relative",
 							}}
 						>
-							<motion.img
-								src={roman.src}
-								alt="Sliding in"
-								initial={{ x: "200%", scale: 0.2 }}
-								animate={{ x: 0, scale: 0.5 }}
-								transition={{ duration: 1.5, ease: "easeOut" }}
-								style={{ width: "100vw", height: "100vh", objectFit: "cover" }}
-							/>
+							{/*<motion.img*/}
+							{/*	src={roman.src}*/}
+							{/*	alt="Sliding in"*/}
+							{/*	initial={{ x: "200%", scale: 0.2 }}*/}
+							{/*	animate={{ x: 0, scale: 0.5 }}*/}
+							{/*	transition={{ duration: 1.5, ease: "easeOut" }}*/}
+							{/*	style={{ width: "100vw", height: "100vh", objectFit: "cover" }}*/}
+							{/*/>*/}
 						</div>
 					</section>
 				</SignedOut>
