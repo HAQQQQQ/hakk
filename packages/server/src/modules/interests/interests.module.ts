@@ -7,6 +7,6 @@ import { OpenAIModule } from "../openai/openai.module";
 	imports: [OpenAIModule],
 	providers: [InterestsService, SupabaseService],
 	controllers: [InterestsController],
-	exports: [InterestsService]
+	exports: [InterestsService],
 })
 export class InterestsModule {}

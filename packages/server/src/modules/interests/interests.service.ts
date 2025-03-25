@@ -6,24 +6,19 @@ import { generatePrompt } from "../openai/openai.constants";
 
 @Injectable()
 export class InterestsService {
-    constructor(private readonly openaiservive: OpenAIService, private readonly supabaseService: SupabaseService) { }
+	constructor(
+		private readonly openaiservive: OpenAIService,
+		private readonly supabaseService: SupabaseService,
+	) {}
 
-    async addInterest(userId: string, preference: Preference) {
-        console.log('pref:', preference);
-        // let interests = await this.openaiservive.completePrompt(generatePrompt(JSON.stringify(preference)));
+	async addInterest(userId: string, preference: Preference) {
+		const openAiPrompt = generatePrompt(preference);
+		const openAiGetInterestsResponse = await this.openaiservive.completePrompt(openAiPrompt);
 
-        const jsonObject: {}[] = [JSON.parse(await this.getPrompt(preference))];
- 
-        return this.supabaseService.addInterest(userId, jsonObject);
-    }
+		// use AsObject since we haven't specified a type yet
+		const interestAsObject = JSON.parse(openAiGetInterestsResponse);
 
-
-    private async getPrompt(preference: Preference): Promise<string> {
-        return this.openaiservive.completePrompt(generatePrompt(JSON.stringify(preference)));
-    }
+		// TODO: Consider that this is for only one interest object, batch processing is for later
+		return this.supabaseService.addInterest(userId, [interestAsObject]);
+	}
 }
-
-
-
-//function to call openai servive, generate interest. make userid argument, preference list argument
-//cache interest object in redis, by userid

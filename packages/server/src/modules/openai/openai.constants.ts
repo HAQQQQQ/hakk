@@ -1,6 +1,8 @@
-export function generatePrompt(inputString: string): string {
+import { Preference } from "@hakk/types";
+
+export function generatePrompt(preference: Preference): string {
 	// Preference): string {
-	// const inputString = JSON.stringify(inputObj, null, 2);
+	const inputString = JSON.stringify(preference, null, 2);
 	return `
 		Given the following input object:
 

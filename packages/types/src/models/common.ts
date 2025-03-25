@@ -4,7 +4,6 @@ export type Preference = {
 	hobby: string[];
 };
 
-
 /*
 
 curl -X POST http://localhost:3001/api/preferences \
