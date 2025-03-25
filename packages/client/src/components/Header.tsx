@@ -31,21 +31,22 @@ export default function Header() {
 									variant="outlined"
 									startIcon={<LoginIcon />}
 									sx={{
-										borderColor: "#00FFAA",
-										color: "#00FFAA",
+										borderColor: "#cccccc",
+										color: "#333",
 										fontWeight: 600,
 										fontFamily: "Roboto, sans-serif",
 										textTransform: "none",
 										px: 3,
 										py: 1,
 										borderRadius: "10px",
-										boxShadow: "0 2px 6px rgba(0, 255, 170, 0.2)",
-										transition: "0.3s ease",
+										backgroundColor: "#f9f9f9",
+										boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
+										transition: "all 0.3s ease",
 										"&:hover": {
-											background:
-												"linear-gradient(to right, #1c1c1c, #5c5c5c)",
-											color: "white",
-											borderColor: "#5c5c5c",
+											backgroundColor: "#e0e0e0",
+											borderColor: "#aaaaaa",
+											color: "#000",
+											boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
 										},
 									}}
 								>
