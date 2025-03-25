@@ -3,7 +3,6 @@ import SurveyForm from "../components/SurveyForm";
 import { useProfile } from "../hooks/useProfile";
 import { motion } from "framer-motion";
 import roman from "../assets/roman.jpg";
-import sasha from "../assets/sasha.jpg";
 
 export default function Home() {
 	// Get Clerk session and user details
@@ -54,7 +53,7 @@ export default function Home() {
 							transition={{ duration: 1, delay: 0.3 }}
 							className="text-xl max-w-2xl text-white mb-8"
 						>
-							HAKK's integrated solution helps you find that person in the club way
+							HAKKs integrated solution helps you find that person in the club way
 							faster than before.
 						</motion.p>
 						<div
