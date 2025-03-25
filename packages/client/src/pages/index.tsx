@@ -25,7 +25,7 @@ export default function Home() {
 					<section className="">
 						<motion.h1
 							initial={{ opacity: 0.2, y: 0 }}
-							animate={{ opacity: 1, y: 700 }}
+							animate={{ opacity: 1, y: 500 }}
 							transition={{ duration: 3 }}
 							className="text-4xl text-purple-700 font-bold mb-4"
 						>
@@ -70,23 +70,6 @@ export default function Home() {
 								Your fitness journey reimagined.
 							</Typography>
 						</motion.div>
-
-						<div
-							style={{
-								overflow: "hidden",
-								width: "100vw",
-								height: "100vh",
-								position: "relative",
-							}}
-						></div>
-						<div
-							style={{
-								overflow: "hidden",
-								width: "100vw",
-								height: "100vh",
-								position: "relative",
-							}}
-						></div>
 					</section>
 				</SignedOut>
 			</main>
