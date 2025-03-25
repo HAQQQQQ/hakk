@@ -14,19 +14,25 @@ packages/*/package-lock.json
 # package-lock.json
 # yarn.lock
 
-# Environment variables
-packages/server/.env
+# Environment Variables
 .env
+.env.*
+**/.env
+**/.env.*
+
+# Specific Environment Files
 .env.local
 .env.*.local
 .env.development
 .env.production
 .env.test
 .env.example
-# Ignore all .env files in all directories
+
+# Directory-Specific .env Files
+packages/server/.env
 packages/client/.env
-**/.env.*
 nginx/.env
+
 
 # Nginx generated config files
 nginx/config/default.conf
