@@ -2,7 +2,6 @@ import { SignedIn, SignedOut, useSession, useUser } from "@clerk/nextjs";
 import SurveyForm from "../components/SurveyForm";
 import { useProfile } from "../hooks/useProfile";
 import { motion } from "framer-motion";
-import roman from "../assets/roman.jpg";
 
 export default function Home() {
 	// Get Clerk session and user details
@@ -64,14 +63,14 @@ export default function Home() {
 								position: "relative",
 							}}
 						>
-							<motion.img
-								src={roman.src}
-								alt="Sliding in"
-								initial={{ x: "-100%", scale: 0.2 }}
-								animate={{ x: 0, scale: 0.5 }}
-								transition={{ duration: 1.5, ease: "easeOut" }}
-								style={{ width: "100vw", height: "100vh", objectFit: "cover" }}
-							/>
+							{/*<motion.img*/}
+							{/*	src={}*/}
+							{/*	alt="Sliding in"*/}
+							{/*	initial={{ x: "-100%", scale: 0.2 }}*/}
+							{/*	animate={{ x: 0, scale: 0.5 }}*/}
+							{/*	transition={{ duration: 1.5, ease: "easeOut" }}*/}
+							{/*	style={{ width: "100vw", height: "100vh", objectFit: "cover" }}*/}
+							{/*/>*/}
 						</div>
 						<div
 							style={{
