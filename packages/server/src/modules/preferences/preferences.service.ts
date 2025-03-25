@@ -9,7 +9,7 @@ export class PreferencesService {
 
 	async addPreference(userId: string, preference: Preference): Promise<any> {
         console.log("reached inside addpreference");
-		const saveResponse = await this.supabaseService.addPreference(userId, preference);
+		// const saveResponse = await this.supabaseService.addPreference(userId, preference);
         
         const interests = await this.interestsService.addInterest(userId, preference);
         console.log("reached add preference after interests ", interests);
