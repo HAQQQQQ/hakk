@@ -88,22 +88,137 @@ export default function SurveyForm() {
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.6, ease: "easeOut" }}
 			>
-				<Paper elevation={3} sx={{ padding: 4, borderRadius: 2, mt: 5 }}>
-					<Typography variant="h4" gutterBottom align="center">
+				<Paper
+					elevation={6}
+					sx={{
+						padding: 4,
+						borderRadius: "32px",
+						mt: 5,
+						background: "rgba(255, 255, 255, 0.15)",
+						backdropFilter: "blur(16px)",
+						border: "1px solid rgba(255, 255, 255, 0.2)",
+						boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.37)",
+						transition: "transform 0.3s ease-in-out",
+						"&:hover": {
+							transform: "scale(1.01)",
+						},
+					}}
+				>
+					<Typography
+						variant="h3"
+						gutterBottom
+						align="center"
+						sx={{
+							fontWeight: 800,
+							letterSpacing: "3px",
+							textTransform: "uppercase",
+							color: "#ffffff",
+							fontSize: {
+								xs: "2rem",
+								sm: "2.75rem",
+								md: "3.5rem",
+							},
+							textShadow: `
+									  0 0 10px #4f83cc,
+									  0 0 20px #4f83cc,
+									  0 0 40px #4f83cc,
+									  0 0 80px #4f83cc
+									`,
+							animation: "grandPulse 3s ease-in-out infinite",
+							"@keyframes grandPulse": {
+								"0%": {
+									textShadow: `
+									  0 0 10px #4f83cc,
+									  0 0 20px #4f83cc,
+									  0 0 40px #4f83cc,
+									  0 0 80px #4f83cc
+									`,
+									transform: "scale(1)",
+								},
+								"50%": {
+									textShadow: `
+									  0 0 20px #82b1ff,
+									  0 0 40px #82b1ff,
+									  0 0 80px #82b1ff,
+									  0 0 120px #82b1ff
+									`,
+									transform: "scale(1.02)",
+								},
+								"100%": {
+									textShadow: `
+									  0 0 10px #4f83cc,
+									  0 0 20px #4f83cc,
+									  0 0 40px #4f83cc,
+									  0 0 80px #4f83cc
+									`,
+									transform: "scale(1)",
+								},
+							},
+						}}
+					>
 						Your Top 3 Favorites
 					</Typography>
-					<Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+
+					<Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
 						{["movies", "artists", "hobbies"].map((category) => (
-							<Box key={category} sx={{ mb: 3 }}>
-								<Typography variant="h6" sx={{ mb: 1 }}>
-									{`Top 3 ${category.charAt(0).toUpperCase() + category.slice(1)}`}
+							<Box key={category} sx={{ mb: 5 }}>
+								<Typography
+									variant="h5"
+									sx={{
+										mb: 2,
+										fontWeight: 700,
+										textAlign: "center",
+										textTransform: "uppercase",
+										letterSpacing: "2px",
+										color: "#ffffff",
+										textShadow: `
+												  0 0 5px #4f83cc,
+												  0 0 10px #4f83cc,
+												  0 0 20px #4f83cc,
+												  0 0 40px #4f83cc
+												`,
+										animation: "pulseGlow 2.5s ease-in-out infinite",
+										fontSize: {
+											xs: "1.5rem",
+											sm: "1.75rem",
+											md: "2rem",
+										},
+										"@keyframes pulseGlow": {
+											"0%": {
+												textShadow: `
+												  0 0 5px #4f83cc,
+												  0 0 10px #4f83cc,
+												  0 0 20px #4f83cc,
+												  0 0 40px #4f83cc
+        `,
+											},
+											"50%": {
+												textShadow: `
+												  0 0 10px #82b1ff,
+												  0 0 20px #82b1ff,
+												  0 0 30px #82b1ff,
+												  0 0 50px #82b1ff
+												`,
+											},
+											"100%": {
+												textShadow: `
+												  0 0 5px #4f83cc,
+												  0 0 10px #4f83cc,
+												  0 0 20px #4f83cc,
+												  0 0 40px #4f83cc
+        `,
+											},
+										},
+									}}
+								>
+									{`${category.charAt(0).toUpperCase() + category.slice(1)}`}
 								</Typography>
+
 								<Grid container spacing={2}>
 									{[0, 1, 2].map((i) => (
 										<Grid item xs={12} sm={4} key={i}>
 											<TextField
 												fullWidth
-												label={`${category.slice(0, -1)} ${i + 1}`}
 												variant="outlined"
 												value={
 													formData[category as keyof typeof formData][i]
@@ -111,18 +226,63 @@ export default function SurveyForm() {
 												onChange={(e) =>
 													handleChange(category, i, e.target.value)
 												}
+												sx={{
+													"& .MuiOutlinedInput-root": {
+														borderRadius: "50px",
+														backgroundColor: "rgba(255, 255, 255, 0.3)",
+														backdropFilter: "blur(10px)",
+														paddingLeft: "18px",
+														transition: "all 0.3s ease-in-out",
+														boxShadow:
+															"0 0 15px 3px rgba(100, 200, 255, 0.25)",
+														"& fieldset": {
+															borderColor: "#d1e0ff",
+														},
+														"&:hover fieldset": {
+															borderColor: "#a3c4f3",
+														},
+														"&.Mui-focused fieldset": {
+															borderColor: "#4f83cc",
+															boxShadow: "0 0 5px #4f83cc",
+														},
+														"&:focus-within": {
+															transform: "scale(1.03)",
+														},
+													},
+													"& .MuiInputLabel-root": {
+														color: "#4f83cc",
+														fontWeight: 500,
+													},
+													"& label.Mui-focused": {
+														color: "#4f83cc",
+													},
+												}}
 											/>
 										</Grid>
 									))}
 								</Grid>
 							</Box>
 						))}
+
 						<Button
 							type="submit"
 							variant="contained"
 							color="primary"
 							fullWidth
 							disabled={isPending}
+							sx={{
+								mt: 3,
+								py: 1.5,
+								fontWeight: "bold",
+								fontSize: "1rem",
+								borderRadius: "30px",
+								background: "linear-gradient(to right, #4f83cc, #3f51b5)",
+								boxShadow: "0 4px 20px rgba(63, 81, 181, 0.3)",
+								"&:hover": {
+									background: "linear-gradient(to right, #3f51b5, #4f83cc)",
+									transform: "scale(1.01)",
+								},
+							}}
 						>
 							{isPending ? "Submitting..." : "Submit"}
 						</Button>

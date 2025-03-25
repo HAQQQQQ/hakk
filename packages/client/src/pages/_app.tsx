@@ -10,7 +10,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 	return (
 		<ClerkProvider {...pageProps}>
 			<ReactQueryProvider>
-				<div style={{ backgroundColor: "lightgrey", minHeight: "100vh" }}>
+				<div style={{ backgroundColor: "lightgrey" }}>
 					<Header />
 					<Component {...pageProps} />
 					<ToastContainer position="bottom-right" autoClose={3000} />
