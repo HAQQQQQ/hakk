@@ -1,0 +1,4 @@
+---In order to publish this package to the npm registry---
+cd ./hakk/packages/types 
+update types package.json version 
+npm publish
