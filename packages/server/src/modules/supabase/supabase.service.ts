@@ -67,24 +67,42 @@ export class SupabaseService {
 		return data.map((item: { preference: Preference }) => item.preference);
 	}
 
-	async addInterest(userId: string, interests: string): Promise<any> {
+	async addInterest(userId: string, newInterests: string[]): Promise<any> {
+    await this.checkUserExists(userId);
 
-		await this.checkUserExists(userId);
-		
-		const { data, error } = await this.supabase.from("preferences").upsert(
-			[
-				{
-					user_id: userId,
-					interests: interests
-				}
-			]
-		)
+    // Fetch existing interests from the database
+    const { data: existingData, error: fetchError } = await this.supabase
+        .from("preferences")
+        .select("interests")
+        .eq("user_id", userId)
+        .single();
 
-		if (error){
-			return error;
-		}
+    if (fetchError && fetchError.code !== "PGRST116") { // Ignore "row not found" error
+        console.error("Error fetching existing interests:", fetchError);
+        return fetchError;
+    }
 
-		return data;
+    // Merge existing interests with new ones (avoiding duplicates)
+    const existingInterests = existingData?.interests || [];
+    const updatedInterests = Array.from(new Set([...existingInterests, ...newInterests])); // Ensure unique values
 
-	}
+    // Upsert merged interests back into the database
+    const { data, error } = await this.supabase.from("preferences").upsert(
+        [
+            {
+                user_id: userId,
+                interests: updatedInterests, // Store updated array
+            }
+        ],
+        { onConflict: "user_id" } // Ensures update instead of insert conflict
+    );
+
+    if (error) {
+        console.error("Error in addInterest:", error);
+        return error;
+    }
+
+    return data;
+}
+
 }

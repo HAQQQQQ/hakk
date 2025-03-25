@@ -66,8 +66,9 @@ export default function SurveyForm() {
 
 	const { mutate, isPending } = useMutation({
 		mutationFn: savePreferences,
-		onSuccess: () => {
+		onSuccess: (data) => {
 			toast.success("Preferences saved!");
+			console.log(data);
 		},
 		onError: (error: any) => {
 			toast.error("Error:", error.message);
