@@ -4,38 +4,26 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Box, AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
 import LoginIcon from "@mui/icons-material/Login";
+import Image from "next/image";
 
 export default function Header() {
 	return (
 		<AppBar
 			position="static"
 			sx={{
-				background: "linear-gradient(to right, #000000, #808080)",
-				color: "white",
-				borderBottomLeftRadius: "16px",
-				borderBottomRightRadius: "16px",
-				borderTopLeftRadius: 0,
-				borderTopRightRadius: 0,
-				m: 0, // removes all margins
+				backgroundColor: "white",
 				width: "100%",
-				boxShadow: 4,
+				boxShadow: 10,
 			}}
 		>
 			<Container maxWidth="lg">
-				<Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-					<Typography
-						variant="h6"
-						component="div"
-						sx={{
-							fontWeight: "bold",
-							color: "linear-gradient(to right, #00C9FF, #92FE9D)",
-							background: "linear-gradient(to right, #00C9FF, #92FE9D)",
-							WebkitBackgroundClip: "text",
-							WebkitTextFillColor: "transparent",
-						}}
-					>
-						HAKK: The Project
-					</Typography>
+				<Toolbar
+					sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+				>
+					<Box sx={{ display: "flex", alignItems: "center", gap: 0 }}>
+						<Image src="/assets/logo.png" alt="HAKK Logo" width={150} height={60} />
+					</Box>
+					{/* Right side */}
 					<Box>
 						<SignedOut>
 							<SignInButton mode="modal">

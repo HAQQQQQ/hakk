@@ -13,16 +13,7 @@ export default function Home() {
 
 	return (
 		<div>
-			<main
-				style={{
-					minHeight: "100vh",
-					backgroundColor: "lightblue",
-					backgroundBlendMode: "lighten",
-					backgroundSize: "cover",
-					backgroundPosition: "center",
-					backgroundRepeat: "no-repeat",
-				}}
-			>
+			<main>
 				<SignedIn>
 					<div style={{ textAlign: "center", marginBottom: "1rem" }}>
 						<h2>
