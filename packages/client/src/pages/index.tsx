@@ -16,7 +16,7 @@ export default function Home() {
 			<main
 				style={{
 					minHeight: "100vh",
-					backgroundColor: "lightpink",
+					backgroundColor: "lightblue",
 					backgroundBlendMode: "lighten",
 					backgroundSize: "cover",
 					backgroundPosition: "center",
