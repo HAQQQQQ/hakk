@@ -12,6 +12,7 @@ services:
     env_file:
       - ./.env
     environment:
+      - NGINX_PORT=${NGINX_PORT:-8080}
       - NGINX_HEADER_NAME=${NGINX_HEADER_NAME}
       - NGINX_SECURE_KEY=${NGINX_SECURE_KEY}
       - SERVER_PORT=${SERVER_PORT:-3001}
