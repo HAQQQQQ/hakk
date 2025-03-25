@@ -38,7 +38,7 @@ export default function WelcomeMessage({ user }) {
 					lineHeight: 1.6,
 				}}
 			>
-				Please fill out the Survey below. It'll make your dreams come true.
+				Please fill out the Survey below. Itll make your dreams come true.
 			</motion.p>
 		</div>
 	);
