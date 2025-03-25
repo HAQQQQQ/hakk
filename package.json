@@ -13,7 +13,6 @@
 		"start:redis_service": "npm run start --workspace=packages/redis-service",
 		"start": "concurrently \"npm run start:server\" \"npm run start:client\"",
 		"build": "npm run build --workspaces",
-		"prepare": "husky install",
 		"lint": "npm run lint --workspaces",
 		"test": "npm run test --workspaces",
 		"format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
@@ -30,15 +29,9 @@
 	},
 	"devDependencies": {
 		"concurrently": "^8.2.0",
-		"husky": "^8.0.0",
 		"lint-staged": "^13.0.0",
 		"prettier": "^3.5.3",
 		"rimraf": "^6.0.1"
-	},
-	"husky": {
-		"hooks": {
-			"pre-commit": "lint-staged"
-		}
 	},
 	"lint-staged": {
 		"**/*.{ts,tsx,js,jsx,json,md}": [

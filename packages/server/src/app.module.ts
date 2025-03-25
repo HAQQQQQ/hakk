@@ -13,36 +13,36 @@ import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
 import { Config } from "./config/config";
 
 @Module({
-    imports: [
-        ProfileModule,
-        TestModule,
-        OpenAIModule,
-        InterestsModule,
-        PreferencesModule,
-        RedisClientModule,
+	imports: [
+		ProfileModule,
+		TestModule,
+		OpenAIModule,
+		InterestsModule,
+		PreferencesModule,
+		RedisClientModule,
 
-        // **** Tech Debt: Maybe use NesJs ConfigModule to fetch env stuff ****
-        // ConfigModule.forRoot({
-        //     // Order matters - later files override earlier ones
-        //     envFilePath: [
-        //         // Server-specific .env (higher priority)
-        //         path.resolve(),
-        //         // Root .env (lower priority)
-        //         path.resolve(__dirname, '../../../../../.env'),
-        //     ],
-        //     isGlobal: true,
-        // }),
-    ],
-    controllers: [AppController, UsersController],
-    providers: [AppService, SupabaseService],
-    exports: [SupabaseService],
+		// **** Tech Debt: Maybe use NesJs ConfigModule to fetch env stuff ****
+		// ConfigModule.forRoot({
+		//     // Order matters - later files override earlier ones
+		//     envFilePath: [
+		//         // Server-specific .env (higher priority)
+		//         path.resolve(),
+		//         // Root .env (lower priority)
+		//         path.resolve(__dirname, '../../../../../.env'),
+		//     ],
+		//     isGlobal: true,
+		// }),
+	],
+	controllers: [AppController, UsersController],
+	providers: [AppService, SupabaseService],
+	exports: [SupabaseService],
 })
 export class AppModule implements NestModule {
-    configure(consumer: MiddlewareConsumer) {
-        // Apply the ApiAuthMiddleware to all routes
+	configure(consumer: MiddlewareConsumer) {
+		// Apply the ApiAuthMiddleware to all routes
 
-        if (Config.useNginx) {
-            consumer.apply(ApiAuthMiddleware).forRoutes("*");
-        }
-    }
+		if (Config.useNginx) {
+			consumer.apply(ApiAuthMiddleware).forRoutes("*");
+		}
+	}
 }
