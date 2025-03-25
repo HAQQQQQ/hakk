@@ -3,6 +3,7 @@ import { TextField, Button, Box, Typography, Container, Grid, Paper } from "@mui
 import { useUser } from "@clerk/nextjs";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 export default function SurveyForm() {
 	const { user } = useUser();
@@ -82,44 +83,52 @@ export default function SurveyForm() {
 
 	return (
 		<Container maxWidth="sm">
-			<Paper elevation={3} sx={{ padding: 4, borderRadius: 2, mt: 5 }}>
-				<Typography variant="h4" gutterBottom align="center">
-					Your Top 3 Favorites
-				</Typography>
-				<Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-					{["movies", "artists", "hobbies"].map((category) => (
-						<Box key={category} sx={{ mb: 3 }}>
-							<Typography variant="h6" sx={{ mb: 1 }}>
-								{`Top 3 ${category.charAt(0).toUpperCase() + category.slice(1)}`}
-							</Typography>
-							<Grid container spacing={2}>
-								{[0, 1, 2].map((i) => (
-									<Grid item xs={12} sm={4} key={i}>
-										<TextField
-											fullWidth
-											label={`${category.slice(0, -1)} ${i + 1}`}
-											variant="outlined"
-											value={formData[category as keyof typeof formData][i]}
-											onChange={(e) =>
-												handleChange(category, i, e.target.value)
-											}
-										/>
-									</Grid>
-								))}
-							</Grid>
-						</Box>
-					))}
-					<Button
-						type="submit"
-						variant="contained"
-						color="primary"
-						fullWidth
-						disabled={isPending}
-					>
-						{isPending ? "Submitting..." : "Submit"}
-					</Button>
-				</Box>
-			</Paper>
+			<motion.div
+				initial={{ y: 100, opacity: 0 }}
+				animate={{ y: 0, opacity: 1 }}
+				transition={{ duration: 0.6, ease: "easeOut" }}
+			>
+				<Paper elevation={3} sx={{ padding: 4, borderRadius: 2, mt: 5 }}>
+					<Typography variant="h4" gutterBottom align="center">
+						Your Top 3 Favorites
+					</Typography>
+					<Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+						{["movies", "artists", "hobbies"].map((category) => (
+							<Box key={category} sx={{ mb: 3 }}>
+								<Typography variant="h6" sx={{ mb: 1 }}>
+									{`Top 3 ${category.charAt(0).toUpperCase() + category.slice(1)}`}
+								</Typography>
+								<Grid container spacing={2}>
+									{[0, 1, 2].map((i) => (
+										<Grid item xs={12} sm={4} key={i}>
+											<TextField
+												fullWidth
+												label={`${category.slice(0, -1)} ${i + 1}`}
+												variant="outlined"
+												value={
+													formData[category as keyof typeof formData][i]
+												}
+												onChange={(e) =>
+													handleChange(category, i, e.target.value)
+												}
+											/>
+										</Grid>
+									))}
+								</Grid>
+							</Box>
+						))}
+						<Button
+							type="submit"
+							variant="contained"
+							color="primary"
+							fullWidth
+							disabled={isPending}
+						>
+							{isPending ? "Submitting..." : "Submit"}
+						</Button>
+					</Box>
+				</Paper>
+			</motion.div>
 		</Container>
 	);
 }

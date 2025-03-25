@@ -2,6 +2,7 @@ import { SignedIn, SignedOut, useSession, useUser } from "@clerk/nextjs";
 import SurveyForm from "../components/SurveyForm";
 import { useProfile } from "../hooks/useProfile";
 import { motion } from "framer-motion";
+import WelcomeMessage from "../components/WelcomeMessage";
 
 export default function Home() {
 	// Get Clerk session and user details
@@ -15,15 +16,7 @@ export default function Home() {
 		<div>
 			<main>
 				<SignedIn>
-					<div style={{ textAlign: "center", marginBottom: "1rem" }}>
-						<h2>
-							Welcome, {user?.firstName} {user?.lastName}!
-						</h2>
-						<p>
-							Please start by filling out this questionnaire to meet your perfect
-							match.
-						</p>
-					</div>
+					<WelcomeMessage user={user}></WelcomeMessage>
 					<SurveyForm />
 				</SignedIn>
 				{/* Hero Section */}
