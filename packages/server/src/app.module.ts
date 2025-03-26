@@ -11,6 +11,7 @@ import { PreferencesModule } from "@modules/preferences/preferences.module";
 import { RedisClientModule } from "./modules/redis-client/redis-client.module";
 import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
 import { EnvConfig } from "./config/env.config";
+import { PreComputeModule } from "./modules/precompute/pre-compute.module";
 
 @Module({
 	imports: [
@@ -20,6 +21,7 @@ import { EnvConfig } from "./config/env.config";
 		InterestsModule,
 		PreferencesModule,
 		RedisClientModule,
+		PreComputeModule,
 
 		// **** Tech Debt: Maybe use NesJs ConfigModule to fetch env stuff ****
 		// ConfigModule.forRoot({

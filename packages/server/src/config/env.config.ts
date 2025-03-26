@@ -19,6 +19,7 @@ export interface EnvConfigI {
 	openaiTemperature: number;
 	nginxHeaderName: string;
 	nginxSecureKey: string;
+	preCompute: boolean;
 }
 
 // Configuration Object — Cleaner Access
@@ -42,4 +43,5 @@ export const EnvConfig: EnvConfigI = {
 	})(),
 	nginxHeaderName: process.env.NGINX_HEADER_NAME ?? "",
 	nginxSecureKey: process.env.NGINX_SECURE_KEY ?? "",
+	preCompute: process.env.PRE_COMPUTE?.toLowerCase() === "true",
 };

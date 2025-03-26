@@ -5,6 +5,7 @@ import { SupabaseService } from "../supabase/supabase.service";
 import { OpenAIModule } from "../openai/openai.module";
 import { InterestsRepository } from "./interests.repository";
 import { ProfileModule } from "../profile/profile.module";
+import { PreComputeService } from "../precompute/pre-compute.service";
 @Module({
 	imports: [OpenAIModule, ProfileModule],
 	providers: [InterestsService, SupabaseService, InterestsRepository],

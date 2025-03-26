@@ -13,7 +13,6 @@ export class InterestsController {
 	@Get()
 	getAllInterests() {
 		console.log("GET /api/interests route was hit"); // Log to confirm the route is being hit
-
 		return [
 			{ id: 1, name: "Fitness" },
 			{ id: 2, name: "Music" },
