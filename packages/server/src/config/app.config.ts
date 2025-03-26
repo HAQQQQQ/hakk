@@ -1,20 +1,5 @@
 import { EnvConfig } from "./env.config";
 
-// Initialize dotenv
-// config();
-
-// // Load the root .env file (shared variables)
-// // (Maybe convert to using nestjs config in the future)
-// config({ path: resolve(__dirname, "../../../../../.env") });
-
-// SUPABASE_URL =
-// SUPABASE_KEY =
-// CLIENT_PORT =
-// SERVER_PORT =
-// REDIS_SERVICE_PORT =
-// NGINX_PORT =
-// USE_NGINX =
-
 export class AppConfig {
 	static validate(): void {
 		const missingVars: string[] = [];
