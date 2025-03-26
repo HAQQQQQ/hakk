@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { OpenAIService } from "../openai/openai.service";
 import { ProfileRepository } from "./profile.repository";
 
 @Injectable()
