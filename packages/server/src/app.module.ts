@@ -12,8 +12,8 @@ import { RedisClientModule } from "./modules/redis-client/redis-client.module";
 import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
 import { EnvConfig } from "./config/env.config";
 import { PreComputeModule } from "./modules/precompute/pre-compute.module";
-import { MatchingService } from "./matching/matching.service";
-import { MatchingModule } from "./matching/matching.module";
+import { MatchingService } from "./modules/matching/matching.service";
+import { MatchingModule } from "./modules/matching/matching.module";
 
 @Module({
 	imports: [
