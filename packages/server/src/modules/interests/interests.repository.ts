@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { SupabaseService } from "../supabase/supabase.service";
+import { InterestAnalysis } from "./interests.types";
 
 // In interests module
 @Injectable()
@@ -9,7 +10,8 @@ export class InterestsRepository {
 
 	constructor(private readonly supabaseService: SupabaseService) {}
 
-	async addInterest(userId: string, newInterests: any[]): Promise<any> {
+	async addInterest(userId: string, newInterests: InterestAnalysis[]): Promise<any> {
+		console.log("In InterestsRepository.addInterest");
 		const interestToUpsert = newInterests[0];
 		const { data, error } = await this.supabaseService.client
 			.from(this.PREFERENCES_TABLE)
