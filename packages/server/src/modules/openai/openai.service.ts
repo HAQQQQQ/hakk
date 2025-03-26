@@ -72,9 +72,8 @@ export class OpenAIService {
 					};
 				}
 
-				await new Promise((resolve) =>
-					setTimeout(resolve, retryDelay * Math.pow(2, attempt - 1)),
-				);
+				// Wait before retrying
+				await this.delayNextAttempt(attempt, retryDelay);
 			}
 		}
 
@@ -130,6 +129,10 @@ export class OpenAIService {
 			`Attempt ${attempt}/${maxRetries} failed:`,
 			error instanceof z.ZodError ? JSON.stringify(error.errors, null, 2) : error.message,
 		);
+	}
+
+	private async delayNextAttempt(attempt: number, baseDelay: number): Promise<void> {
+		await new Promise((resolve) => setTimeout(resolve, baseDelay * Math.pow(2, attempt - 1)));
 	}
 
 	private async sendOpenAIRequest(prompt: string): Promise<string> {
