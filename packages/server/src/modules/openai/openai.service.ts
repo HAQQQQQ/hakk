@@ -59,12 +59,8 @@ export class OpenAIService {
 					status = OpenAIResponseStatus.API_ERROR;
 				}
 
-				console.error(
-					`Attempt ${attempt}/${maxRetries} failed:`,
-					error instanceof z.ZodError
-						? JSON.stringify(error.errors, null, 2)
-						: error.message,
-				);
+				// Log the error
+				this.logPromptError(attempt, maxRetries, error);
 
 				if (attempt === maxRetries) {
 					// Return error response after all retries
@@ -127,6 +123,13 @@ export class OpenAIService {
     
             Return ONLY the JSON object in the exact format specified.
         `;
+	}
+
+	private logPromptError(attempt: number, maxRetries: number, error: Error): void {
+		console.error(
+			`Attempt ${attempt}/${maxRetries} failed:`,
+			error instanceof z.ZodError ? JSON.stringify(error.errors, null, 2) : error.message,
+		);
 	}
 
 	private async sendOpenAIRequest(prompt: string): Promise<string> {
