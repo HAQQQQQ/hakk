@@ -13,7 +13,8 @@ export class PreferencesService {
 	) {}
 
 	async addPreference(userId: string, preference: Preference): Promise<any> {
-		if (!(await this.profileService.validateUser(userId))) {
+		const userExists = await this.profileService.validateUser(userId);
+		if (!userExists) {
 			throw new NotFoundException(`User with userId ${userId} not found`);
 		}
 

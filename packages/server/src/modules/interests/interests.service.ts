@@ -18,10 +18,10 @@ export class InterestsService {
 	// This will be called by the controller
 	async addInterestWithUserCheck(userId: string, preference: Preference) {
 		// First, verify user exists
-		if (!(await this.profileService.validateUser(userId))) {
+		const userExists = await this.profileService.validateUser(userId);
+		if (!userExists) {
 			throw new NotFoundException(`User with userId ${userId} not found`);
 		}
-
 		// Call core method
 		return this.addInterest(userId, preference);
 	}
@@ -43,18 +43,7 @@ export class InterestsService {
 				response.error || "Unknown error",
 			);
 
-			// Create a default interest analysis
-			const defaultAnalysis: InterestAnalysis = {
-				music: { genres: [], mood: "Not available" },
-				movies: { genres: [], time_periods: [], cultural_context: [] },
-				hobbies: {
-					lifestyle: "Not available",
-					personality: "Not available",
-					related_activities: [],
-				},
-			};
-
-			return this.interestsRepository.addInterest(userId, [defaultAnalysis]);
+			return this.interestsRepository.addInterest(userId, [this.getDefaultAnalysis()]);
 		}
 	}
 
@@ -69,5 +58,17 @@ export class InterestsService {
 			openAiPrompt,
 			interestAnalysisSchema,
 		);
+	}
+
+	private getDefaultAnalysis(): InterestAnalysis {
+		return {
+			music: { genres: [], mood: "Not available" },
+			movies: { genres: [], time_periods: [], cultural_context: [] },
+			hobbies: {
+				lifestyle: "Not available",
+				personality: "Not available",
+				related_activities: [],
+			},
+		};
 	}
 }
