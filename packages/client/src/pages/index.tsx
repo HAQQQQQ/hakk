@@ -47,6 +47,35 @@ export default function Home() {
 								Unlock the power of finding love.
 							</Typography>
 						</motion.h1>
+						{/* Banner Container */}
+						<motion.div
+							initial={{ scale: 0.8, opacity: 0 }}
+							animate={{ scale: 1, opacity: 1 }}
+							transition={{ duration: 0.8, ease: "easeOut" }}
+							style={{
+								display: "flex",
+								justifyContent: "center",
+								overflow: "hidden",
+								marginBottom: "1rem",
+							}}
+						>
+							<motion.img
+								src="/assets/bluesky.png"
+								alt="Banner Left"
+								initial={{ x: "-100%", scale: 0.8 }}
+								animate={{ x: 0, scale: 1 }}
+								transition={{ duration: 0.8, ease: "easeOut" }}
+								style={{ width: "50%", objectFit: "cover" }}
+							/>
+							<motion.img
+								src="/assets/purplesky.png"
+								alt="Banner Right"
+								initial={{ x: "100%", scale: 0.8 }}
+								animate={{ x: 0, scale: 1 }}
+								transition={{ duration: 0.8, ease: "easeOut" }}
+								style={{ width: "50%", objectFit: "cover" }}
+							/>
+						</motion.div>
 						<motion.div
 							initial={{ opacity: 0, y: 30 }}
 							animate={{ opacity: 1, y: 0 }}
