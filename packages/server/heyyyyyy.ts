@@ -1,0 +1,699 @@
+export function listDistinctGenres() {
+	const myList: any[] = [
+		{
+			genreA: "Pop",
+			genreB: "Synthpop",
+			weight: 10,
+		},
+		{
+			genreA: "Pop",
+			genreB: "Electropop",
+			weight: 10,
+		},
+		{
+			genreA: "Pop",
+			genreB: "K-Pop",
+			weight: 10,
+		},
+		{
+			genreA: "Pop",
+			genreB: "Indie Pop",
+			weight: 10,
+		},
+		{
+			genreA: "Pop",
+			genreB: "Bedroom Pop",
+			weight: 10,
+		},
+		{
+			genreA: "Pop",
+			genreB: "Country Pop",
+			weight: 6,
+		},
+		{
+			genreA: "Pop",
+			genreB: "R&B / Soul",
+			weight: 6,
+		},
+		{
+			genreA: "Synthpop",
+			genreB: "Electropop",
+			weight: 10,
+		},
+		{
+			genreA: "Synthpop",
+			genreB: "K-Pop",
+			weight: 8,
+		},
+		{
+			genreA: "Synthpop",
+			genreB: "Indie Pop",
+			weight: 8,
+		},
+		{
+			genreA: "Synthpop",
+			genreB: "Bedroom Pop",
+			weight: 8,
+		},
+		{
+			genreA: "Electropop",
+			genreB: "K-Pop",
+			weight: 8,
+		},
+		{
+			genreA: "Electropop",
+			genreB: "Indie Pop",
+			weight: 8,
+		},
+		{
+			genreA: "Electropop",
+			genreB: "Bedroom Pop",
+			weight: 8,
+		},
+		{
+			genreA: "K-Pop",
+			genreB: "Indie Pop",
+			weight: 8,
+		},
+		{
+			genreA: "K-Pop",
+			genreB: "Bedroom Pop",
+			weight: 8,
+		},
+		{
+			genreA: "K-Pop",
+			genreB: "K-Hip-Hop",
+			weight: 7,
+		},
+		{
+			genreA: "Indie Pop",
+			genreB: "Bedroom Pop",
+			weight: 10,
+		},
+		{
+			genreA: "Indie Pop",
+			genreB: "Indie / Alternative",
+			weight: 7,
+		},
+		{
+			genreA: "Bedroom Pop",
+			genreB: "Indie / Alternative",
+			weight: 7,
+		},
+		{
+			genreA: "Hip-Hop / Rap",
+			genreB: "Trap",
+			weight: 10,
+		},
+		{
+			genreA: "Hip-Hop / Rap",
+			genreB: "Boom Bap",
+			weight: 10,
+		},
+		{
+			genreA: "Hip-Hop / Rap",
+			genreB: "Drill",
+			weight: 10,
+		},
+		{
+			genreA: "Hip-Hop / Rap",
+			genreB: "K-Hip-Hop",
+			weight: 9,
+		},
+		{
+			genreA: "Hip-Hop / Rap",
+			genreB: "Lo-fi / Chillhop",
+			weight: 8,
+		},
+		{
+			genreA: "Hip-Hop / Rap",
+			genreB: "R&B / Soul",
+			weight: 6,
+		},
+		{
+			genreA: "Trap",
+			genreB: "Boom Bap",
+			weight: 8,
+		},
+		{
+			genreA: "Trap",
+			genreB: "Drill",
+			weight: 8,
+		},
+		{
+			genreA: "Trap",
+			genreB: "K-Hip-Hop",
+			weight: 8,
+		},
+		{
+			genreA: "Trap",
+			genreB: "Lo-fi / Chillhop",
+			weight: 7,
+		},
+		{
+			genreA: "Trap",
+			genreB: "Latin Trap",
+			weight: 9,
+		},
+		{
+			genreA: "Boom Bap",
+			genreB: "Drill",
+			weight: 8,
+		},
+		{
+			genreA: "Boom Bap",
+			genreB: "K-Hip-Hop",
+			weight: 8,
+		},
+		{
+			genreA: "Boom Bap",
+			genreB: "Lo-fi / Chillhop",
+			weight: 7,
+		},
+		{
+			genreA: "Drill",
+			genreB: "K-Hip-Hop",
+			weight: 8,
+		},
+		{
+			genreA: "Drill",
+			genreB: "Lo-fi / Chillhop",
+			weight: 7,
+		},
+		{
+			genreA: "K-Hip-Hop",
+			genreB: "Lo-fi / Chillhop",
+			weight: 7,
+		},
+		{
+			genreA: "Rock",
+			genreB: "Alternative Rock",
+			weight: 10,
+		},
+		{
+			genreA: "Rock",
+			genreB: "Hard Rock",
+			weight: 10,
+		},
+		{
+			genreA: "Rock",
+			genreB: "Punk Rock",
+			weight: 10,
+		},
+		{
+			genreA: "Rock",
+			genreB: "Indie Rock",
+			weight: 10,
+		},
+		{
+			genreA: "Rock",
+			genreB: "Indie / Alternative",
+			weight: 7,
+		},
+		{
+			genreA: "Rock",
+			genreB: "Metal",
+			weight: 5,
+		},
+		{
+			genreA: "Alternative Rock",
+			genreB: "Hard Rock",
+			weight: 8,
+		},
+		{
+			genreA: "Alternative Rock",
+			genreB: "Punk Rock",
+			weight: 8,
+		},
+		{
+			genreA: "Alternative Rock",
+			genreB: "Indie Rock",
+			weight: 8,
+		},
+		{
+			genreA: "Alternative Rock",
+			genreB: "Indie / Alternative",
+			weight: 9,
+		},
+		{
+			genreA: "Hard Rock",
+			genreB: "Punk Rock",
+			weight: 9,
+		},
+		{
+			genreA: "Hard Rock",
+			genreB: "Indie Rock",
+			weight: 8,
+		},
+		{
+			genreA: "Hard Rock",
+			genreB: "Metal",
+			weight: 6,
+		},
+		{
+			genreA: "Punk Rock",
+			genreB: "Indie Rock",
+			weight: 8,
+		},
+		{
+			genreA: "Indie Rock",
+			genreB: "Indie / Alternative",
+			weight: 9,
+		},
+		{
+			genreA: "R&B / Soul",
+			genreB: "Neo-Soul",
+			weight: 10,
+		},
+		{
+			genreA: "R&B / Soul",
+			genreB: "Funk",
+			weight: 8,
+		},
+		{
+			genreA: "R&B / Soul",
+			genreB: "Pop",
+			weight: 6,
+		},
+		{
+			genreA: "R&B / Soul",
+			genreB: "Hip-Hop / Rap",
+			weight: 6,
+		},
+		{
+			genreA: "Neo-Soul",
+			genreB: "Funk",
+			weight: 8,
+		},
+		{
+			genreA: "Funk",
+			genreB: "Rock",
+			weight: 5,
+		},
+		{
+			genreA: "Electronic / EDM",
+			genreB: "House",
+			weight: 10,
+		},
+		{
+			genreA: "Electronic / EDM",
+			genreB: "Techno",
+			weight: 10,
+		},
+		{
+			genreA: "Electronic / EDM",
+			genreB: "Trance",
+			weight: 9,
+		},
+		{
+			genreA: "Electronic / EDM",
+			genreB: "Dubstep",
+			weight: 8,
+		},
+		{
+			genreA: "Electronic / EDM",
+			genreB: "Drum & Bass",
+			weight: 8,
+		},
+		{
+			genreA: "Electronic / EDM",
+			genreB: "Experimental / Ambient",
+			weight: 7,
+		},
+		{
+			genreA: "House",
+			genreB: "Techno",
+			weight: 9,
+		},
+		{
+			genreA: "House",
+			genreB: "Trance",
+			weight: 8,
+		},
+		{
+			genreA: "House",
+			genreB: "Dubstep",
+			weight: 7,
+		},
+		{
+			genreA: "House",
+			genreB: "Drum & Bass",
+			weight: 7,
+		},
+		{
+			genreA: "House",
+			genreB: "Experimental / Ambient",
+			weight: 6,
+		},
+		{
+			genreA: "Techno",
+			genreB: "Trance",
+			weight: 8,
+		},
+		{
+			genreA: "Techno",
+			genreB: "Dubstep",
+			weight: 7,
+		},
+		{
+			genreA: "Techno",
+			genreB: "Drum & Bass",
+			weight: 7,
+		},
+		{
+			genreA: "Techno",
+			genreB: "Experimental / Ambient",
+			weight: 6,
+		},
+		{
+			genreA: "Trance",
+			genreB: "Dubstep",
+			weight: 7,
+		},
+		{
+			genreA: "Trance",
+			genreB: "Drum & Bass",
+			weight: 7,
+		},
+		{
+			genreA: "Trance",
+			genreB: "Experimental / Ambient",
+			weight: 6,
+		},
+		{
+			genreA: "Dubstep",
+			genreB: "Drum & Bass",
+			weight: 8,
+		},
+		{
+			genreA: "Dubstep",
+			genreB: "Experimental / Ambient",
+			weight: 6,
+		},
+		{
+			genreA: "Drum & Bass",
+			genreB: "Experimental / Ambient",
+			weight: 6,
+		},
+		{
+			genreA: "Experimental / Ambient",
+			genreB: "Soundtracks / Scores",
+			weight: 6,
+		},
+		{
+			genreA: "Latin",
+			genreB: "Reggaeton",
+			weight: 10,
+		},
+		{
+			genreA: "Latin",
+			genreB: "Latin Trap",
+			weight: 9,
+		},
+		{
+			genreA: "Latin",
+			genreB: "Salsa",
+			weight: 10,
+		},
+		{
+			genreA: "Latin",
+			genreB: "Bachata",
+			weight: 10,
+		},
+		{
+			genreA: "Reggaeton",
+			genreB: "Latin Trap",
+			weight: 10,
+		},
+		{
+			genreA: "Reggaeton",
+			genreB: "Salsa",
+			weight: 8,
+		},
+		{
+			genreA: "Reggaeton",
+			genreB: "Bachata",
+			weight: 8,
+		},
+		{
+			genreA: "Latin Trap",
+			genreB: "Salsa",
+			weight: 7,
+		},
+		{
+			genreA: "Latin Trap",
+			genreB: "Bachata",
+			weight: 7,
+		},
+		{
+			genreA: "Latin Trap",
+			genreB: "Trap",
+			weight: 9,
+		},
+		{
+			genreA: "Salsa",
+			genreB: "Bachata",
+			weight: 10,
+		},
+		{
+			genreA: "Country",
+			genreB: "Country Pop",
+			weight: 10,
+		},
+		{
+			genreA: "Country",
+			genreB: "Bluegrass",
+			weight: 10,
+		},
+		{
+			genreA: "Country",
+			genreB: "Folk / Americana",
+			weight: 8,
+		},
+		{
+			genreA: "Country Pop",
+			genreB: "Bluegrass",
+			weight: 8,
+		},
+		{
+			genreA: "Country Pop",
+			genreB: "Pop",
+			weight: 6,
+		},
+		{
+			genreA: "Bluegrass",
+			genreB: "Folk / Americana",
+			weight: 8,
+		},
+		{
+			genreA: "Jazz",
+			genreB: "Smooth Jazz",
+			weight: 10,
+		},
+		{
+			genreA: "Jazz",
+			genreB: "Bebop",
+			weight: 9,
+		},
+		{
+			genreA: "Jazz",
+			genreB: "Lo-fi / Chillhop",
+			weight: 6,
+		},
+		{
+			genreA: "Jazz",
+			genreB: "Blues",
+			weight: 8,
+		},
+		{
+			genreA: "Smooth Jazz",
+			genreB: "Bebop",
+			weight: 9,
+		},
+		{
+			genreA: "Classical",
+			genreB: "Baroque",
+			weight: 10,
+		},
+		{
+			genreA: "Classical",
+			genreB: "Romantic Era",
+			weight: 10,
+		},
+		{
+			genreA: "Classical",
+			genreB: "Opera",
+			weight: 9,
+		},
+		{
+			genreA: "Classical",
+			genreB: "Soundtracks / Scores",
+			weight: 7,
+		},
+		{
+			genreA: "Baroque",
+			genreB: "Romantic Era",
+			weight: 8,
+		},
+		{
+			genreA: "Baroque",
+			genreB: "Opera",
+			weight: 7,
+		},
+		{
+			genreA: "Romantic Era",
+			genreB: "Opera",
+			weight: 8,
+		},
+		{
+			genreA: "Indie / Alternative",
+			genreB: "Singer-Songwriter",
+			weight: 7,
+		},
+		{
+			genreA: "Reggae",
+			genreB: "Dancehall",
+			weight: 10,
+		},
+		{
+			genreA: "Reggae",
+			genreB: "Ska",
+			weight: 10,
+		},
+		{
+			genreA: "Dancehall",
+			genreB: "Ska",
+			weight: 9,
+		},
+		{
+			genreA: "Metal",
+			genreB: "Heavy Metal",
+			weight: 10,
+		},
+		{
+			genreA: "Metal",
+			genreB: "Death Metal",
+			weight: 10,
+		},
+		{
+			genreA: "Metal",
+			genreB: "Black Metal",
+			weight: 10,
+		},
+		{
+			genreA: "Metal",
+			genreB: "Hard Rock",
+			weight: 6,
+		},
+		{
+			genreA: "Metal",
+			genreB: "Rock",
+			weight: 5,
+		},
+		{
+			genreA: "Heavy Metal",
+			genreB: "Death Metal",
+			weight: 9,
+		},
+		{
+			genreA: "Heavy Metal",
+			genreB: "Black Metal",
+			weight: 9,
+		},
+		{
+			genreA: "Death Metal",
+			genreB: "Black Metal",
+			weight: 9,
+		},
+		{
+			genreA: "Afrobeats",
+			genreB: "Amapiano",
+			weight: 8,
+		},
+		{
+			genreA: "Afrobeats",
+			genreB: "Pop",
+			weight: 6,
+		},
+		{
+			genreA: "Amapiano",
+			genreB: "Electronic / EDM",
+			weight: 6,
+		},
+		{
+			genreA: "Gospel",
+			genreB: "Christian Contemporary",
+			weight: 10,
+		},
+		{
+			genreA: "Gospel",
+			genreB: "R&B / Soul",
+			weight: 6,
+		},
+		{
+			genreA: "Christian Contemporary",
+			genreB: "Pop",
+			weight: 6,
+		},
+		{
+			genreA: "Blues",
+			genreB: "Jazz",
+			weight: 8,
+		},
+		{
+			genreA: "Blues",
+			genreB: "Folk / Americana",
+			weight: 7,
+		},
+		{
+			genreA: "Folk / Americana",
+			genreB: "Country",
+			weight: 8,
+		},
+		{
+			genreA: "Folk / Americana",
+			genreB: "Bluegrass",
+			weight: 8,
+		},
+		{
+			genreA: "World Music",
+			genreB: "Latin",
+			weight: 6,
+		},
+		{
+			genreA: "World Music",
+			genreB: "Reggae",
+			weight: 6,
+		},
+		{
+			genreA: "World Music",
+			genreB: "Afrobeats",
+			weight: 7,
+		},
+		{
+			genreA: "World Music",
+			genreB: "Folk / Americana",
+			weight: 7,
+		},
+		{
+			genreA: "Soundtracks / Scores",
+			genreB: "Experimental / Ambient",
+			weight: 6,
+		},
+	];
+
+	const mySet: Set<string> = new Set();
+
+	for (const comparison of myList) {
+		mySet.add(comparison["genreA"]);
+		mySet.add(comparison["genreB"]);
+	}
+
+	for (const genre of mySet) {
+		console.log(genre);
+	}
+
+	console.log("Number of genres: ", mySet.size);
+}
+
+listDistinctGenres();
