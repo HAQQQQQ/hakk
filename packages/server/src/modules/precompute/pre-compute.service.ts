@@ -1,8 +1,8 @@
-import { MUSIC_GENRES_ADJACENCY_FILE_PATH } from "@/common/constants/file-names.constants";
 import { EnvConfig } from "@/config/env.config";
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import * as fs from "fs";
 import * as path from "path";
+import { GraphTokens, PrecomputedDataSource, PrecomputedGraphTokens } from "./pre-compute.types";
 
 interface Connection {
 	genreA: string;
@@ -28,6 +28,9 @@ interface ComputedConnection {
 
 @Injectable()
 export class PreComputeService implements OnModuleInit {
+	// TODO:
+	// ----- adjacencyGraph, distances, nextMatrix, computedConnections currently only acts as a singleton (any data after first array will be over written (update this later) -----
+
 	// Direct adjacency graph: raw weights
 	private adjacencyGraph: { [genre: string]: { [genre: string]: number } } = {};
 
@@ -40,21 +43,31 @@ export class PreComputeService implements OnModuleInit {
 	// Final computed connections using the new structure
 	private computedConnections: { [genre: string]: { [genre: string]: ComputedConnection } } = {};
 
+	constructor(
+		@Inject(PrecomputedGraphTokens.GRAPH_CONFIGS)
+		private readonly graphConfigs: PrecomputedDataSource[],
+	) {}
+
 	onModuleInit(): void {
-		if (EnvConfig.preCompute) {
-			console.log(
-				"[PreComputeService] Pre-computation enabled. Starting computation of shortest distances for the genres adjacency graph...",
-			);
+		if (!EnvConfig.preCompute) {
+			console.log("[PreComputeService] Pre-computation disabled by configuration.");
+			return;
+		}
+
+		console.log("[PreComputeService] Pre-computation enabled.");
+
+		for (const config of this.graphConfigs) {
+			const { graphToken, filePath } = config;
+			console.log(`[PreComputeService] Starting computation for graph: ${graphToken}`);
+
 			try {
-				this.loadAndCompute();
-				console.log("[PreComputeService] Pre-computation completed successfully.");
+				this.loadAndCompute(filePath);
+				console.log(`[PreComputeService] Successfully computed graph: ${graphToken}`);
 				this.buildComputedConnections();
 				this.logAllComputedConnections();
 			} catch (error) {
-				console.log("[PreComputeService] Error during pre-computation:", error);
+				console.error(`[PreComputeService] Failed to compute graph ${graphToken}:`, error);
 			}
-		} else {
-			console.log("[PreComputeService] Pre-computation disabled by configuration.");
 		}
 	}
 
@@ -90,10 +103,10 @@ export class PreComputeService implements OnModuleInit {
 		return this.reconstructPath(genreA, genreB);
 	}
 
-	private loadAndCompute() {
+	private loadAndCompute(filePath: string) {
 		// 1) Read JSON file from the project root using process.cwd()
-		const filePath = path.join(process.cwd(), MUSIC_GENRES_ADJACENCY_FILE_PATH);
-		const fileContent = fs.readFileSync(filePath, "utf8");
+		const fullFilePath = path.join(process.cwd(), filePath); //this.genreFilePath);
+		const fileContent = fs.readFileSync(fullFilePath, "utf8");
 		const data = JSON.parse(fileContent);
 
 		// 2) Extract the connections array
