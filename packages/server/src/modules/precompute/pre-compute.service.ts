@@ -10,15 +10,20 @@ interface Connection {
 	weight: number;
 }
 
-interface FloydWarshallResult {
+interface ShortestPathsResult {
 	distances: { [genre: string]: { [genre: string]: number } };
 	next: { [genre: string]: { [genre: string]: string | null } };
 }
 
+// New data structure: each step contains a node and optionally a weight (for the first node, weight is undefined)
+interface PathStep {
+	node: string;
+	weight?: number;
+}
+
 interface ComputedConnection {
 	distance: number;
-	path: string[];
-	weights: number[];
+	steps: PathStep[];
 }
 
 @Injectable()
@@ -26,30 +31,30 @@ export class PreComputeService implements OnModuleInit {
 	// Direct adjacency graph: raw weights
 	private adjacencyGraph: { [genre: string]: { [genre: string]: number } } = {};
 
-	// Shortest distances computed by Floyd–Warshall (converted distance: 10 - weight)
+	// Shortest distances (converted: distance = 10 - weight)
 	private distances: { [genre: string]: { [genre: string]: number } } = {};
 
 	// Matrix for path reconstruction
 	private nextMatrix: { [genre: string]: { [genre: string]: string | null } } = {};
 
-	// Final computed connections: For each genreA, a mapping of genreB to an object with {distance, path, weights}
+	// Final computed connections using the new structure
 	private computedConnections: { [genre: string]: { [genre: string]: ComputedConnection } } = {};
 
 	onModuleInit(): void {
 		if (EnvConfig.preCompute) {
-			console.info(
+			console.log(
 				"[PreComputeService] Pre-computation enabled. Starting computation of shortest distances for the genres adjacency graph...",
 			);
 			try {
 				this.loadAndCompute();
-				console.info("[PreComputeService] Pre-computation completed successfully.");
+				console.log("[PreComputeService] Pre-computation completed successfully.");
 				this.buildComputedConnections();
 				this.logAllComputedConnections();
 			} catch (error) {
-				console.error("[PreComputeService] Error during pre-computation:", error);
+				console.log("[PreComputeService] Error during pre-computation:", error);
 			}
 		} else {
-			console.info("[PreComputeService] Pre-computation disabled by configuration.");
+			console.log("[PreComputeService] Pre-computation disabled by configuration.");
 		}
 	}
 
@@ -60,40 +65,33 @@ export class PreComputeService implements OnModuleInit {
 		console.log("\nAll computed connections (excluding self-connections):\n");
 		for (const genreA in this.computedConnections) {
 			for (const genreB in this.computedConnections[genreA]) {
-				const { distance, path, weights } = this.computedConnections[genreA][genreB];
+				const { distance, steps } = this.computedConnections[genreA][genreB];
+				// Build path string: join all node names
+				const pathNodes = steps.map((step) => step.node);
+				// Build weights string: for display, skip the first step which has no weight
+				const weightValues = steps.slice(1).map((step) => step.weight);
 				console.log(
-					`${genreA} -> ${genreB}: distance = ${distance}, path = ${path.join(" -> ")}, weights = ${weights.join(" -> ")}`,
+					`${genreA} -> ${genreB}: distance = ${distance}, path = ${pathNodes.join(" -> ")}, weights = ${weightValues.join(" -> ")}`,
 				);
 			}
 		}
 	}
 
 	// --- Public Methods to Access Data ---
-
-	/**
-	 * Returns the full computed connections data structure.
-	 */
 	getComputedConnections(): { [genre: string]: { [genre: string]: ComputedConnection } } {
 		return this.computedConnections;
 	}
 
-	/**
-	 * Returns the "distance" (inverse similarity) between two genres.
-	 */
 	getDistance(genreA: string, genreB: string): number {
 		return this.distances?.[genreA]?.[genreB] ?? Infinity;
 	}
 
-	/**
-	 * Returns the reconstructed path between two genres.
-	 */
 	getPath(genreA: string, genreB: string): string[] {
 		return this.reconstructPath(genreA, genreB);
 	}
 
 	private loadAndCompute() {
-		// 1) Read JSON file
-		// const filePath = path.join(__dirname, MUSIC_GENRES_ADJACENCY_FILE);
+		// 1) Read JSON file from the project root using process.cwd()
 		const filePath = path.join(process.cwd(), MUSIC_GENRES_ADJACENCY_FILE_PATH);
 		const fileContent = fs.readFileSync(filePath, "utf8");
 		const data = JSON.parse(fileContent);
@@ -101,7 +99,7 @@ export class PreComputeService implements OnModuleInit {
 		// 2) Extract the connections array
 		const connections: Connection[] = data.connections;
 
-		// 3) Build adjacencyGraph with raw weights (direct connections)
+		// 3) Build the raw adjacencyGraph from connections (undirected)
 		this.adjacencyGraph = {};
 		for (const { genreA, genreB, weight } of connections) {
 			if (!this.adjacencyGraph[genreA]) {
@@ -110,23 +108,22 @@ export class PreComputeService implements OnModuleInit {
 			if (!this.adjacencyGraph[genreB]) {
 				this.adjacencyGraph[genreB] = {};
 			}
-			// Undirected graph: store both directions
 			this.adjacencyGraph[genreA][genreB] = weight;
 			this.adjacencyGraph[genreB][genreA] = weight;
 		}
 
-		// 4) Run Floyd–Warshall
-		const { distances, next } = this.floydWarshall(connections);
+		// 4) Run to compute distances and nextMatrix
+		const { distances, next } = this.computeShortestPaths(connections);
 		this.distances = distances;
 		this.nextMatrix = next;
 	}
 
 	private similarityToDistance(weight: number): number {
-		// Higher similarity weight yields lower "distance"
+		// Convert similarity weight into a "distance" (higher similarity means lower distance)
 		return 10 - weight;
 	}
 
-	private floydWarshall(connections: Connection[]): FloydWarshallResult {
+	private computeShortestPaths(connections: Connection[]): ShortestPathsResult {
 		// 1) Collect all unique genres
 		const genresSet = new Set<string>();
 		for (const conn of connections) {
@@ -138,7 +135,6 @@ export class PreComputeService implements OnModuleInit {
 		// 2) Initialize distance & next matrices
 		const distances: { [i: string]: { [j: string]: number } } = {};
 		const next: { [i: string]: { [j: string]: string | null } } = {};
-
 		for (const i of genres) {
 			distances[i] = {};
 			next[i] = {};
@@ -148,7 +144,7 @@ export class PreComputeService implements OnModuleInit {
 			}
 		}
 
-		// 3) Populate direct connections (convert similarity -> distance)
+		// 3) Populate direct connections (using converted distance)
 		for (const { genreA, genreB, weight } of connections) {
 			const d = this.similarityToDistance(weight);
 			if (d < distances[genreA][genreB]) {
@@ -159,7 +155,7 @@ export class PreComputeService implements OnModuleInit {
 			}
 		}
 
-		// 4) Run Floyd–Warshall
+		// 4) Run algorithm
 		for (const k of genres) {
 			for (const i of genres) {
 				for (const j of genres) {
@@ -189,10 +185,7 @@ export class PreComputeService implements OnModuleInit {
 
 	/**
 	 * Builds the computedConnections data structure.
-	 * For every genreA and genreB (excluding self-connections), it computes:
-	 * - distance (from Floyd–Warshall),
-	 * - path (reconstructed sequence of genres),
-	 * - weights (raw similarity weights along the path).
+	 * For every pair of genres (excluding self-connections)
 	 */
 	private buildComputedConnections() {
 		this.computedConnections = {};
@@ -202,16 +195,21 @@ export class PreComputeService implements OnModuleInit {
 			for (const genreB of genres) {
 				if (genreA === genreB) continue;
 				const distance = this.distances[genreA][genreB];
-				if (distance === Infinity) continue; // Skip unreachable nodes
+				if (distance === Infinity) continue; // skip unreachable nodes
 				const path = this.reconstructPath(genreA, genreB);
-				const weights: number[] = [];
-				// For each adjacent pair in the path, get the raw similarity weight from the adjacencyGraph.
+				const steps: PathStep[] = [];
+				if (path.length > 0) {
+					// First node (starting point) has no weight.
+					steps.push({ node: path[0] });
+				}
+				// For every subsequent node, record the node and the raw weight from the adjacencyGraph.
 				for (let i = 0; i < path.length - 1; i++) {
 					const from = path[i];
 					const to = path[i + 1];
-					weights.push(this.adjacencyGraph[from][to]);
+					const weight = this.adjacencyGraph[from][to];
+					steps.push({ node: to, weight });
 				}
-				this.computedConnections[genreA][genreB] = { distance, path, weights };
+				this.computedConnections[genreA][genreB] = { distance, steps };
 			}
 		}
 	}
