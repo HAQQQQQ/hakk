@@ -11,7 +11,9 @@ export class PreferencesService {
 	) {}
 
 	async addPreference(userId: string, preference: Preference): Promise<any> {
+		console.log("In addPreference");
 		const addedPreference = await this.supabaseService.addPreference(userId, preference);
+		console.log("Prefernce added");
 		const addedInterest = await this.interestsService.addInterest(userId, preference);
 		return { message: "Preferences saved successfully!", addedInterest };
 	}

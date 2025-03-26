@@ -1,4 +1,4 @@
-import { OpenAIModel } from "../modules/openai/openai-models.enum";
+import { OpenAIModel } from "@/modules/openai/openai.types";
 import { config } from "dotenv";
 import { resolve } from "path";
 
@@ -7,7 +7,7 @@ config();
 config({ path: resolve(__dirname, "../../../../../.env") });
 
 // Interface for environment variables
-export interface EnvConfig {
+export interface EnvConfigI {
 	port: number;
 	useNginx: boolean;
 	clientPort: number;
@@ -22,7 +22,7 @@ export interface EnvConfig {
 }
 
 // Configuration Object — Cleaner Access
-export const Config: EnvConfig = {
+export const EnvConfig: EnvConfigI = {
 	port: parseInt(process.env.SERVER_PORT ?? "3001", 10),
 	useNginx: process.env.USE_NGINX?.toLowerCase() === "true",
 	clientPort: parseInt(process.env.CLIENT_PORT ?? "3000", 10),

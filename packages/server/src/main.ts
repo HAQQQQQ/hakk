@@ -3,20 +3,20 @@ import { AppModule } from "./app.module";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { ResponseInterceptor } from "./common/interceptors/response.interceptor";
 import { AppConfig } from "./config/app.config";
-import { Config } from "./config/config";
+import { EnvConfig } from "./config/env.config";
 
 // Validate critical environment variables before starting the app
 AppConfig.validate();
 
 async function bootstrap() {
-	const port = Config.port;
+	const port = EnvConfig.port;
 	console.log(`---Server running on port: ${port}---`);
 	const app = await NestFactory.create(AppModule);
 
 	// Set global prefix for all routes
 	app.setGlobalPrefix("api");
 	app.enableCors({
-		origin: `http://localhost:${Config.clientPort}`,
+		origin: `http://localhost:${EnvConfig.clientPort}`,
 		credentials: true, // if you're using cookies or auth headers
 	});
 
@@ -28,10 +28,10 @@ async function bootstrap() {
 
 	configureGlobalMiddleware();
 
-	if (Config.useNginx) {
-		await app.listen(Config.port, "0.0.0.0"); // "127.0.0.1");
+	if (EnvConfig.useNginx) {
+		await app.listen(EnvConfig.port, "0.0.0.0"); // "127.0.0.1");
 	} else {
-		await app.listen(Config.port);
+		await app.listen(EnvConfig.port);
 	}
 }
 

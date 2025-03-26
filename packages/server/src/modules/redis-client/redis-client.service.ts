@@ -1,10 +1,10 @@
-import { Config } from "@/config/config";
+import { EnvConfig } from "@/config/env.config";
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import axios from "axios";
 
 @Injectable()
 export class RedisClientService {
-	private readonly redisServiceUrl = `http://localhost:${Config.redisServicePort}`;
+	private readonly redisServiceUrl = `http://localhost:${EnvConfig.redisServicePort}`;
 
 	async setKey(key: string, value: string, ttl?: number): Promise<string> {
 		try {

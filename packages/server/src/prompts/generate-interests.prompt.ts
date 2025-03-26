@@ -1,6 +1,6 @@
 import { Preference } from "@hakk/types";
 
-export function generatePrompt(preference: Preference): string {
+export function generateInterestsPrompt(preference: Preference): string {
 	// Preference): string {
 	const inputString = JSON.stringify(preference, null, 2);
 	return `

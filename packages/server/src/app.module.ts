@@ -10,7 +10,7 @@ import { InterestsModule } from "./modules/interests/interests.module";
 import { PreferencesModule } from "@modules/preferences/preferences.module";
 import { RedisClientModule } from "./modules/redis-client/redis-client.module";
 import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
-import { Config } from "./config/config";
+import { EnvConfig } from "./config/env.config";
 
 @Module({
 	imports: [
@@ -41,7 +41,7 @@ export class AppModule implements NestModule {
 	configure(consumer: MiddlewareConsumer) {
 		// Apply the ApiAuthMiddleware to all routes
 
-		if (Config.useNginx) {
+		if (EnvConfig.useNginx) {
 			consumer.apply(ApiAuthMiddleware).forRoutes("*");
 		}
 	}
