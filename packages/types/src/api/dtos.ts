@@ -20,5 +20,6 @@ export interface IBaseResponse<T = null> {
 	meta: {
 		timestamp: string;
 		path: string;
+		method: string | undefined;
 	};
 }

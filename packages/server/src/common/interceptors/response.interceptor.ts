@@ -16,6 +16,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, IBaseResponse<
 				meta: {
 					timestamp: new Date().toISOString(),
 					path: request.url,
+					method: request.method,
 				},
 			})),
 		);

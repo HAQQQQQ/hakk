@@ -20,6 +20,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 			meta: {
 				timestamp: new Date().toISOString(),
 				path: request.url,
+				method: request.method,
 			},
 		});
 	}
