@@ -12,6 +12,8 @@ import { RedisClientModule } from "./modules/redis-client/redis-client.module";
 import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
 import { EnvConfig } from "./config/env.config";
 import { PreComputeModule } from "./modules/precompute/pre-compute.module";
+import { MatchingService } from "./matching/matching.service";
+import { MatchingModule } from "./matching/matching.module";
 
 @Module({
 	imports: [
@@ -22,6 +24,7 @@ import { PreComputeModule } from "./modules/precompute/pre-compute.module";
 		PreferencesModule,
 		RedisClientModule,
 		PreComputeModule,
+		MatchingModule,
 
 		// **** Tech Debt: Maybe use NesJs ConfigModule to fetch env stuff ****
 		// ConfigModule.forRoot({
@@ -36,7 +39,7 @@ import { PreComputeModule } from "./modules/precompute/pre-compute.module";
 		// }),
 	],
 	controllers: [AppController, UsersController],
-	providers: [AppService, SupabaseService],
+	providers: [AppService, SupabaseService, MatchingService],
 	exports: [SupabaseService],
 })
 export class AppModule implements NestModule {
