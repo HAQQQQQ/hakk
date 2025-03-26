@@ -4,20 +4,24 @@ import { Preference } from "@hakk/types";
 
 @Injectable()
 export class PreferenceRepository {
+	private readonly PREFERENCES_TABLE: string = "preferences";
+
 	constructor(private readonly supabaseService: SupabaseService) {}
 
 	async addPreference(userId: string, preference: Preference): Promise<any> {
 		// Insert the preference for the user into the 'preferences' table.
 		// Here, the entire preference object is stored in a JSONB column named "data".
-		const { data, error } = await this.supabaseService.client.from("preferences").upsert(
-			[
-				{
-					user_id: userId,
-					preference: preference, // Stores the entire preference object
-				},
-			],
-			{ onConflict: "user_id" },
-		);
+		const { data, error } = await this.supabaseService.client
+			.from(this.PREFERENCES_TABLE)
+			.upsert(
+				[
+					{
+						user_id: userId,
+						preference: preference, // Stores the entire preference object
+					},
+				],
+				{ onConflict: "user_id" },
+			);
 
 		if (error) throw error;
 
@@ -26,7 +30,7 @@ export class PreferenceRepository {
 
 	async getPreferences(userIds: string[]): Promise<Preference[]> {
 		const { data, error } = await this.supabaseService.client
-			.from("preferences")
+			.from(this.PREFERENCES_TABLE)
 			.select("preference")
 			.in("user_id", userIds);
 

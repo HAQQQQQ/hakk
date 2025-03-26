@@ -3,11 +3,13 @@ import { SupabaseService } from "../supabase/supabase.service";
 
 @Injectable()
 export class ProfileRepository {
+	private readonly PROFILES_TABLE: string = "profiles";
+
 	constructor(private readonly supabaseService: SupabaseService) {}
 
 	async checkUserExists(userId: string): Promise<boolean> {
 		const { data: user, error } = await this.supabaseService.client
-			.from("profiles")
+			.from(this.PROFILES_TABLE)
 			.select("user_id")
 			.eq("user_id", userId)
 			.single();
