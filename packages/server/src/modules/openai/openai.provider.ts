@@ -2,13 +2,14 @@ import { Provider } from "@nestjs/common";
 import OpenAI from "openai";
 import { EnvConfig } from "@/config/env.config";
 import { OpenAIConfig } from "./openai.config";
+import { OpenAITokens } from "./openai.types";
 
 /**
  * NestJS providers for OpenAI-related services
  */
 export const OpenAIProviders: Provider[] = [
 	{
-		provide: "OPENAI_CLIENT",
+		provide: OpenAITokens.CLIENT,
 		useFactory: () => {
 			const apiKey = EnvConfig.openaiApiKey;
 			if (!apiKey) {
@@ -18,21 +19,21 @@ export const OpenAIProviders: Provider[] = [
 		},
 	},
 	{
-		provide: "OPENAI_MODEL",
+		provide: OpenAITokens.MODEL,
 		useFactory: () => {
 			// Model is already validated and converted in AppConfig
 			return EnvConfig.gptModel;
 		},
 	},
 	{
-		provide: "OPENAI_TEMPERATURE",
+		provide: OpenAITokens.TEMPERATURE,
 		useFactory: () => {
 			// Temperature is already validated in AppConfig
 			return EnvConfig.openaiTemperature;
 		},
 	},
 	{
-		provide: "OPENAI_RETRY_CONFIG",
+		provide: OpenAITokens.RETRY_CONFIG,
 		useValue: {
 			maxRetries: OpenAIConfig.DEFAULT_MAX_RETRIES,
 			retryDelay: OpenAIConfig.DEFAULT_RETRY_DELAY,

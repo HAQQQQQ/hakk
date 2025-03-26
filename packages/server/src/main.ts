@@ -29,9 +29,9 @@ async function bootstrap() {
 	configureGlobalMiddleware();
 
 	if (EnvConfig.useNginx) {
-		await app.listen(EnvConfig.port, "0.0.0.0"); // "127.0.0.1");
+		await app.listen(port, "0.0.0.0"); // "127.0.0.1");
 	} else {
-		await app.listen(EnvConfig.port);
+		await app.listen(port);
 	}
 }
 

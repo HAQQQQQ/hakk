@@ -8,6 +8,14 @@ export enum OpenAIModel {
 	GPT_4_VISION = "gpt-4-vision-preview",
 }
 
+// openai.tokens.ts
+export const OpenAITokens = {
+	CLIENT: "OPENAI_CLIENT",
+	MODEL: "OPENAI_MODEL",
+	TEMPERATURE: "OPENAI_TEMPERATURE",
+	RETRY_CONFIG: "OPENAI_RETRY_CONFIG",
+} as const;
+
 /**
  * Represents possible states for OpenAI API responses
  */
@@ -39,6 +47,11 @@ export enum OpenAIResponseStatus {
 }
 
 /**
+ * Status values representing error cases (excluding SUCCESS)
+ */
+export type OpenAIErrorStatus = Exclude<OpenAIResponseStatus, OpenAIResponseStatus.SUCCESS>;
+
+/**
  * Unified response type for OpenAI API operations
  */
 export type OpenAIResponse<T> = OpenAISuccessResponse<T> | OpenAIErrorResponse;
@@ -56,7 +69,7 @@ export interface OpenAISuccessResponse<T> {
  * Failed API response with error information
  */
 export interface OpenAIErrorResponse {
-	status: Exclude<OpenAIResponseStatus, OpenAIResponseStatus.SUCCESS>;
+	status: OpenAIErrorStatus;
 	error: Error | string;
 	originalPrompt?: string;
 }

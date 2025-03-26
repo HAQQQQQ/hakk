@@ -2,16 +2,21 @@
 import { Injectable, Inject } from "@nestjs/common";
 import { OpenAI } from "openai";
 import { z } from "zod";
-import { OpenAIConfig } from "./openai.config";
-import { OpenAIModel, OpenAIResponse, OpenAIResponseStatus } from "./openai.types";
+import {
+	OpenAIErrorStatus,
+	OpenAIModel,
+	OpenAIResponse,
+	OpenAIResponseStatus,
+	OpenAITokens,
+} from "./openai.types";
 
 @Injectable()
 export class OpenAIService {
 	constructor(
-		@Inject("OPENAI_CLIENT") private readonly openai: OpenAI,
-		@Inject("OPENAI_MODEL") private readonly model: OpenAIModel,
-		@Inject("OPENAI_TEMPERATURE") private readonly temperature: number,
-		@Inject("OPENAI_RETRY_CONFIG")
+		@Inject(OpenAITokens.CLIENT) private readonly openai: OpenAI,
+		@Inject(OpenAITokens.MODEL) private readonly model: OpenAIModel,
+		@Inject(OpenAITokens.TEMPERATURE) private readonly temperature: number,
+		@Inject(OpenAITokens.RETRY_CONFIG)
 		private readonly retryConfig: {
 			maxRetries: number;
 			retryDelay: number;
@@ -50,22 +55,13 @@ export class OpenAIService {
 			} catch (error) {
 				lastError = error;
 
-				let status = OpenAIResponseStatus.UNKNOWN_ERROR;
-				if (error instanceof z.ZodError) {
-					status = OpenAIResponseStatus.SCHEMA_VALIDATION_FAILED;
-				} else if (error instanceof SyntaxError) {
-					status = OpenAIResponseStatus.INVALID_JSON;
-				} else if (error.name === "OpenAIError") {
-					status = OpenAIResponseStatus.API_ERROR;
-				}
-
 				// Log the error
 				this.logPromptError(attempt, maxRetries, error);
 
 				if (attempt === maxRetries) {
 					// Return error response after all retries
 					return {
-						status,
+						status: this.getErrorStatus(error),
 						error,
 						originalPrompt: prompt,
 						// No data field for error responses
@@ -84,6 +80,17 @@ export class OpenAIService {
 			originalPrompt: prompt,
 			// No data field for error responses
 		};
+	}
+
+	private getErrorStatus(error: Error): OpenAIErrorStatus {
+		if (error instanceof z.ZodError) {
+			return OpenAIResponseStatus.SCHEMA_VALIDATION_FAILED;
+		} else if (error instanceof SyntaxError) {
+			return OpenAIResponseStatus.INVALID_JSON;
+		} else if (error.name === "OpenAIError") {
+			return OpenAIResponseStatus.API_ERROR;
+		}
+		return OpenAIResponseStatus.UNKNOWN_ERROR;
 	}
 
 	private addErrorFeedbackToPrompt(originalPrompt: string, error: Error | null): string {
