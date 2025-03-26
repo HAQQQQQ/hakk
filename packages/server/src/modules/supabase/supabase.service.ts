@@ -18,12 +18,4 @@ export class SupabaseService {
 	get client(): SupabaseClient {
 		return this.supabase;
 	}
-
-	// TODO: Move this function out of this class
-	async getUsers(): Promise<any> {
-		console.log("Fetching users from Supabase...");
-		const { data, error } = await this.supabase.from("users").select("*");
-		if (error) throw error;
-		return data;
-	}
 }

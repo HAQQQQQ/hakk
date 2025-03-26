@@ -1,15 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { OpenAIService } from "../openai/openai.service";
+import { ProfileRepository } from "./profile.repository";
 
 @Injectable()
 export class ProfileService {
-	constructor(private readonly openAIService: OpenAIService) {}
+	constructor(private readonly profileRepository: ProfileRepository) {}
 
-	getProfile(): string {
-		return "Kevin Setayesh";
-	}
-
-	getSetayesh(): string {
-		return "Kevin Setayesh";
+	async validateUser(userId: string): Promise<boolean> {
+		return this.profileRepository.checkUserExists(userId);
 	}
 }
