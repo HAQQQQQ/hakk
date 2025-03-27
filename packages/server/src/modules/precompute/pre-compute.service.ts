@@ -1,5 +1,5 @@
 import { EnvConfig } from "@/config/env.config";
-import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
+import { Inject, Injectable, InternalServerErrorException, OnModuleInit } from "@nestjs/common";
 import { PrecomputeRepository } from "./pre-compute.repository";
 import {
 	Concept,
@@ -8,12 +8,13 @@ import {
 	PrecomputedGraphTokens,
 	Topic,
 } from "./pre-compute.types";
-import axios from "axios";
+import { PreComputeConfig } from "./pre-compute.config";
+import { PreComputeApiService } from "./pre-compute.api";
 
 @Injectable()
 export class PreComputeService implements OnModuleInit {
-	private batchSize: number = 5;
 	constructor(
+		private readonly preComputeApiService: PreComputeApiService,
 		private readonly preComputeRepository: PrecomputeRepository,
 		@Inject(PrecomputedGraphTokens.GRAPH_CONFIGS)
 		private readonly graphTokens: GraphToken[],
@@ -25,40 +26,27 @@ export class PreComputeService implements OnModuleInit {
 			return;
 		}
 
-		await this.processGraphTokens();
+		await this.processTopicSimilarities();
 	}
 
-	async processGraphTokens(): Promise<void> {
-		const topics: Topic[] = await this.fetchGraphTokens();
+	async processTopicSimilarities(topics: Topic[] = []): Promise<void> {
+		topics = topics.length === 0 ? await this.fetchAllTopics() : topics;
 		for (const topic of topics) {
-			const conceptPairArr: ConceptPair[] = this.generateUniqueConceptPairs(topic.concepts);
-			await this.callPythonServer(conceptPairArr);
+			const conceptPairs: ConceptPair[] = this.generateUniqueConceptPairs(topic.concepts);
+			const conceptPairsResponse =
+				await this.preComputeApiService.callMatchingService(conceptPairs);
+			if (conceptPairsResponse) {
+				await this.preComputeRepository.storeConceptSimilarities(conceptPairsResponse);
+			}
 		}
 	}
 
-	async callPythonServer(conceptPairArr: ConceptPair[]): Promise<any> {
-		console.log("📡 Calling Python server with:", conceptPairArr);
-
-		try {
-			const res = await axios.post("http://localhost:5000/similarity", conceptPairArr, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-
-			console.log("✅ Match scores:", res.data);
-			return res.data;
-		} catch (error: any) {
-			console.error("❌ Python API error:", error.response?.data || error.message);
-		}
-	}
-
-	async fetchGraphTokens(): Promise<Topic[]> {
+	private async fetchAllTopics(): Promise<Topic[]> {
 		const allTopics: Topic[] = [];
-
+		const batchSize = PreComputeConfig.BATCH_SIZE;
 		// Process in batches to avoid overwhelming the database
-		for (let i = 0; i < this.graphTokens.length; i += this.batchSize) {
-			const batch = this.graphTokens.slice(i, i + this.batchSize);
+		for (let i = 0; i < this.graphTokens.length; i += batchSize) {
+			const batch = this.graphTokens.slice(i, i + batchSize);
 
 			const batchPromises = batch.map(async (token) => {
 				try {
@@ -76,7 +64,18 @@ export class PreComputeService implements OnModuleInit {
 		return allTopics;
 	}
 
-	generateUniqueConceptPairs(concepts: Concept[]): ConceptPair[] {
+	async createTopic(topic: Topic): Promise<Topic> {
+		const inserted = await this.preComputeRepository.insertTopic(topic);
+
+		if (!inserted) {
+			console.error("❌ Failed to create topic");
+			throw new InternalServerErrorException("Failed to create topic");
+		}
+
+		return inserted;
+	}
+
+	private generateUniqueConceptPairs(concepts: Concept[]): ConceptPair[] {
 		const pairs: ConceptPair[] = [];
 
 		for (let i = 0; i < concepts.length; i++) {

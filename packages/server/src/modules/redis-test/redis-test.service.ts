@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { RedisClientService } from "../redis-client/redis-client.service";
-import { InterestResponseDto } from "../interests/interests.controller"; // Import the DTO
+import { InterestResponseDto } from "./redis-test.controller";
 
 @Injectable()
 export class RedisTestService {

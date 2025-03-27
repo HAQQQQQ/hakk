@@ -20,6 +20,7 @@ export interface EnvConfigI {
 	nginxHeaderName: string;
 	nginxSecureKey: string;
 	preCompute: boolean;
+	matcherPort: number;
 }
 
 // Configuration Object — Cleaner Access
@@ -44,4 +45,5 @@ export const EnvConfig: EnvConfigI = {
 	nginxHeaderName: process.env.NGINX_HEADER_NAME ?? "",
 	nginxSecureKey: process.env.NGINX_SECURE_KEY ?? "",
 	preCompute: process.env.PRE_COMPUTE?.toLowerCase() === "true",
+	matcherPort: parseInt(process.env.MATCHER_PORT ?? "5000", 10),
 };

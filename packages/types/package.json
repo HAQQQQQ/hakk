@@ -1,6 +1,6 @@
 {
 	"name": "@hakk/types",
-	"version": "1.0.2",
+	"version": "1.0.7",
 	"private": false,
 	"publishConfig": {
 		"access": "public"
