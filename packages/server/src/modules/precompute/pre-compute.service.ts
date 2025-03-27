@@ -7,25 +7,27 @@ import {
 	Connection,
 	DistanceMatrix,
 	GraphComputationState,
-	GraphTokens,
+	GraphToken,
 	NextMatrix,
 	PathStep,
-	PrecomputedDataSource,
+	// PrecomputedDataSource,
 	PrecomputedGraphTokens,
 	ShortestPathsResult,
 	ComputedConnections,
 } from "./pre-compute.types";
+import { PrecomputeRepository } from "./pre-compute.repository";
 
 @Injectable()
 export class PreComputeService implements OnModuleInit {
-	private graphMap: Map<GraphTokens, GraphComputationState> = new Map();
+	private graphMap: Map<GraphToken, GraphComputationState> = new Map();
 
 	constructor(
+		private readonly preComputeRepository: PrecomputeRepository,
 		@Inject(PrecomputedGraphTokens.GRAPH_CONFIGS)
-		private readonly graphConfigs: PrecomputedDataSource[],
+		private readonly graphTokens: GraphToken[],
 	) {}
 
-	onModuleInit(): void {
+	async onModuleInit(): Promise<void> {
 		if (!EnvConfig.preCompute) {
 			console.log("[PreComputeService] Pre-computation disabled by configuration.");
 			return;
@@ -33,12 +35,12 @@ export class PreComputeService implements OnModuleInit {
 
 		console.log("[PreComputeService] Pre-computation enabled.");
 
-		for (const config of this.graphConfigs) {
-			const { graphToken, filePath } = config;
+		for (const graphToken of this.graphTokens) {
 			console.log(`[PreComputeService] Starting computation for graph: ${graphToken}`);
 
 			try {
-				const { adjacencyGraph, distances, nextMatrix } = this.loadAndCompute(filePath);
+				const { adjacencyGraph, distances, nextMatrix } =
+					await this.loadAndCompute(graphToken); //(filePath);
 				const computedConnections = this.buildComputedConnections(
 					adjacencyGraph,
 					distances,
@@ -60,11 +62,11 @@ export class PreComputeService implements OnModuleInit {
 		}
 	}
 
-	getGraphConfig(graphToken: GraphTokens): GraphComputationState | null {
+	getGraphConfig(graphToken: GraphToken): GraphComputationState | null {
 		return this.graphMap.get(graphToken) ?? null;
 	}
 
-	logAllComputedConnections(graphToken: GraphTokens): void {
+	logAllComputedConnections(graphToken: GraphToken): void {
 		const graph = this.graphMap.get(graphToken);
 		if (!graph) return;
 
@@ -83,15 +85,18 @@ export class PreComputeService implements OnModuleInit {
 		}
 	}
 
-	private loadAndCompute(filePath: string): {
+	private async loadAndCompute(graphToken: GraphToken): Promise<{
+		//(filePath: string): {
 		adjacencyGraph: AdjacencyGraph;
 		distances: DistanceMatrix;
 		nextMatrix: NextMatrix;
-	} {
-		const fullFilePath = path.join(process.cwd(), filePath);
-		const fileContent = fs.readFileSync(fullFilePath, "utf8");
-		const data = JSON.parse(fileContent);
-		const connections: Connection[] = data.connections;
+	}> {
+		// const fullFilePath = path.join(process.cwd(), filePath);
+		// const fileContent = fs.readFileSync(fullFilePath, "utf8");
+		// const data = JSON.parse(fileContent);
+		// const connections: Connection[] = data.connections;
+		const connections: Connection[] =
+			await this.preComputeRepository.fetchConnectionsForGraph(graphToken);
 
 		const adjacencyGraph: AdjacencyGraph = {};
 		for (const { genreA, genreB, weight } of connections) {

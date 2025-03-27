@@ -4,16 +4,16 @@ export const PrecomputedGraphTokens = {
 } as const;
 
 // Enum for identifying individual graphs
-export enum GraphTokens {
-	GENRES,
+export enum GraphToken {
+	Genres = "Genres",
 }
 
 // --- Data Source Configuration ---
 
-export interface PrecomputedDataSource {
-	graphToken: GraphTokens;
-	filePath: string;
-}
+// export interface PrecomputedDataSource {
+// 	graphToken: GraphToken;
+// 	filePath: string;
+// }
 
 // --- Generic 2D Matrix Type ---
 
