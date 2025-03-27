@@ -1,9 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { SupabaseService } from "../supabase/supabase.service";
-import { Concept, ConceptPair, Topic } from "./pre-compute.types";
+import { Concept, ConceptPairResult, Topic } from "./pre-compute.types";
 
 @Injectable()
 export class PrecomputeRepository {
+	private readonly TOPIC_TABLE: string = "topic";
+	private readonly CONCEPT_TABLE: string = "concept";
+	private readonly CONCEPT_SIMILARITY_TABLE: string = "concept_similarity";
+
 	constructor(private readonly supabaseService: SupabaseService) {}
 
 	/**
@@ -14,7 +18,7 @@ export class PrecomputeRepository {
 	async getTopicWithConcepts(topicName: string): Promise<Topic | null> {
 		// First, get the topic id from the name
 		const { data: topicData, error: topicError } = await this.supabaseService.client
-			.from("topic")
+			.from(`${this.TOPIC_TABLE}`)
 			.select("id, name")
 			.eq("name", topicName)
 			.single();
@@ -26,7 +30,7 @@ export class PrecomputeRepository {
 
 		// Then, get all concepts related to this topic using the topic_id foreign key
 		const { data: conceptsData, error: conceptsError } = await this.supabaseService.client
-			.from("concept")
+			.from(`${this.CONCEPT_TABLE}`)
 			.select("id, name, description")
 			.eq("topic_id", topicData.id);
 
@@ -42,7 +46,7 @@ export class PrecomputeRepository {
 		};
 	}
 
-	async storeConceptSimilarities(results: any[]): Promise<void> {
+	async storeConceptSimilarities(results: ConceptPairResult[]): Promise<void> {
 		const rowsToInsert = results.map((item) => {
 			const conceptMinId = Math.min(item.conceptA_id, item.conceptB_id);
 			const conceptMaxId = Math.max(item.conceptA_id, item.conceptB_id);
@@ -55,7 +59,7 @@ export class PrecomputeRepository {
 		});
 
 		const { data, error } = await this.supabaseService.client
-			.from("concept_similarity")
+			.from(`${this.CONCEPT_SIMILARITY_TABLE}`)
 			.upsert(rowsToInsert, {
 				onConflict: "concept_a_id,concept_b_id",
 			});
@@ -66,24 +70,4 @@ export class PrecomputeRepository {
 			console.log("✅ Inserted concept similarities into Supabase:", data);
 		}
 	}
-
-	/**
-	 * Fetches a single concept by name
-	 * @param conceptName The name of the concept to search for
-	 * @returns Promise containing the concept or null if not found
-	 */
-	// async getConceptByName(conceptName: string): Promise<Concept | null> {
-	//     const { data, error } = await this.supabaseService.client
-	//         .from('concept')
-	//         .select('id, name, description')
-	//         .eq('name', conceptName)
-	//         .single();
-
-	//     if (error || !data) {
-	//         console.error('Error fetching concept:', error);
-	//         return null;
-	//     }
-
-	//     return data as Concept;
-	// }
 }

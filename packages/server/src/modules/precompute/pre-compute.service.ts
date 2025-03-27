@@ -8,12 +8,13 @@ import {
 	PrecomputedGraphTokens,
 	Topic,
 } from "./pre-compute.types";
-import axios from "axios";
+import { PreComputeConfig } from "./pre-compute.config";
+import { PreComputeApiService } from "./pre-compute.api";
 
 @Injectable()
 export class PreComputeService implements OnModuleInit {
-	private batchSize: number = 5;
 	constructor(
+		private readonly preComputeApiService: PreComputeApiService,
 		private readonly preComputeRepository: PrecomputeRepository,
 		@Inject(PrecomputedGraphTokens.GRAPH_CONFIGS)
 		private readonly graphTokens: GraphToken[],
@@ -32,34 +33,20 @@ export class PreComputeService implements OnModuleInit {
 		const topics: Topic[] = await this.fetchGraphTokens();
 		for (const topic of topics) {
 			const conceptPairs: ConceptPair[] = this.generateUniqueConceptPairs(topic.concepts);
-			const conceptPairsResponse: any[] = await this.callPythonServer(conceptPairs);
-			await this.preComputeRepository.storeConceptSimilarities(conceptPairsResponse);
+			const conceptPairsResponse =
+				await this.preComputeApiService.callMatchingService(conceptPairs);
+			if (conceptPairsResponse) {
+				await this.preComputeRepository.storeConceptSimilarities(conceptPairsResponse);
+			}
 		}
 	}
 
-	async callPythonServer(conceptPairs: ConceptPair[]): Promise<any> {
-		console.log("📡 Calling Python server with:", conceptPairs);
-
-		try {
-			const res = await axios.post("http://localhost:5000/similarity", conceptPairs, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
-
-			console.log("✅ Match scores:", res.data);
-			return res.data;
-		} catch (error: any) {
-			console.error("❌ Python API error:", error.response?.data || error.message);
-		}
-	}
-
-	async fetchGraphTokens(): Promise<Topic[]> {
+	private async fetchGraphTokens(): Promise<Topic[]> {
 		const allTopics: Topic[] = [];
-
+		const batchSize = PreComputeConfig.BATCH_SIZE;
 		// Process in batches to avoid overwhelming the database
-		for (let i = 0; i < this.graphTokens.length; i += this.batchSize) {
-			const batch = this.graphTokens.slice(i, i + this.batchSize);
+		for (let i = 0; i < this.graphTokens.length; i += batchSize) {
+			const batch = this.graphTokens.slice(i, i + batchSize);
 
 			const batchPromises = batch.map(async (token) => {
 				try {
@@ -77,7 +64,7 @@ export class PreComputeService implements OnModuleInit {
 		return allTopics;
 	}
 
-	generateUniqueConceptPairs(concepts: Concept[]): ConceptPair[] {
+	private generateUniqueConceptPairs(concepts: Concept[]): ConceptPair[] {
 		const pairs: ConceptPair[] = [];
 
 		for (let i = 0; i < concepts.length; i++) {

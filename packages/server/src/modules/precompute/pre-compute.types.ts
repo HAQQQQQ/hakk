@@ -22,3 +22,10 @@ export type ConceptPair = {
 	conceptB: Concept;
 	similarityScore?: number;
 };
+
+// Result I get from FlaskAPi
+export type ConceptPairResult = {
+	conceptA_id: number;
+	conceptB_id: number;
+	similarity: number;
+};
