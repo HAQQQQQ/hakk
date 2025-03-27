@@ -17,8 +17,6 @@ export class PrecomputeRepository {
 	constructor(private readonly supabaseService: SupabaseService) {}
 
 	async fetchConnectionsForGraph(graphToken: GraphToken): Promise<Connection[]> {
-		console.log("In fetchConnectionsForGraph");
-
 		const { data, error } = await this.supabaseService.client
 			.from(this.GRAPH_CONNECTIONS_TABLE)
 			.select(`node_a, node_b, weight, ${this.GRAPHS_TABLE}!inner(graph_type)`)
@@ -36,7 +34,6 @@ export class PrecomputeRepository {
 			weight: row.weight,
 		}));
 
-		console.log("Connections:", connections);
 		return connections;
 	}
 }

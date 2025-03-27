@@ -8,13 +8,6 @@ export enum GraphToken {
 	Genres = "Genres",
 }
 
-// --- Data Source Configuration ---
-
-// export interface PrecomputedDataSource {
-// 	graphToken: GraphToken;
-// 	filePath: string;
-// }
-
 // --- Generic 2D Matrix Type ---
 
 export type Matrix<T> = Record<string, Record<string, T>>;

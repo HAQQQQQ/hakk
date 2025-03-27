@@ -1,7 +1,5 @@
 import { EnvConfig } from "@/config/env.config";
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
-import * as fs from "fs";
-import * as path from "path";
 import {
 	AdjacencyGraph,
 	Connection,
@@ -10,7 +8,6 @@ import {
 	GraphToken,
 	NextMatrix,
 	PathStep,
-	// PrecomputedDataSource,
 	PrecomputedGraphTokens,
 	ShortestPathsResult,
 	ComputedConnections,
@@ -86,15 +83,10 @@ export class PreComputeService implements OnModuleInit {
 	}
 
 	private async loadAndCompute(graphToken: GraphToken): Promise<{
-		//(filePath: string): {
 		adjacencyGraph: AdjacencyGraph;
 		distances: DistanceMatrix;
 		nextMatrix: NextMatrix;
 	}> {
-		// const fullFilePath = path.join(process.cwd(), filePath);
-		// const fileContent = fs.readFileSync(fullFilePath, "utf8");
-		// const data = JSON.parse(fileContent);
-		// const connections: Connection[] = data.connections;
 		const connections: Connection[] =
 			await this.preComputeRepository.fetchConnectionsForGraph(graphToken);
 
