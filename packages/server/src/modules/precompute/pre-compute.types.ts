@@ -44,8 +44,8 @@ export interface PathStep {
 // --- Raw Input ---
 
 export interface Connection {
-	genreA: string;
-	genreB: string;
+	topicA: string;
+	topicB: string;
 	weight: number;
 }
 

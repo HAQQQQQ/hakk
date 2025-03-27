@@ -29,8 +29,8 @@ export class PrecomputeRepository {
 		}
 
 		const connections: Connection[] = (data as RawConnectionRow[]).map((row) => ({
-			genreA: row.node_a,
-			genreB: row.node_b,
+			topicA: row.node_a,
+			topicB: row.node_b,
 			weight: row.weight,
 		}));
 
