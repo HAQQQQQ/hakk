@@ -11,6 +11,13 @@
 		"incremental": false, // Useful for development speed
 		"paths": {
 			"@/*": ["./src/*"] // client-specific path alias
+		},
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"skipLibCheck": true,
+		"paths": {
+			"@/*": ["./src/*"]
 		}
 	},
 	"include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx"],

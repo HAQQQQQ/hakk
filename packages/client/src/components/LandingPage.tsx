@@ -1,95 +1,85 @@
+"use client";
+
 import React from "react";
 import { motion } from "framer-motion";
-import Typography from "@mui/material/Typography";
+import { Box, Heading, Image } from "@chakra-ui/react";
 
-// Create a motion-enhanced Typography component
-const MotionTypography = motion(Typography);
+// Chakra + Motion component
+const MotionHeading = motion(Heading);
+const MotionImage = motion(Image);
+const MotionBox = motion(Box);
 
-// Define common styles for Typography components
-const commonTypographyStyle = {
-	textAlign: "center",
-	fontSize: "30px",
-	maxWidth: "100rem",
-	mb: 4,
-	pl: 3,
-	color: "#000", // Using a hex code for a standard black color
-	fontWeight: 1000,
-	letterSpacing: "0.05em",
-	textShadow: "0 0 10px rgba(200,200,200,0.6), 0 0 20px rgba(255,255,255,0.3)",
+const commonHeadingStyle = {
+	textAlign: "center" as const,
+	fontWeight: "bold",
+	size: "6xl",
 };
 
 const LandingPage = () => {
 	return (
-		<section className="landing-page">
+		<Box
+			as="section"
+			className="landing-page"
+			position="relative"
+			minH="100vh"
+			pt="4rem"
+			overflow="hidden"
+		>
 			{/* Main Heading */}
-			<MotionTypography
-				variant="h1"
-				sx={commonTypographyStyle}
-				initial={{ opacity: 0.2, y: 0 }}
-				animate={{ opacity: 1, y: 500 }}
+			<MotionHeading
+				as="h1"
+				{...commonHeadingStyle}
+				initial={{ opacity: 0.2, y: 550 }}
+				animate={{ opacity: 1, y: 650 }}
 				transition={{ duration: 3 }}
 			>
-				Unlock the power of finding love.
-			</MotionTypography>
+				Speed dating optimized.
+			</MotionHeading>
 
-			{/* Banner Images Container */}
-			<motion.div
-				className="banner-container"
+			<MotionBox
+				display="flex"
+				justifyContent="center"
+				overflow="hidden"
+				mb="1rem"
+				position="relative"
 				initial={{ scale: 0.8, opacity: 0 }}
 				animate={{ scale: 1, opacity: 1 }}
 				transition={{ duration: 0.8, ease: "easeOut" }}
-				style={{
-					display: "flex",
-					justifyContent: "center",
-					overflow: "hidden",
-					marginBottom: "1rem",
-					position: "relative", // Required for absolute positioning of the overlay
-				}}
 			>
-				<motion.img
-					src="/assets/bluesky.png"
+				{/* Left Image */}
+				<MotionImage
+					src="/assets/speeddating1.jpg"
 					alt="Banner Left"
+					objectFit="cover"
+					w="50%"
 					initial={{ x: "-100%", scale: 0.8 }}
 					animate={{ x: 0, scale: 1 }}
 					transition={{ duration: 0.8, ease: "easeOut" }}
-					style={{ width: "50%", objectFit: "cover" }}
 				/>
-				<motion.img
-					src="/assets/purplesky.png"
+
+				{/* Right Image */}
+				<MotionImage
+					src="/assets/speeddating2.jpg"
 					alt="Banner Right"
+					objectFit="cover"
+					w="50%"
 					initial={{ x: "100%", scale: 0.8 }}
 					animate={{ x: 0, scale: 1 }}
 					transition={{ duration: 0.8, ease: "easeOut" }}
-					style={{ width: "50%", objectFit: "cover" }}
 				/>
+			</MotionBox>
 
-				{/* Blur Overlay at the Intersection */}
-				<div
-					style={{
-						position: "absolute",
-						top: 0,
-						bottom: 0, // Ensures the overlay is contained within the parent's height
-						left: "50%",
-						transform: "translateX(-50%)",
-						width: "50px", // adjust width as needed
-						backdropFilter: "blur(10px)",
-						WebkitBackdropFilter: "blur(10px)",
-						pointerEvents: "none", // ensures the overlay doesn't block interactions
-					}}
-				></div>
-			</motion.div>
-
-			{/* Secondary Message */}
-			<MotionTypography
-				variant="h2"
-				sx={commonTypographyStyle}
+			{/* Secondary Message - fixed near bottom of viewport */}
+			<MotionHeading
+				as="h1"
+				{...commonHeadingStyle}
 				initial={{ opacity: 0, y: 30 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 1, delay: 0.3 }}
 			>
-				Your fitness journey reimagined.
-			</MotionTypography>
-		</section>
+				Matching has never been easier.
+			</MotionHeading>
+		</Box>
 	);
 };
 

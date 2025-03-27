@@ -1,56 +1,24 @@
-// components/Header.tsx
-"use client";
-
+import { Box, Button, Container, Flex, Image } from "@chakra-ui/react";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { Box, AppBar, Toolbar, Button, Container } from "@mui/material";
-import LoginIcon from "@mui/icons-material/Login";
-import Image from "next/image";
+import { RiArrowRightLine } from "react-icons/ri";
 
 export default function Header() {
 	return (
-		<AppBar
-			position="static"
-			sx={{
-				backgroundColor: "white",
-				width: "100%",
-				boxShadow: 10,
-			}}
-		>
-			<Container maxWidth="lg">
-				<Toolbar
-					sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
-				>
-					<Box sx={{ display: "flex", alignItems: "center", gap: 0 }}>
-						<Image src="/assets/logo.png" alt="HAKK Logo" width={150} height={60} />
+		<Box as="header" bg="white" w="100%" boxShadow="lg" position="static">
+			<Container maxW="container.lg">
+				<Flex justify="space-between" align="center" py={4}>
+					{/* Logo */}
+					<Box>
+						<Image src="/assets/logo.png" alt="HAKK Logo" h="60px" w="auto" />
 					</Box>
-					{/* Right side */}
+
+					{/* Right Side Auth Buttons */}
 					<Box>
 						<SignedOut>
 							<SignInButton mode="modal">
-								<Button
-									variant="outlined"
-									startIcon={<LoginIcon />}
-									sx={{
-										borderColor: "#cccccc",
-										color: "#333",
-										fontWeight: 600,
-										fontFamily: "Roboto, sans-serif",
-										textTransform: "none",
-										px: 3,
-										py: 1,
-										borderRadius: "10px",
-										backgroundColor: "#f9f9f9",
-										boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)",
-										transition: "all 0.3s ease",
-										"&:hover": {
-											backgroundColor: "#e0e0e0",
-											borderColor: "#aaaaaa",
-											color: "#000",
-											boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-										},
-									}}
-								>
-									Sign In
+								<Button size="xl" rounded="xl" variant="outline">
+									Get Started
+									<RiArrowRightLine />
 								</Button>
 							</SignInButton>
 						</SignedOut>
@@ -58,8 +26,8 @@ export default function Header() {
 							<UserButton />
 						</SignedIn>
 					</Box>
-				</Toolbar>
+				</Flex>
 			</Container>
-		</AppBar>
+		</Box>
 	);
 }
