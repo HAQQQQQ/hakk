@@ -25,13 +25,15 @@
 		"docker:prune": "docker system prune -f",
 		"docker:clean": "docker-compose down && docker system prune -af && docker volume prune -f",
 		"supabase:start": "npx supabase start",
-		"supabase:stop": "npx supabase stop"
+		"supabase:stop": "npx supabase stop",
+		"export-schemas": "tsx packages/server/scripts/export-schemas.ts"
 	},
 	"devDependencies": {
 		"concurrently": "^8.2.0",
 		"lint-staged": "^13.0.0",
 		"prettier": "^3.5.3",
-		"rimraf": "^6.0.1"
+		"rimraf": "^6.0.1",
+		"tsx": "^4.19.3"
 	},
 	"lint-staged": {
 		"**/*.{ts,tsx,js,jsx,json,md}": [
@@ -43,6 +45,7 @@
 		"node": ">=20.0.0"
 	},
 	"dependencies": {
-		"zod": "^3.24.2"
+		"zod": "^3.24.2",
+		"zod-to-json-schema": "^3.24.5"
 	}
 }

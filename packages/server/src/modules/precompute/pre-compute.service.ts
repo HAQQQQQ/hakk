@@ -1,44 +1,46 @@
 import { EnvConfig } from "@/config/env.config";
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
-import * as fs from "fs";
-import * as path from "path";
 import {
 	AdjacencyGraph,
 	Connection,
 	DistanceMatrix,
 	GraphComputationState,
-	GraphTokens,
+	GraphToken,
 	NextMatrix,
 	PathStep,
-	PrecomputedDataSource,
 	PrecomputedGraphTokens,
 	ShortestPathsResult,
 	ComputedConnections,
 } from "./pre-compute.types";
+import { PrecomputeRepository } from "./pre-compute.repository";
 
 @Injectable()
 export class PreComputeService implements OnModuleInit {
-	private graphMap: Map<GraphTokens, GraphComputationState> = new Map();
+	private graphMap: Map<GraphToken, GraphComputationState> = new Map();
 
 	constructor(
+		private readonly preComputeRepository: PrecomputeRepository,
 		@Inject(PrecomputedGraphTokens.GRAPH_CONFIGS)
-		private readonly graphConfigs: PrecomputedDataSource[],
+		private readonly graphTokens: GraphToken[],
 	) {}
 
-	onModuleInit(): void {
+	async onModuleInit(): Promise<void> {
 		if (!EnvConfig.preCompute) {
 			console.log("[PreComputeService] Pre-computation disabled by configuration.");
 			return;
 		}
 
 		console.log("[PreComputeService] Pre-computation enabled.");
+		await this.loadAndComputeAllGraphTokens();
+	}
 
-		for (const config of this.graphConfigs) {
-			const { graphToken, filePath } = config;
+	async loadAndComputeAllGraphTokens(): Promise<void> {
+		for (const graphToken of this.graphTokens) {
 			console.log(`[PreComputeService] Starting computation for graph: ${graphToken}`);
 
 			try {
-				const { adjacencyGraph, distances, nextMatrix } = this.loadAndCompute(filePath);
+				const { adjacencyGraph, distances, nextMatrix } =
+					await this.loadAndCompute(graphToken); //(filePath);
 				const computedConnections = this.buildComputedConnections(
 					adjacencyGraph,
 					distances,
@@ -60,45 +62,43 @@ export class PreComputeService implements OnModuleInit {
 		}
 	}
 
-	getGraphConfig(graphToken: GraphTokens): GraphComputationState | null {
+	getGraphConfig(graphToken: GraphToken): GraphComputationState | null {
 		return this.graphMap.get(graphToken) ?? null;
 	}
 
-	logAllComputedConnections(graphToken: GraphTokens): void {
+	logAllComputedConnections(graphToken: GraphToken): void {
 		const graph = this.graphMap.get(graphToken);
 		if (!graph) return;
 
 		const { computedConnections } = graph;
 
 		console.log(`\n[${graphToken}] All computed connections (excluding self-connections):\n`);
-		for (const genreA in computedConnections) {
-			for (const genreB in computedConnections[genreA]) {
-				const { distance, steps } = computedConnections[genreA][genreB];
+		for (const topicA in computedConnections) {
+			for (const topicB in computedConnections[topicA]) {
+				const { distance, steps } = computedConnections[topicA][topicB];
 				const pathNodes = steps.map((step) => step.node);
 				const weightValues = steps.slice(1).map((step) => step.weight);
 				console.log(
-					`${genreA} -> ${genreB}: distance = ${distance}, path = ${pathNodes.join(" -> ")}, weights = ${weightValues.join(" -> ")}`,
+					`${topicA} -> ${topicB}: distance = ${distance}, path = ${pathNodes.join(" -> ")}, weights = ${weightValues.join(" -> ")}`,
 				);
 			}
 		}
 	}
 
-	private loadAndCompute(filePath: string): {
+	private async loadAndCompute(graphToken: GraphToken): Promise<{
 		adjacencyGraph: AdjacencyGraph;
 		distances: DistanceMatrix;
 		nextMatrix: NextMatrix;
-	} {
-		const fullFilePath = path.join(process.cwd(), filePath);
-		const fileContent = fs.readFileSync(fullFilePath, "utf8");
-		const data = JSON.parse(fileContent);
-		const connections: Connection[] = data.connections;
+	}> {
+		const connections: Connection[] =
+			await this.preComputeRepository.fetchConnectionsForGraph(graphToken);
 
 		const adjacencyGraph: AdjacencyGraph = {};
-		for (const { genreA, genreB, weight } of connections) {
-			if (!adjacencyGraph[genreA]) adjacencyGraph[genreA] = {};
-			if (!adjacencyGraph[genreB]) adjacencyGraph[genreB] = {};
-			adjacencyGraph[genreA][genreB] = weight;
-			adjacencyGraph[genreB][genreA] = weight;
+		for (const { topicA, topicB, weight } of connections) {
+			if (!adjacencyGraph[topicA]) adjacencyGraph[topicA] = {};
+			if (!adjacencyGraph[topicB]) adjacencyGraph[topicB] = {};
+			adjacencyGraph[topicA][topicB] = weight;
+			adjacencyGraph[topicB][topicA] = weight;
 		}
 
 		const { distances, next } = this.computeShortestPaths(connections);
@@ -110,38 +110,38 @@ export class PreComputeService implements OnModuleInit {
 	}
 
 	private computeShortestPaths(connections: Connection[]): ShortestPathsResult {
-		const genresSet = new Set<string>();
+		const topicsSet = new Set<string>();
 		for (const conn of connections) {
-			genresSet.add(conn.genreA);
-			genresSet.add(conn.genreB);
+			topicsSet.add(conn.topicA);
+			topicsSet.add(conn.topicB);
 		}
-		const genres = Array.from(genresSet);
+		const topics = Array.from(topicsSet);
 
 		const distances: DistanceMatrix = {};
 		const next: NextMatrix = {};
 
-		for (const i of genres) {
+		for (const i of topics) {
 			distances[i] = {};
 			next[i] = {};
-			for (const j of genres) {
+			for (const j of topics) {
 				distances[i][j] = i === j ? 0 : Infinity;
 				next[i][j] = null;
 			}
 		}
 
-		for (const { genreA, genreB, weight } of connections) {
+		for (const { topicA, topicB, weight } of connections) {
 			const d = this.similarityToDistance(weight);
-			if (d < distances[genreA][genreB]) {
-				distances[genreA][genreB] = d;
-				distances[genreB][genreA] = d;
-				next[genreA][genreB] = genreB;
-				next[genreB][genreA] = genreA;
+			if (d < distances[topicA][topicB]) {
+				distances[topicA][topicB] = d;
+				distances[topicB][topicA] = d;
+				next[topicA][topicB] = topicB;
+				next[topicB][topicA] = topicA;
 			}
 		}
 
-		for (const k of genres) {
-			for (const i of genres) {
-				for (const j of genres) {
+		for (const k of topics) {
+			for (const i of topics) {
+				for (const j of topics) {
 					if (distances[i][j] > distances[i][k] + distances[k][j]) {
 						distances[i][j] = distances[i][k] + distances[k][j];
 						next[i][j] = next[i][k];
@@ -159,17 +159,17 @@ export class PreComputeService implements OnModuleInit {
 		nextMatrix: NextMatrix,
 	): ComputedConnections {
 		const computedConnections: ComputedConnections = {};
-		const genres = Object.keys(distances);
+		const topics = Object.keys(distances);
 
-		for (const genreA of genres) {
-			computedConnections[genreA] = {};
-			for (const genreB of genres) {
-				if (genreA === genreB) continue;
+		for (const topicA of topics) {
+			computedConnections[topicA] = {};
+			for (const topicB of topics) {
+				if (topicA === topicB) continue;
 
-				const distance = distances[genreA][genreB];
+				const distance = distances[topicA][topicB];
 				if (distance === Infinity) continue;
 
-				const path = this.reconstructPath(genreA, genreB, nextMatrix);
+				const path = this.reconstructPath(topicA, topicB, nextMatrix);
 				const steps: PathStep[] = [];
 
 				if (path.length > 0) steps.push({ node: path[0] });
@@ -181,7 +181,7 @@ export class PreComputeService implements OnModuleInit {
 					steps.push({ node: to, weight });
 				}
 
-				computedConnections[genreA][genreB] = { distance, steps };
+				computedConnections[topicA][topicB] = { distance, steps };
 			}
 		}
 
