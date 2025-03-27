@@ -9,9 +9,7 @@ import {
 	Text,
 	VStack,
 	useBreakpointValue,
-	StackSeparator,
 } from "@chakra-ui/react";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useState } from "react";
 import { useColorModeValue } from "./ui/color-mode";
@@ -31,7 +29,7 @@ export default function ChatSurvey() {
 	const isFinalStep = step >= categories.length * 3;
 
 	const bgColor = useColorModeValue("gray.100", "white.900");
-	const chatBubbleBg = useColorModeValue("white", "gray.700");
+	const chatBubbleBg = useColorModeValue("gray.100", "white.700");
 	const accentColor = "black.800";
 
 	const promptFontSize = useBreakpointValue({ base: "xl", md: "2xl" });
@@ -51,17 +49,12 @@ export default function ChatSurvey() {
 
 	const handleSubmit = () => {
 		console.log("Submitting:", formData);
-		toast.success("Preferences submitted! 🧠", {
-			position: "top-center",
-			autoClose: 3000,
-		});
 	};
 
 	return (
 		<Container maxW="6xl" py={10}>
-			<ToastContainer />
 			<VStack align="stretch" p={8} bg={bgColor} borderRadius="2xl" boxShadow="lg">
-				<Heading size="3xl" textAlign="center" color={accentColor} letterSpacing="wide">
+				<Heading size="3xl" textAlign="center" color="black" letterSpacing="wide">
 					🎤 Let’s get to know you!
 				</Heading>
 
@@ -74,11 +67,13 @@ export default function ChatSurvey() {
 							boxShadow="sm"
 							borderLeft="6px solid"
 							borderColor={accentColor}
+							display="flex"
+							alignItems="center"
 						>
 							<Text fontSize={promptFontSize} fontWeight="semibold" color="gray.700">
 								{`What's one of your favorite ${currentCategory}?`}
 							</Text>
-							<Text fontSize="sm" color="gray.500" mt={1}>
+							<Text fontSize="sm" color="gray.500" ml={2}>
 								({formData[currentCategory].length + 1}/3)
 							</Text>
 						</Box>
@@ -97,9 +92,10 @@ export default function ChatSurvey() {
 						/>
 
 						<Button
+							variant="ghost"
 							onClick={handleNext}
 							colorScheme="teal"
-							size="lg"
+							size="2xl"
 							borderRadius="full"
 							px={8}
 							fontWeight="bold"
@@ -120,7 +116,7 @@ export default function ChatSurvey() {
 							borderColor={accentColor}
 						>
 							<Text fontSize="2xl" fontWeight="bold" mb={2}>
-								🎉 You're all done!
+								🎉 Youre all done!
 							</Text>
 							<Text fontSize="md" mb={4}>
 								Here’s what you picked:
