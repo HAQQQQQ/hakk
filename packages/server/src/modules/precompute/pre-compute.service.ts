@@ -1,5 +1,5 @@
 import { EnvConfig } from "@/config/env.config";
-import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
+import { Inject, Injectable, InternalServerErrorException, OnModuleInit } from "@nestjs/common";
 import { PrecomputeRepository } from "./pre-compute.repository";
 import {
 	Concept,
@@ -26,11 +26,11 @@ export class PreComputeService implements OnModuleInit {
 			return;
 		}
 
-		await this.processGraphTokens();
+		await this.processTopicSimilarities();
 	}
 
-	async processGraphTokens(): Promise<void> {
-		const topics: Topic[] = await this.fetchGraphTokens();
+	async processTopicSimilarities(topics: Topic[] = []): Promise<void> {
+		topics = topics.length === 0 ? await this.fetchAllTopics() : topics;
 		for (const topic of topics) {
 			const conceptPairs: ConceptPair[] = this.generateUniqueConceptPairs(topic.concepts);
 			const conceptPairsResponse =
@@ -41,7 +41,7 @@ export class PreComputeService implements OnModuleInit {
 		}
 	}
 
-	private async fetchGraphTokens(): Promise<Topic[]> {
+	private async fetchAllTopics(): Promise<Topic[]> {
 		const allTopics: Topic[] = [];
 		const batchSize = PreComputeConfig.BATCH_SIZE;
 		// Process in batches to avoid overwhelming the database
@@ -62,6 +62,17 @@ export class PreComputeService implements OnModuleInit {
 		}
 
 		return allTopics;
+	}
+
+	async createTopic(topic: Topic): Promise<Topic> {
+		const inserted = await this.preComputeRepository.insertTopic(topic);
+
+		if (!inserted) {
+			console.error("❌ Failed to create topic");
+			throw new InternalServerErrorException("Failed to create topic");
+		}
+
+		return inserted;
 	}
 
 	private generateUniqueConceptPairs(concepts: Concept[]): ConceptPair[] {

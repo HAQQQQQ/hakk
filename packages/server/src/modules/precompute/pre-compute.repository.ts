@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { SupabaseService } from "../supabase/supabase.service";
 import { Concept, ConceptPairResult, Topic } from "./pre-compute.types";
-
+import { InternalServerErrorException } from "@nestjs/common";
 @Injectable()
 export class PrecomputeRepository {
 	private readonly TOPIC_TABLE: string = "topic";
@@ -41,8 +41,45 @@ export class PrecomputeRepository {
 
 		// Construct the Topic object with its concepts
 		return {
+			id: topicData.id,
 			name: topicData.name,
 			concepts: conceptsData as Concept[],
+		};
+	}
+
+	async insertTopic(topic: Topic): Promise<Topic> {
+		const { data: topicData, error: topicError } = await this.supabaseService.client
+			.from(this.TOPIC_TABLE)
+			.insert({ name: topic.name })
+			.select("id")
+			.single();
+
+		if (topicError || !topicData) {
+			console.error("❌ Failed to insert topic:", topicError);
+			throw new InternalServerErrorException("Failed to insert topic");
+		}
+
+		const topicId = topicData.id;
+
+		const conceptsToInsert = topic.concepts.map((concept) => ({
+			name: concept.name,
+			description: concept.description,
+			topic_id: topicId,
+		}));
+
+		const { error: conceptError } = await this.supabaseService.client
+			.from(this.CONCEPT_TABLE)
+			.insert(conceptsToInsert);
+
+		if (conceptError) {
+			console.error("❌ Failed to insert concepts:", conceptError);
+			throw new InternalServerErrorException("Failed to insert topic concepts");
+		}
+
+		return {
+			id: topicId,
+			name: topic.name,
+			concepts: topic.concepts,
 		};
 	}
 
