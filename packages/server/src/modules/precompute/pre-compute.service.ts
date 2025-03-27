@@ -31,16 +31,17 @@ export class PreComputeService implements OnModuleInit {
 	async processGraphTokens(): Promise<void> {
 		const topics: Topic[] = await this.fetchGraphTokens();
 		for (const topic of topics) {
-			const conceptPairArr: ConceptPair[] = this.generateUniqueConceptPairs(topic.concepts);
-			await this.callPythonServer(conceptPairArr);
+			const conceptPairs: ConceptPair[] = this.generateUniqueConceptPairs(topic.concepts);
+			const conceptPairsResponse: any[] = await this.callPythonServer(conceptPairs);
+			await this.preComputeRepository.storeConceptSimilarities(conceptPairsResponse);
 		}
 	}
 
-	async callPythonServer(conceptPairArr: ConceptPair[]): Promise<any> {
-		console.log("📡 Calling Python server with:", conceptPairArr);
+	async callPythonServer(conceptPairs: ConceptPair[]): Promise<any> {
+		console.log("📡 Calling Python server with:", conceptPairs);
 
 		try {
-			const res = await axios.post("http://localhost:5000/similarity", conceptPairArr, {
+			const res = await axios.post("http://localhost:5000/similarity", conceptPairs, {
 				headers: {
 					"Content-Type": "application/json",
 				},

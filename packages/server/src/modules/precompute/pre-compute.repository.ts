@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { SupabaseService } from "../supabase/supabase.service";
-import { Concept, Topic } from "./pre-compute.types";
+import { Concept, ConceptPair, Topic } from "./pre-compute.types";
 
 @Injectable()
 export class PrecomputeRepository {
@@ -40,6 +40,31 @@ export class PrecomputeRepository {
 			name: topicData.name,
 			concepts: conceptsData as Concept[],
 		};
+	}
+
+	async storeConceptSimilarities(results: any[]): Promise<void> {
+		const rowsToInsert = results.map((item) => {
+			const conceptMinId = Math.min(item.conceptA_id, item.conceptB_id);
+			const conceptMaxId = Math.max(item.conceptA_id, item.conceptB_id);
+
+			return {
+				concept_a_id: conceptMinId,
+				concept_b_id: conceptMaxId,
+				similarity_score: item.similarity,
+			};
+		});
+
+		const { data, error } = await this.supabaseService.client
+			.from("concept_similarity")
+			.upsert(rowsToInsert, {
+				onConflict: "concept_a_id,concept_b_id",
+			});
+
+		if (error) {
+			console.error("❌ Failed to insert into Supabase:", error);
+		} else {
+			console.log("✅ Inserted concept similarities into Supabase:", data);
+		}
 	}
 
 	/**
