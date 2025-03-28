@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: hakk-server
+    env: docker
+    dockerfilePath: ./packages/server/Dockerfile
+    envVars:
+      - key: REDIS_HOST
+        value: redis-service
+      # Add other environment variables here
+
+  - type: web
+    name: redis-service
+    env: docker
+    dockerfilePath: ./packages/redis-service/Dockerfile
+    # Add other configuration...
