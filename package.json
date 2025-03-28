@@ -5,7 +5,6 @@
 	"description": "Monorepo for hakk project with Next.js client and NestJS backend",
 	"license": "UNLICENSED",
 	"scripts": {
-		"start:client": "pnpm --filter packages/client start",
 		"start:server": "pnpm --filter packages/server start",
 		"start:redis_service": "pnpm --filter packages/redis-service start",
 		"start": "concurrently \"pnpm start:server\" \"pnpm start:client\"",
