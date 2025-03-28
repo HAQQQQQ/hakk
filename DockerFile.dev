@@ -1,0 +1,25 @@
+FROM node:20-slim
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Install development tools
+RUN npm install -g nodemon
+
+WORKDIR /app
+
+# We don't copy files here because in development mode,
+# we'll mount the source code as volumes
+
+# Create package directories to ensure they exist
+RUN mkdir -p packages
+
+# Expose ports
+EXPOSE 3000
+EXPOSE 9229
+
+# Set environment for development
+ENV NODE_ENV=development
+
+# The default command - this will likely be overridden in docker-compose
+CMD ["pnpm", "start:dev"]

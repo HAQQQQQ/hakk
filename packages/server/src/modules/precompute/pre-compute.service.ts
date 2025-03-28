@@ -41,6 +41,17 @@ export class PreComputeService implements OnModuleInit {
 		}
 	}
 
+	async createTopic(topic: Topic): Promise<Topic> {
+		const inserted = await this.preComputeRepository.insertTopic(topic);
+
+		if (!inserted) {
+			console.error("❌ Failed to create topic");
+			throw new InternalServerErrorException("Failed to create topic");
+		}
+
+		return inserted;
+	}
+
 	private async fetchAllTopics(): Promise<Topic[]> {
 		const allTopics: Topic[] = [];
 		const batchSize = PreComputeConfig.BATCH_SIZE;
@@ -62,17 +73,6 @@ export class PreComputeService implements OnModuleInit {
 		}
 
 		return allTopics;
-	}
-
-	async createTopic(topic: Topic): Promise<Topic> {
-		const inserted = await this.preComputeRepository.insertTopic(topic);
-
-		if (!inserted) {
-			console.error("❌ Failed to create topic");
-			throw new InternalServerErrorException("Failed to create topic");
-		}
-
-		return inserted;
 	}
 
 	private generateUniqueConceptPairs(concepts: Concept[]): ConceptPair[] {

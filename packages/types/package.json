@@ -1,26 +1,21 @@
 {
 	"name": "@hakk/types",
-	"version": "1.0.7",
+	"version": "1.0.0",
 	"private": false,
 	"publishConfig": {
 		"access": "public"
 	},
-	"description": "",
 	"main": "dist/cjs/index.js",
 	"module": "dist/esm/index.js",
 	"types": "dist/index.d.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "tsc && tsc --project tsconfig.cjs.json",
-		"prepublishOnly": "npm run build"
+		"prepublishOnly": "pnpm run build"
 	},
-	"keywords": [],
 	"files": [
 		"dist"
 	],
-	"author": "",
-	"license": "ISC",
-	"dependencies": {},
 	"devDependencies": {
 		"@types/node": "^20.11.17",
 		"typescript": "^5.3.3"

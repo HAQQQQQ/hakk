@@ -1,0 +1,23 @@
+FROM node:20-slim
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set working directory
+WORKDIR /app
+
+# We'll mount volumes in dev mode, so no need to copy files
+# Dependencies will be mounted from the host machine
+
+# Ensure the needed directories exist
+RUN mkdir -p /app/packages/server
+
+# Install nodemon for development
+RUN npm install -g nodemon
+
+# Expose ports
+EXPOSE ${SERVER_PORT:-3001}
+EXPOSE 9229
+
+# Command will be overridden in docker-compose
+CMD ["pnpm", "--filter", "server", "start:dev"]

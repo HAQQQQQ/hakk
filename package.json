@@ -4,17 +4,15 @@
 	"private": true,
 	"description": "Monorepo for hakk project with Next.js client and NestJS backend",
 	"license": "UNLICENSED",
-	"workspaces": [
-		"packages/*"
-	],
 	"scripts": {
-		"start:client": "npm run start --workspace=packages/client",
-		"start:server": "npm run start --workspace=packages/server",
-		"start:redis_service": "npm run start --workspace=packages/redis-service",
-		"start": "concurrently \"npm run start:server\" \"npm run start:client\"",
-		"build": "npm run build --workspaces",
-		"lint": "npm run lint --workspaces",
-		"test": "npm run test --workspaces",
+		"start:client": "pnpm --filter packages/client start",
+		"start:server": "pnpm --filter packages/server start",
+		"start:redis_service": "pnpm --filter packages/redis-service start",
+		"start": "concurrently \"pnpm start:server\" \"pnpm start:client\"",
+		"build": "pnpm -r build",
+		"clean": "bash scripts/clean.sh",
+		"lint": "pnpm -r lint",
+		"test": "pnpm -r test",
 		"format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
 		"docker:ps": "docker-compose ps",
 		"docker:build": "docker-compose build",
@@ -35,6 +33,10 @@
 		"rimraf": "^6.0.1",
 		"tsx": "^4.19.3"
 	},
+	"dependencies": {
+		"zod": "^3.24.2",
+		"zod-to-json-schema": "^3.24.5"
+	},
 	"lint-staged": {
 		"**/*.{ts,tsx,js,jsx,json,md}": [
 			"prettier --write",
@@ -43,9 +45,5 @@
 	},
 	"engines": {
 		"node": ">=20.0.0"
-	},
-	"dependencies": {
-		"zod": "^3.24.2",
-		"zod-to-json-schema": "^3.24.5"
 	}
 }

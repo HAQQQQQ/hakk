@@ -45,7 +45,7 @@ server {
         # Add detailed logging for API requests
         access_log /var/log/nginx/api_access.log detailed_log;
         
-        proxy_pass http://hakk-server:${SERVER_PORT};
+        proxy_pass http://hakk-server-dev:${SERVER_PORT};
 
         # ✅ Automatically Inject `x-nginx-secure-key` for Requests to API
         proxy_set_header ${NGINX_HEADER_NAME} "${NGINX_SECURE_KEY}";
@@ -70,7 +70,7 @@ server {
         # Add detailed logging for login requests
         access_log /var/log/nginx/login_access.log detailed_log;
         
-        proxy_pass http://hakk-server:${SERVER_PORT};
+        proxy_pass http://hakk-server-dev:${SERVER_PORT};
 
         # ✅ Automatically Inject `x-nginx-secure-key` for Requests to Login Route
         proxy_set_header ${NGINX_HEADER_NAME} "${NGINX_SECURE_KEY}";

@@ -5,7 +5,7 @@ services:
     build:
       context: ./nginx
       dockerfile: Dockerfile
-    container_name: nginx-proxy
+    container_name: nginx-proxy-dev
     ports:
       - "8080:${NGINX_PORT:-8080}"
     volumes:
@@ -25,70 +25,86 @@ services:
       - "host.docker.internal:host-gateway"
     depends_on:
       - server
-    restart: on-failure
 
   server:
     build:
       context: .
-      dockerfile: packages/server/Dockerfile
-    container_name: hakk-server
-    hostname: hakk-server
+      dockerfile: packages/server/Dockerfile.dev
+    container_name: hakk-server-dev
+    hostname: hakk-server-dev
     ports:
       - "3001:${SERVER_PORT:-3001}"
-    # No volume mounts in production - use built files
+      - "9229:9229" # For debugging
+    volumes:
+      # Mount source for live reloading in development
+      - ./packages/server:/app/packages/server
+      - ./node_modules:/app/node_modules
+      - ./package.json:/app/package.json
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
+      - ./pnpm-workspace.yaml:/app/pnpm-workspace.yaml
     env_file:
       - ./.env
     environment:
       - NGINX_HEADER_NAME=${NGINX_HEADER_NAME}
       - NGINX_SECURE_KEY=${NGINX_SECURE_KEY}
       - REDIS_SERVICE_PORT=${REDIS_SERVICE_PORT:-3002}
-      - REDIS_SERVICE_HOST=hakk-redis-service
+      - REDIS_SERVICE_HOST=hakk-redis-service-dev
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - SUPABASE_URL=${SUPABASE_URL}
       - SUPABASE_KEY=${SUPABASE_KEY}
-      - NODE_ENV=production
+      - NODE_ENV=development
     networks:
       - app-network
     depends_on:
       - redis-service
-    restart: on-failure
+    # Use development start command with nodemon for auto-restart
+    command: pnpm --filter server start:dev
 
   redis-service:
     build:
       context: .
-      dockerfile: packages/redis-service/Dockerfile
-    container_name: hakk-redis-service
-    hostname: hakk-redis-service
+      dockerfile: packages/redis-service/Dockerfile.dev
+    container_name: hakk-redis-service-dev
+    hostname: hakk-redis-service-dev
     ports:
       - "3002:${REDIS_SERVICE_PORT:-3002}"
-    # No volume mounts in production - use built files
+      - "9230:9229" # For debugging
+    volumes:
+      # Mount source for live reloading in development
+      - ./packages/redis-service:/app/packages/redis-service
+      - ./node_modules:/app/node_modules
+      - ./package.json:/app/package.json
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
+      - ./pnpm-workspace.yaml:/app/pnpm-workspace.yaml
     env_file:
       - ./.env
     environment:
-      - REDIS_HOST=hakk-redis
+      - REDIS_HOST=hakk-redis-dev
       - REDIS_PORT=${REDIS_PORT:-6379}
-      - NODE_ENV=production
+      - NODE_ENV=development
     networks:
       - app-network
     depends_on:
       - redis
-    restart: on-failure
+    # Use development start command with nodemon for auto-restart
+    command: pnpm --filter redis-service start:dev
 
   redis:
     image: redis:alpine
-    container_name: hakk-redis
-    hostname: hakk-redis
+    container_name: hakk-redis-dev
+    hostname: hakk-redis-dev
     ports:
       - "6379:${REDIS_PORT:-6379}"
     volumes:
-      - redis-data:/data
+      - redis-data-dev:/data
     networks:
       - app-network
-    restart: on-failure
 
 networks:
   app-network:
     driver: bridge
+    name: hakk_app-network-dev
 
 volumes:
-  redis-data:
+  redis-data-dev:
+    name: hakk-redis-data-dev
