@@ -8,6 +8,7 @@ export type Error = {
 	message: string;
 	details?: string;
 };
+
 export interface IBaseResponse<T = null> {
 	status: ResponseStatus;
 	data?: T; // Present only in success responses
@@ -22,4 +23,8 @@ export interface IBaseResponse<T = null> {
 		path: string;
 		method: string | undefined;
 	};
+}
+
+export interface IDTOConvertible<T> {
+	toDTO(): T;
 }

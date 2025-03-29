@@ -2,6 +2,8 @@ import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class MatchingService {
+	constructor() {}
+
 	/*
         Step1 - compute graph for all graph types
 
