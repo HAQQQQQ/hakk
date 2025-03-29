@@ -4,6 +4,7 @@ import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { ResponseInterceptor } from "./common/interceptors/response.interceptor";
 import { AppConfig } from "./config/app.config";
 import { EnvConfig } from "./config/env.config";
+import { ValidationPipe } from "@nestjs/common";
 
 // Validate critical environment variables before starting the app
 AppConfig.validate();
@@ -21,15 +22,21 @@ async function bootstrap() {
 	});
 
 	// Apply global interceptors and filters
-	const configureGlobalMiddleware = () => {
-		app.useGlobalInterceptors(new ResponseInterceptor());
-		app.useGlobalFilters(new HttpExceptionFilter());
-	};
+	app.useGlobalInterceptors(new ResponseInterceptor());
+	app.useGlobalFilters(new HttpExceptionFilter());
 
-	configureGlobalMiddleware();
+	// Apply global validation pipe with transformation options
+	app.useGlobalPipes(
+		new ValidationPipe({
+			whitelist: true, // Remove properties that are not defined in the DTO
+			forbidNonWhitelisted: true, // Throw error if unknown properties are present
+			transform: true, // Automatically transform payloads to DTO instances
+			transformOptions: { enableImplicitConversion: true },
+		}),
+	);
 
 	if (EnvConfig.useNginx) {
-		await app.listen(port, "0.0.0.0"); // "127.0.0.1");
+		await app.listen(port, "0.0.0.0");
 	} else {
 		console.log("[NGINX] Reverse Proxy disabled by configuration.");
 		await app.listen(port);

@@ -3,7 +3,6 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { ProfileModule } from "./modules/profile/profile.module";
 import { OpenAIModule } from "./modules/openai/openai.module";
-import { UsersController } from "./modules/users/users.controller";
 import { SupabaseService } from "./modules/supabase/supabase.service";
 import { TestModule } from "../test/test.module";
 import { InterestsModule } from "./modules/interests/interests.module";
@@ -12,8 +11,8 @@ import { RedisClientModule } from "./modules/redis-client/redis-client.module";
 import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
 import { EnvConfig } from "./config/env.config";
 import { PreComputeModule } from "./modules/precompute/pre-compute.module";
-import { MatchingService } from "./modules/matching/matching.service";
 import { MatchingModule } from "./modules/matching/matching.module";
+import { UsersModule } from "./modules/users/users.module";
 
 @Module({
 	imports: [
@@ -25,6 +24,7 @@ import { MatchingModule } from "./modules/matching/matching.module";
 		RedisClientModule,
 		PreComputeModule,
 		MatchingModule,
+		UsersModule,
 
 		// **** Tech Debt: Maybe use NesJs ConfigModule to fetch env stuff ****
 		// ConfigModule.forRoot({
@@ -38,8 +38,8 @@ import { MatchingModule } from "./modules/matching/matching.module";
 		//     isGlobal: true,
 		// }),
 	],
-	controllers: [AppController, UsersController],
-	providers: [AppService, SupabaseService, MatchingService],
+	controllers: [AppController],
+	providers: [AppService, SupabaseService],
 	exports: [SupabaseService],
 })
 export class AppModule implements NestModule {
