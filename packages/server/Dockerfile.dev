@@ -16,8 +16,8 @@ RUN mkdir -p /app/packages/server
 RUN npm install -g nodemon
 
 # Expose ports
-EXPOSE ${SERVER_PORT:-3001}
-EXPOSE 9229
+# EXPOSE ${SERVER_PORT:-3001}
+# EXPOSE 9229
 
 # Command will be overridden in docker-compose
 CMD ["pnpm", "--filter", "server", "start:dev"]
