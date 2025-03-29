@@ -32,4 +32,20 @@ export class InterestsRepository {
 
 		return data;
 	}
+
+	async getInterestsByUserId(userId: string): Promise<any> {
+		console.log("In InterestsRepository.getInterestsByUserId");
+		const { data, error } = await this.supabaseService.client
+			.from(this.PREFERENCES_TABLE)
+			.select("interests")
+			.eq("user_id", userId)
+			.single();
+
+		if (error) {
+			console.error("Error in getInterestsByUserId:", error);
+			return error;
+		}
+
+		return data;
+	}
 }

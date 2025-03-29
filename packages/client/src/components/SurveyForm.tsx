@@ -9,13 +9,15 @@ import {
 	Text,
 	VStack,
 	useBreakpointValue,
+	CardBody,
 } from "@chakra-ui/react";
 import "react-toastify/dist/ReactToastify.css";
 import { useState } from "react";
 import { useColorModeValue } from "./ui/color-mode";
 import { toast } from "react-toastify";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useUser } from "@clerk/nextjs";
+import { Card, CardHeader, Divider } from "@mui/material";
 
 const categories = ["movies", "artists", "hobbies"] as const;
 
@@ -73,6 +75,26 @@ export default function SurveyForm() {
 
 		return response.json();
 	};
+
+	const { data, status } = useQuery({
+		queryKey: ["interests", user?.id],
+		queryFn: async () => {
+			const response = await fetch(`${apiUrl}/api/interests/user/${user?.id}`, {
+				method: "GET",
+				headers: { "Content-Type": "application/json" },
+			});
+
+			if (!response.ok) {
+				const errorText = await response.text();
+				throw new Error(errorText || "Failed to fetch preferences.");
+			}
+
+			return response.json();
+		},
+		enabled: !!user?.id,
+	});
+
+	const interests = data?.data;
 
 	const { mutate } = useMutation({
 		mutationFn: savePreferences,
@@ -194,6 +216,50 @@ export default function SurveyForm() {
 					✅ Submit Preferences TEST
 				</Button>
 			</VStack>
+
+			{interests && (
+				<h1> {interests.data.interests.music.mood}</h1>
+				// <Card mt={10} boxShadow="lg" borderRadius="xl" bg="white">
+				// 	<CardHeader>
+				// 		<Heading size="lg" color="teal.600">
+				// 			🎯 Your Interest Profile
+				// 		</Heading>
+				// 	</CardHeader>
+				//
+				// 	<Divider />
+				//
+				// 	<CardBody>
+				// 		{/* MUSIC */}
+				// 		<Box mb={6}>
+				// 			<Heading size="md" mb={2} color="teal.500">
+				// 				🎵 Music
+				// 			</Heading>
+				// 			<Text><strong>Mood:</strong> {interests.music.mood}</Text>
+				// 			<Text><strong>Genres:</strong> {interests.music.genres.join(", ")}</Text>
+				// 		</Box>
+				//
+				// 		{/* MOVIES */}
+				// 		<Box mb={6}>
+				// 			<Heading size="md" mb={2} color="teal.500">
+				// 				🎬 Movies
+				// 			</Heading>
+				// 			<Text><strong>Genres:</strong> {interests.movies.genres.join(", ")}</Text>
+				// 			<Text><strong>Time Periods:</strong> {interests.movies.time_periods.join(", ")}</Text>
+				// 			<Text><strong>Cultural Context:</strong> {interests.movies.cultural_context.join(", ")}</Text>
+				// 		</Box>
+				//
+				// 		{/* HOBBIES */}
+				// 		<Box>
+				// 			<Heading size="md" mb={2} color="teal.500">
+				// 				⛰️ Hobbies
+				// 			</Heading>
+				// 			<Text><strong>Lifestyle:</strong> {interests.hobbies.lifestyle}</Text>
+				// 			<Text><strong>Personality:</strong> {interests.hobbies.personality}</Text>
+				// 			<Text><strong>Activities:</strong> {interests.hobbies.related_activities.join(", ")}</Text>
+				// 		</Box>
+				// 	</CardBody>
+				// </Card>
+			)}
 		</Container>
 	);
 }

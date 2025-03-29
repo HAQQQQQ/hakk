@@ -60,6 +60,18 @@ export class InterestsService {
 		);
 	}
 
+	// New function: Retrieve interests for a given user by leveraging the repository function
+	async getInterestsForUser(userId: string) {
+		// First, verify user exists
+		const userExists = await this.profileService.validateUser(userId);
+		if (!userExists) {
+			throw new NotFoundException(`User with userId ${userId} not found`);
+		}
+
+		// Retrieve the interests from the repository
+		return this.interestsRepository.getInterestsByUserId(userId);
+	}
+
 	private getDefaultAnalysis(): InterestAnalysis {
 		return {
 			music: { genres: [], mood: "Not available" },
