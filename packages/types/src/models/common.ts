@@ -3,3 +3,7 @@ export type Preference = {
 	movie: string[];
 	hobby: string[];
 };
+
+export type Events = {
+	name: string;
+};

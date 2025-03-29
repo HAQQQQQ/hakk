@@ -23,7 +23,7 @@
 		"postinstall": "[ -z \"$DOCKER\" ] && git config core.hooksPath .githooks || echo 'Skipping git hooks in Docker'"
 	},
 	"dependencies": {
-		"@hakk/types": "1.0.7",
+		"@hakk/types": "1.0.8",
 		"@nestjs/common": "^11.0.1",
 		"@nestjs/config": "^4.0.1",
 		"@nestjs/core": "^11.0.1",
@@ -32,7 +32,6 @@
 		"axios": "^1.8.4",
 		"cors": "^2.8.5",
 		"dotenv": "^16.4.7",
-		"express-list-routes": "^1.2.4",
 		"openai": "^4.89.0",
 		"reflect-metadata": "^0.2.2",
 		"rxjs": "^7.8.1",

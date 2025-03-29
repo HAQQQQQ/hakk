@@ -1,4 +1,5 @@
 ---In order to publish this package to the npm registry---
-cd ./hakk/packages/types 
-update types package.json version 
-npm publish
+1) cd ./hakk/packages/types 
+2) update types package.json version 
+3) npm publish
+4) Update server package.json so that @hakk/types points to most recent version

@@ -31,6 +31,7 @@ async function bootstrap() {
 	if (EnvConfig.useNginx) {
 		await app.listen(port, "0.0.0.0"); // "127.0.0.1");
 	} else {
+		console.log("[NGINX] Reverse Proxy disabled by configuration.");
 		await app.listen(port);
 	}
 }
