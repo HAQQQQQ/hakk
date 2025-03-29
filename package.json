@@ -13,6 +13,7 @@
 		"start:redis_service": "npm run start --workspace=packages/redis-service",
 		"start": "concurrently \"npm run start:server\" \"npm run start:client\"",
 		"build": "npm run build --workspaces",
+		"build:backend": "npm run build -w @hakk/types && npm run build -w @hakk/redis-service && npm run build -w @hakk/server",
 		"lint": "npm run lint --workspaces",
 		"test": "npm run test --workspaces",
 		"format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
@@ -25,8 +26,7 @@
 		"docker:prune": "docker system prune -f",
 		"docker:clean": "docker-compose down && docker system prune -af && docker volume prune -f",
 		"supabase:start": "npx supabase start",
-		"supabase:stop": "npx supabase stop",
-		"export-schemas": "tsx packages/server/scripts/export-schemas.ts"
+		"supabase:stop": "npx supabase stop"
 	},
 	"devDependencies": {
 		"concurrently": "^8.2.0",
