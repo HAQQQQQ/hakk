@@ -1,4 +1,5 @@
 import {
+	AgeRange,
 	Distance,
 	DistanceUnit,
 	Education,
@@ -32,6 +33,7 @@ export interface UserAdditionalDetailsBase {
 	lookingFor: RelationshipGoal;
 	interestedIn: Gender[];
 	photos: Photo[];
+	ageRange: AgeRange;
 
 	// Optional fields
 	location?: string;

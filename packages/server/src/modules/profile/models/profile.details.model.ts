@@ -1,4 +1,5 @@
 import {
+	AgeRange,
 	Distance,
 	Education,
 	FrequencyHabit,
@@ -20,6 +21,7 @@ export class AdditionalDetails implements IDTOConvertible<UserAdditionalDetailsD
 	readonly lookingFor: RelationshipGoal;
 	readonly interestedIn: Gender[];
 	readonly photos: Photo[];
+	readonly ageRange: AgeRange;
 
 	// Optional fields
 	readonly location?: string;
@@ -42,12 +44,12 @@ export class AdditionalDetails implements IDTOConvertible<UserAdditionalDetailsD
 		lookingFor: RelationshipGoal,
 		interestedIn: Gender[],
 		photos: Photo[],
+		ageRange: AgeRange,
 		location?: string,
 		height?: Height,
 		occupation?: string,
 		hasChildren?: boolean,
 		wantsChildren?: boolean,
-		// interests?: string[],
 		educationLevel?: Education,
 		drinkingHabit?: FrequencyHabit,
 		smokingHabit?: FrequencyHabit,
@@ -61,12 +63,12 @@ export class AdditionalDetails implements IDTOConvertible<UserAdditionalDetailsD
 		this.lookingFor = lookingFor;
 		this.interestedIn = interestedIn;
 		this.photos = photos;
+		this.ageRange = ageRange;
 		this.location = location;
 		this.height = height;
 		this.occupation = occupation;
 		this.hasChildren = hasChildren;
 		this.wantsChildren = wantsChildren;
-		// this.interests = interests;
 		this.educationLevel = educationLevel;
 		this.drinkingHabit = drinkingHabit;
 		this.smokingHabit = smokingHabit;
@@ -83,6 +85,7 @@ export class AdditionalDetails implements IDTOConvertible<UserAdditionalDetailsD
 			lookingFor: this.lookingFor,
 			interestedIn: this.interestedIn,
 			photos: this.photos,
+			ageRange: this.ageRange,
 			location: this.location,
 			height: this.height,
 			occupation: this.occupation,

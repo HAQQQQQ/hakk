@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import {
+	AgeRange,
 	Distance,
 	DistanceUnit,
 	Gender,
@@ -49,6 +50,7 @@ export class ProfileMapperService {
 			data.profile_details.looking_for as RelationshipGoal,
 			data.profile_details.interested_in,
 			this.createPhotos(data),
+			this.createAgeRange(data),
 			data.profile_details.location,
 			this.getHeight(data),
 			data.profile_details.occupation,
@@ -90,5 +92,14 @@ export class ProfileMapperService {
 			isPrimary: photo.is_primary,
 			isVerified: photo.is_verified,
 		}));
+	}
+
+	private createAgeRange(data: any): AgeRange {
+		const ageRange = data.profile_details.age_range;
+
+		return {
+			min: ageRange[0],
+			max: ageRange[1],
+		};
 	}
 }

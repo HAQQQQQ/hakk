@@ -103,3 +103,8 @@ export type Photo = {
 	createdAt?: Date;
 	updatedAt?: Date;
 };
+
+export type AgeRange = {
+	min: number;
+	max: number;
+};
