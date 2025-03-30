@@ -1,8 +1,7 @@
-import { IDTOConvertible, UserType } from "@hakk/types";
-import { UserDto, Gender } from "@hakk/types";
+import { IDTOConvertible, UserInfoDto, UserType } from "@hakk/types";
+import { Gender } from "@hakk/types";
 
-export class User implements IDTOConvertible<UserDto> {
-	readonly userId: string;
+export class UserInfo implements IDTOConvertible<UserInfoDto> {
 	readonly firstName: string;
 	readonly lastName: string;
 	readonly middleName?: string;
@@ -16,7 +15,6 @@ export class User implements IDTOConvertible<UserDto> {
 	readonly updatedAt: Date;
 
 	constructor(
-		userId: string,
 		firstName: string,
 		lastName: string,
 		email: string,
@@ -37,15 +35,13 @@ export class User implements IDTOConvertible<UserDto> {
 		this.userType = userType;
 		this.phoneNumber = phoneNumber;
 		this.gender = gender;
-		this.userId = userId;
 		this.avatarUrl = avatarUrl;
 		this.createdAt = createdAt ?? new Date();
 		this.updatedAt = updatedAt ?? new Date();
 	}
 
-	toDTO(): UserDto {
+	toDTO(): UserInfoDto {
 		return {
-			userId: this.userId,
 			firstName: this.firstName,
 			lastName: this.lastName,
 			fullName: this.getFullName(),

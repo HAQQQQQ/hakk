@@ -1,0 +1,4 @@
+
+-Want to create custom DTO's so that we can validate request at run time.
+-We can then use Swagger API to generate our interfaces (in the types folder) on the fly. The Swagger will use the DTO's to generate the interfaces
+

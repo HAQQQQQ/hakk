@@ -12,7 +12,6 @@ import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
 import { EnvConfig } from "./config/env.config";
 import { PreComputeModule } from "./modules/precompute/pre-compute.module";
 import { MatchingModule } from "./modules/matching/matching.module";
-import { UsersModule } from "./modules/users/users.module";
 
 @Module({
 	imports: [
@@ -24,7 +23,6 @@ import { UsersModule } from "./modules/users/users.module";
 		RedisClientModule,
 		PreComputeModule,
 		MatchingModule,
-		UsersModule,
 
 		// **** Tech Debt: Maybe use NesJs ConfigModule to fetch env stuff ****
 		// ConfigModule.forRoot({

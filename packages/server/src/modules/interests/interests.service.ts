@@ -5,7 +5,7 @@ import { OpenAIResponse, OpenAIResponseStatus } from "../openai/openai.types";
 import { generateInterestsPrompt } from "@/prompts/generate-interests.prompt";
 import { InterestAnalysis, interestAnalysisSchema } from "./interests.types";
 import { InterestsRepository } from "./interests.repository";
-import { ProfileService } from "../profile/profile.service";
+import { ProfileService } from "../profile/services/profile.service";
 
 @Injectable()
 export class InterestsService {

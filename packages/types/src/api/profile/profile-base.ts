@@ -1,39 +1,41 @@
 import {
+	Distance,
+	DistanceUnit,
 	Education,
 	FrequencyHabit,
 	Gender,
+	Height,
+	Photo,
 	RelationshipGoal,
 	RelationshipStatus,
 	Religion,
 	UserType,
-} from "../../models";
+} from "../../common";
 
-export interface CreateUserRequest {
-	userId: string;
+export interface UserInfoBase {
 	firstName: string;
 	lastName: string;
 	middleName?: string;
 	email: string;
-	dateOfBirth: string;
 	phoneNumber?: string;
-	gender: Gender;
 	avatarUrl?: string;
 	userType: UserType;
+	dateOfBirth: string;
+	gender: Gender;
 }
 
-export interface CreateUserProfileRequest {
+export interface UserAdditionalDetailsBase {
 	// Required fields
-	userId: string;
 	displayName: string;
 	aboutMe: string;
 	relationshipStatus: RelationshipStatus;
 	lookingFor: RelationshipGoal;
 	interestedIn: Gender[];
-	photos: string[];
+	photos: Photo[];
 
 	// Optional fields
 	location?: string;
-	height?: number;
+	height?: Height;
 	occupation?: string;
 	hasChildren?: boolean;
 	wantsChildren?: boolean;
@@ -43,5 +45,5 @@ export interface CreateUserProfileRequest {
 	smokingHabit?: FrequencyHabit;
 	religion?: Religion;
 	languages?: string;
-	maxDistance?: number;
+	maxDistance?: Distance;
 }
