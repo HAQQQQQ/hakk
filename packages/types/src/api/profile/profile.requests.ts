@@ -1,4 +1,3 @@
-import { Photo } from "../../common";
 import { UserAdditionalDetailsBase, UserInfoBase, UserPreferencesBase } from "./profile-base";
 
 export type CreateUserInfoRequest = UserInfoBase;
