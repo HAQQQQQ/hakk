@@ -1,11 +1,11 @@
 import {
 	AgeRange,
 	Distance,
-	DistanceUnit,
 	Education,
 	FrequencyHabit,
 	Gender,
 	Height,
+	PartnerChildrenPreference,
 	Photo,
 	RelationshipGoal,
 	RelationshipStatus,
@@ -27,25 +27,46 @@ export interface UserInfoBase {
 
 export interface UserAdditionalDetailsBase {
 	// Required fields
-	displayName: string;
-	aboutMe: string;
-	relationshipStatus: RelationshipStatus;
-	lookingFor: RelationshipGoal;
-	interestedIn: Gender[];
+	displayName: string; // maps to display_name, required
+	aboutMe: string; // maps to about_me
 	photos: Photo[];
-	ageRange: AgeRange;
 
 	// Optional fields
-	location?: string;
-	height?: Height;
+	relationshipStatus?: RelationshipStatus;
 	occupation?: string;
+	educationLevel?: Education;
+	languages?: string[];
+	religion?: Religion;
 	hasChildren?: boolean;
 	wantsChildren?: boolean;
-	interests?: string[];
-	educationLevel?: Education;
 	drinkingHabit?: FrequencyHabit;
 	smokingHabit?: FrequencyHabit;
-	religion?: Religion;
-	languages?: string;
+	height?: Height;
+	location?: string;
+}
+
+export interface UserPreferencesBase {
+	preferredAgeRange: AgeRange;
+	preferredGenders: Gender[];
+
+	// Relationship Preferences
+	desiredRelationshipTypes: RelationshipGoal[];
+
+	// Lifestyle Preferences
+	preferredEducationLevels?: Education[];
+	preferredOccupations?: string[];
+
+	// Family Preferences
+	partnerHasChildrenPreference?: PartnerChildrenPreference;
+
+	// Habits Preferences
+	drinkingHabitPreference?: FrequencyHabit;
+	smokingHabitPreference?: FrequencyHabit;
+
 	maxDistance?: Distance;
+	preferredLocations?: string[];
+
+	// Additional Preferences
+	preferredLanguages?: string[];
+	preferredReligions?: Religion[];
 }

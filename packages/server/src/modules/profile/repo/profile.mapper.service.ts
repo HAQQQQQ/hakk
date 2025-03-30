@@ -3,11 +3,11 @@ import {
 	AgeRange,
 	Distance,
 	DistanceUnit,
+	FrequencyHabit,
 	Gender,
 	Height,
 	MeasurementUnit,
 	Photo,
-	RelationshipGoal,
 	RelationshipStatus,
 	Religion,
 	UserType,
@@ -15,6 +15,7 @@ import {
 import { UserProfile } from "../models/profile.userprofile.model";
 import { UserInfo } from "../models/profile.userinfo.model";
 import { AdditionalDetails } from "../models/profile.details.model";
+import { UserPreferences } from "../models/profile.preferences.model";
 
 @Injectable()
 export class ProfileMapperService {
@@ -23,6 +24,7 @@ export class ProfileMapperService {
 			userId,
 			this.createUserInfo(data),
 			this.createAdditionalDetails(data),
+			this.createUserPreferences(data),
 		);
 	}
 
@@ -43,63 +45,74 @@ export class ProfileMapperService {
 	}
 
 	private createAdditionalDetails(data: any): AdditionalDetails {
+		const createPhotos = (data: any): Photo[] => {
+			return (data.profile_details.profile_photos || []).map((photo) => ({
+				id: photo.id.toString(),
+				url: photo.url,
+				isPrimary: photo.is_primary,
+				isVerified: photo.is_verified,
+			}));
+		};
+
+		const getHeight = (data: any): Height | undefined => {
+			if (data.profile_details.height_value && data.profile_details.height_unit) {
+				return {
+					height: data.profile_details.height_value,
+					unitOfMeasure: data.profile_details.height_unit as MeasurementUnit,
+				};
+			}
+			return undefined;
+		};
+
 		return new AdditionalDetails(
 			data.profile_details.display_name,
 			data.profile_details.about_me,
+			createPhotos(data),
 			data.profile_details.relationship_status as RelationshipStatus,
-			data.profile_details.looking_for as RelationshipGoal,
-			data.profile_details.interested_in,
-			this.createPhotos(data),
-			this.createAgeRange(data),
-			data.profile_details.location,
-			this.getHeight(data),
 			data.profile_details.occupation,
+			data.profile_details.education_level,
+			data.profile_details.languages,
+			data.profile_details.religion as Religion,
 			data.profile_details.has_children,
 			data.profile_details.wants_children,
-			data.profile_details.education_level,
-			data.profile_details.drinking_habit,
-			data.profile_details.smoking_habit,
-			data.profile_details.religion as Religion,
-			data.profile_details.languages,
-			this.getDistance(data),
+			data.profile_details.drinking_habit as FrequencyHabit,
+			data.profile_details.smoking_habit as FrequencyHabit,
+			getHeight(data),
+			data.profile_details.location,
 		);
 	}
 
-	private getHeight(data: any): Height | undefined {
-		if (data.profile_details.height_value && data.profile_details.height_unit) {
+	private createUserPreferences(data: any): UserPreferences {
+		const createAgeRange = (data: any): AgeRange => {
 			return {
-				height: data.profile_details.height_value,
-				unitOfMeasure: data.profile_details.height_unit as MeasurementUnit,
+				min: data.profile_details.preferred_min_age,
+				max: data.profile_details.preferred_max_age,
 			};
-		}
-		return undefined;
-	}
-
-	private getDistance(data: any): Distance | undefined {
-		if (data.profile_details.max_distance_value && data.profile_details.max_distance_unit) {
-			return {
-				value: data.profile_details.max_distance_value,
-				unit: data.profile_details.max_distance_unit as DistanceUnit,
-			};
-		}
-		return undefined;
-	}
-
-	private createPhotos(data: any): Photo[] {
-		return (data.profile_photos || []).map((photo) => ({
-			id: photo.id.toString(),
-			url: photo.url,
-			isPrimary: photo.is_primary,
-			isVerified: photo.is_verified,
-		}));
-	}
-
-	private createAgeRange(data: any): AgeRange {
-		const ageRange = data.profile_details.age_range;
-
-		return {
-			min: ageRange[0],
-			max: ageRange[1],
 		};
+
+		const getMaxDistance = (data: any): Distance | undefined => {
+			if (data.profile_details.max_distance_value && data.profile_details.max_distance_unit) {
+				return {
+					value: data.profile_details.max_distance_value,
+					unit: data.profile_details.max_distance_unit as DistanceUnit,
+				};
+			}
+			return undefined;
+		};
+
+		return new UserPreferences(
+			createAgeRange(data), // preferredAgeRange: AgeRange
+			data.user_preferences.preferred_genders, // preferredGenders: Gender[]
+			data.user_preferences.desired_relationship_types, // desiredRelationshipTypes: RelationshipGoal[]
+			data.user_preferences.preferred_education_levels, // preferredEducationLevels?: Education[]
+			data.user_preferences.preferred_occupations, // preferredOccupations?: string[]
+			data.user_preferences.partner_has_children_preference, // partnerHasChildrenPreference?: PartnerChildrenPreference
+			data.user_preferences.drinking_habit_preference, // drinkingHabitPreference?: FrequencyHabit
+			data.user_preferences.smoking_habit_preference, // smokingHabitPreference?: FrequencyHabit
+			getMaxDistance(data), // maxDistance?: Distance
+			data.user_preferences.preferred_locations, // preferredLocations?: string[]
+			data.user_preferences.preferred_languages, // preferredLanguages?: string[]
+			data.user_preferences.preferred_religions, // preferredReligions?: Religion[]
+		);
 	}
 }

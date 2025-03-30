@@ -84,6 +84,14 @@ export enum DistanceUnit {
 	FEET = "ft",
 }
 
+export enum PartnerChildrenPreference {
+	NO_PREFERENCE = "no-preference",
+	YES = "yes",
+	NO = "no",
+	OPEN = "open",
+	UNSURE = "unsure",
+}
+
 export type Distance = {
 	unit: DistanceUnit;
 	value: number;

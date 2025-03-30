@@ -8,6 +8,7 @@ import { CreateUserProfileRequest, Gender } from "@hakk/types";
 @Injectable()
 export class ProfileRepository {
 	private readonly PROFILES_TABLE: string = "profiles";
+	private readonly PROFILE_DETAILS_TABLE: string = "profile_details";
 
 	constructor(
 		private readonly supabaseService: SupabaseService,
@@ -30,13 +31,16 @@ export class ProfileRepository {
 
 			// Perform a single query with joins
 			const { data, error } = await this.supabaseService.client
-				.from(`${this.PROFILES_TABLE}`)
+				.from(this.PROFILES_TABLE)
 				.select(
 					`
-                *,
-                profile_details(*),
-                profile_photos(*)
-            `,
+                        *,
+                        profile_details(
+                        *,
+                        profile_photos(*)
+                        ),
+                        user_preferences(*)
+                    `,
 				)
 				.eq("user_id", userId)
 				.single();
@@ -63,7 +67,7 @@ export class ProfileRepository {
 
 	async createUserProfile(createUserDto: CreateUserProfileRequest): Promise<UserProfile> {
 		try {
-			// Start a transaction
+			// 1. Create base profile
 			const { data: profileData, error: profileError } = await this.supabaseService.client
 				.from(this.PROFILES_TABLE)
 				.insert({
@@ -84,17 +88,8 @@ export class ProfileRepository {
 				throw new Error(`Failed to create profile: ${profileError?.message}`);
 			}
 
-			// Only create profile details if additional details are provided
+			// 2. Optionally create profile details
 			if (createUserDto.additionalDetails) {
-				console.log("arr0:", createUserDto.additionalDetails.interestedIn);
-				console.log(
-					"arr:",
-					createUserDto.additionalDetails.interestedIn
-						?.map((gender) => gender.toLowerCase())
-						.filter((gender) => Object.values(Gender).includes(gender as Gender))
-						.join(","),
-				);
-
 				const { data: detailsData, error: detailsError } = await this.supabaseService.client
 					.from("profile_details")
 					.insert({
@@ -102,8 +97,6 @@ export class ProfileRepository {
 						display_name: createUserDto.additionalDetails.displayName,
 						about_me: createUserDto.additionalDetails.aboutMe,
 						relationship_status: createUserDto.additionalDetails.relationshipStatus,
-						looking_for: createUserDto.additionalDetails.lookingFor,
-						interested_in: createUserDto.additionalDetails.interestedIn,
 						location: createUserDto.additionalDetails.location,
 						occupation: createUserDto.additionalDetails.occupation,
 						has_children: createUserDto.additionalDetails.hasChildren,
@@ -115,14 +108,12 @@ export class ProfileRepository {
 						languages: createUserDto.additionalDetails.languages,
 						height_value: createUserDto.additionalDetails.height?.height,
 						height_unit: createUserDto.additionalDetails.height?.unitOfMeasure,
-						max_distance_value: createUserDto.additionalDetails.maxDistance?.value,
-						max_distance_unit: createUserDto.additionalDetails.maxDistance?.unit,
 					})
 					.select()
 					.single();
 
 				if (detailsError || !detailsData) {
-					// Rollback profile creation if details insertion fails
+					// Roll back the base profile if profile details fail
 					await this.supabaseService.client
 						.from(this.PROFILES_TABLE)
 						.delete()
@@ -131,13 +122,69 @@ export class ProfileRepository {
 					throw new Error(`Failed to create profile details: ${detailsError?.message}`);
 				}
 
-				// Create profile photos if provided
+				// 3. Optionally create user preferences
+				if (createUserDto.userPreferences) {
+					const { data: preferencesData, error: preferencesError } =
+						await this.supabaseService.client
+							.from("user_preferences")
+							.insert({
+								// The foreign key to profile_details is profile_id
+								profile_id: detailsData.profile_id, // or simply use profileData.id
+
+								preferred_min_age:
+									createUserDto.userPreferences.preferredAgeRange.min,
+								preferred_max_age:
+									createUserDto.userPreferences.preferredAgeRange.max,
+								preferred_genders: createUserDto.userPreferences.preferredGenders,
+
+								desired_relationship_types:
+									createUserDto.userPreferences.desiredRelationshipTypes,
+								preferred_education_levels:
+									createUserDto.userPreferences.preferredEducationLevels,
+								preferred_occupations:
+									createUserDto.userPreferences.preferredOccupations,
+
+								partner_has_children_preference:
+									createUserDto.userPreferences.partnerHasChildrenPreference,
+
+								drinking_habit_preference:
+									createUserDto.userPreferences.drinkingHabitPreference,
+								smoking_habit_preference:
+									createUserDto.userPreferences.smokingHabitPreference,
+
+								max_distance: createUserDto.userPreferences.maxDistance?.value,
+								max_distance_unit: createUserDto.userPreferences.maxDistance?.unit,
+								preferred_locations:
+									createUserDto.userPreferences.preferredLocations,
+
+								preferred_languages:
+									createUserDto.userPreferences.preferredLanguages,
+								preferred_religions:
+									createUserDto.userPreferences.preferredReligions,
+							})
+							.select()
+							.single();
+
+					if (preferencesError || !preferencesData) {
+						// Roll back the entire profile if user preferences fail
+						await this.supabaseService.client
+							.from(this.PROFILES_TABLE)
+							.delete()
+							.eq("id", profileData.id);
+
+						throw new Error(
+							`Failed to create user preferences: ${preferencesError?.message}`,
+						);
+					}
+				}
+
+				// 4. Optionally create profile photos
 				if (
 					createUserDto.additionalDetails.photos &&
 					createUserDto.additionalDetails.photos.length > 0
 				) {
 					const photoInserts = createUserDto.additionalDetails.photos.map((photo) => ({
-						profile_id: profileData.id,
+						profile_details_id: detailsData.id,
 						url: photo.url,
 						is_primary: photo.isPrimary || false,
 						is_verified: photo.isVerified || false,
@@ -148,21 +195,20 @@ export class ProfileRepository {
 						.insert(photoInserts);
 
 					if (photosError) {
-						// Rollback previous insertions
+						// Roll back everything if photos fail
 						await this.supabaseService.client
-							.from(this.PROFILES_TABLE)
+							.from(this.PROFILE_DETAILS_TABLE)
 							.delete()
-							.eq("id", profileData.id);
+							.eq("id", detailsData.id);
 
 						throw new Error(`Failed to create profile photos: ${photosError.message}`);
 					}
 				}
 			}
 
-			// Use existing method to fetch and return the full user profile
+			// 5. Finally, return the complete user profile
 			return await this.fetchUserProfileByUserId(createUserDto.userId);
 		} catch (error) {
-			// Handle any unexpected errors
 			throw new Error(`Profile creation failed: ${error.message}`);
 		}
 	}

@@ -2,17 +2,17 @@ import { IDTOConvertible, UserInfoDto, UserType } from "@hakk/types";
 import { Gender } from "@hakk/types";
 
 export class UserInfo implements IDTOConvertible<UserInfoDto> {
-	readonly firstName: string;
-	readonly lastName: string;
-	readonly middleName?: string;
-	readonly email: string;
-	readonly dateOfBirth: Date;
-	readonly userType: UserType;
-	readonly phoneNumber?: string;
-	readonly gender: Gender;
-	readonly avatarUrl?: string;
-	readonly createdAt: Date;
-	readonly updatedAt: Date;
+	private readonly firstName: string;
+	private readonly lastName: string;
+	private readonly middleName?: string;
+	private readonly email: string;
+	private readonly dateOfBirth: Date;
+	private readonly userType: UserType;
+	private readonly phoneNumber?: string;
+	private readonly gender: Gender;
+	private readonly avatarUrl?: string;
+	private readonly createdAt: Date;
+	private readonly updatedAt: Date;
 
 	constructor(
 		firstName: string,

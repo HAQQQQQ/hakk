@@ -1,4 +1,4 @@
-import { UserAdditionalDetailsBase, UserInfoBase } from "./profile-base";
+import { UserAdditionalDetailsBase, UserInfoBase, UserPreferencesBase } from "./profile-base";
 
 export interface UserInfoDto extends UserInfoBase {
 	fullName: string;
@@ -8,10 +8,11 @@ export interface UserInfoDto extends UserInfoBase {
 }
 
 export type UserAdditionalDetailsDto = UserAdditionalDetailsBase;
+export type UserPreferencesDto = UserPreferencesBase;
 
-// Combined request for creating user with profile
 export interface UserProfileResponse {
-	userId: string; // from Clerk or other auth provider
+	userId: string;
 	info: UserInfoDto;
-	additionalDetails?: UserAdditionalDetailsDto; // Optional since profile might be created later
+	additionalDetails?: UserAdditionalDetailsDto;
+	userPreference?: UserPreferencesDto;
 }
