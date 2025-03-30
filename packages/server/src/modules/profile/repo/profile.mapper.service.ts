@@ -8,6 +8,7 @@ import {
 	Photo,
 	RelationshipGoal,
 	RelationshipStatus,
+	Religion,
 	UserType,
 } from "@hakk/types";
 import { UserProfile } from "../models/profile.userprofile.model";
@@ -17,9 +18,6 @@ import { AdditionalDetails } from "../models/profile.details.model";
 @Injectable()
 export class ProfileMapperService {
 	createUserProfile(userId: string, data: any): UserProfile {
-		console.log("Mapper - Input Data:", data);
-		console.log("Mapper - User ID:", userId);
-
 		return new UserProfile(
 			userId,
 			this.createUserInfo(data),
@@ -44,30 +42,22 @@ export class ProfileMapperService {
 	}
 
 	private createAdditionalDetails(data: any): AdditionalDetails {
-		console.log("Interested in: ", data.profile_details.interested_in);
 		return new AdditionalDetails(
 			data.profile_details.display_name,
 			data.profile_details.about_me,
 			data.profile_details.relationship_status as RelationshipStatus,
 			data.profile_details.looking_for as RelationshipGoal,
 			data.profile_details.interested_in,
-			// ? (data.profile_details.interested_in as string)
-			//     .split(",")
-			//     .map((g) => g.trim() as Gender)
-			// : [],
 			this.createPhotos(data),
 			data.profile_details.location,
 			this.getHeight(data),
 			data.profile_details.occupation,
 			data.profile_details.has_children,
 			data.profile_details.wants_children,
-			// data.profile_details.interests
-			//     ? (data.profile_details.interests as string).split(",")
-			//     : undefined,
 			data.profile_details.education_level,
 			data.profile_details.drinking_habit,
 			data.profile_details.smoking_habit,
-			data.profile_details.religion,
+			data.profile_details.religion as Religion,
 			data.profile_details.languages,
 			this.getDistance(data),
 		);
