@@ -20,9 +20,11 @@ export class ProfileService {
 		return user.toDTO();
 	}
 
-	async createProfile(createUserDto: CreateUserProfileRequest): Promise<UserProfileResponse> {
+	async createProfile(
+		createUserProfileDto: CreateUserProfileRequest,
+	): Promise<UserProfileResponse> {
 		// Create profile in the repository
-		const createdProfile = await this.profileRepository.createUserProfile(createUserDto);
+		const createdProfile = await this.profileRepository.createUserProfile(createUserProfileDto);
 
 		// Convert to DTO and return
 		return createdProfile.toDTO();

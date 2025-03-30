@@ -3,12 +3,20 @@ import { SupabaseService } from "../../supabase/supabase.service";
 import { UserProfile } from "../models/profile.userprofile.model";
 import { ProfileNotFoundError } from "./profile-errors";
 import { ProfileMapperService } from "./profile.mapper.service";
-import { CreateUserProfileRequest, Gender } from "@hakk/types";
+import {
+	CreateUserProfileRequest,
+	Photo,
+	UserAdditionalDetailsBase,
+	UserPreferencesRequest,
+} from "@hakk/types";
 
 @Injectable()
 export class ProfileRepository {
 	private readonly PROFILES_TABLE: string = "profiles";
 	private readonly PROFILE_DETAILS_TABLE: string = "profile_details";
+	private readonly USER_PREFERENCES = "user_preferences";
+	private readonly PROFILE_PHOTOS = "profile_photos";
+	private readonly PROFILE_DETAILS = "profile_details";
 
 	constructor(
 		private readonly supabaseService: SupabaseService,
@@ -65,151 +73,170 @@ export class ProfileRepository {
 		}
 	}
 
-	async createUserProfile(createUserDto: CreateUserProfileRequest): Promise<UserProfile> {
+	async createUserProfile(createUserProfileDto: CreateUserProfileRequest): Promise<UserProfile> {
 		try {
-			// 1. Create base profile
-			const { data: profileData, error: profileError } = await this.supabaseService.client
-				.from(this.PROFILES_TABLE)
-				.insert({
-					user_id: createUserDto.userId,
-					first_name: createUserDto.info.firstName,
-					last_name: createUserDto.info.lastName,
-					middle_name: createUserDto.info.middleName,
-					email: createUserDto.info.email,
-					date_of_birth: createUserDto.info.dateOfBirth,
-					gender: createUserDto.info.gender,
-					phone_number: createUserDto.info.phoneNumber,
-					avatar_url: createUserDto.info.avatarUrl,
-				})
-				.select()
-				.single();
-
-			if (profileError || !profileData) {
-				throw new Error(`Failed to create profile: ${profileError?.message}`);
-			}
+			const profileData = await this.createProfileInfo(createUserProfileDto);
 
 			// 2. Optionally create profile details
-			if (createUserDto.additionalDetails) {
-				const { data: detailsData, error: detailsError } = await this.supabaseService.client
-					.from("profile_details")
-					.insert({
-						profile_id: profileData.id,
-						display_name: createUserDto.additionalDetails.displayName,
-						about_me: createUserDto.additionalDetails.aboutMe,
-						relationship_status: createUserDto.additionalDetails.relationshipStatus,
-						location: createUserDto.additionalDetails.location,
-						occupation: createUserDto.additionalDetails.occupation,
-						has_children: createUserDto.additionalDetails.hasChildren,
-						wants_children: createUserDto.additionalDetails.wantsChildren,
-						education_level: createUserDto.additionalDetails.educationLevel,
-						drinking_habit: createUserDto.additionalDetails.drinkingHabit,
-						smoking_habit: createUserDto.additionalDetails.smokingHabit,
-						religion: createUserDto.additionalDetails.religion,
-						languages: createUserDto.additionalDetails.languages,
-						height_value: createUserDto.additionalDetails.height?.height,
-						height_unit: createUserDto.additionalDetails.height?.unitOfMeasure,
-					})
-					.select()
-					.single();
+			if (createUserProfileDto.additionalDetails) {
+				const detailsData = await this.createProfifileDetails(
+					profileData.id,
+					createUserProfileDto.additionalDetails,
+				);
 
-				if (detailsError || !detailsData) {
-					// Roll back the base profile if profile details fail
-					await this.supabaseService.client
-						.from(this.PROFILES_TABLE)
-						.delete()
-						.eq("id", profileData.id);
-
-					throw new Error(`Failed to create profile details: ${detailsError?.message}`);
-				}
-
-				// 3. Optionally create user preferences
-				if (createUserDto.userPreferences) {
-					const { data: preferencesData, error: preferencesError } =
-						await this.supabaseService.client
-							.from("user_preferences")
-							.insert({
-								// The foreign key to profile_details is profile_id
-								profile_id: detailsData.profile_id, // or simply use profileData.id
-
-								preferred_min_age:
-									createUserDto.userPreferences.preferredAgeRange.min,
-								preferred_max_age:
-									createUserDto.userPreferences.preferredAgeRange.max,
-								preferred_genders: createUserDto.userPreferences.preferredGenders,
-
-								desired_relationship_types:
-									createUserDto.userPreferences.desiredRelationshipTypes,
-								preferred_education_levels:
-									createUserDto.userPreferences.preferredEducationLevels,
-								preferred_occupations:
-									createUserDto.userPreferences.preferredOccupations,
-
-								partner_has_children_preference:
-									createUserDto.userPreferences.partnerHasChildrenPreference,
-
-								drinking_habit_preference:
-									createUserDto.userPreferences.drinkingHabitPreference,
-								smoking_habit_preference:
-									createUserDto.userPreferences.smokingHabitPreference,
-
-								max_distance: createUserDto.userPreferences.maxDistance?.value,
-								max_distance_unit: createUserDto.userPreferences.maxDistance?.unit,
-								preferred_locations:
-									createUserDto.userPreferences.preferredLocations,
-
-								preferred_languages:
-									createUserDto.userPreferences.preferredLanguages,
-								preferred_religions:
-									createUserDto.userPreferences.preferredReligions,
-							})
-							.select()
-							.single();
-
-					if (preferencesError || !preferencesData) {
-						// Roll back the entire profile if user preferences fail
-						await this.supabaseService.client
-							.from(this.PROFILES_TABLE)
-							.delete()
-							.eq("id", profileData.id);
-
-						throw new Error(
-							`Failed to create user preferences: ${preferencesError?.message}`,
-						);
-					}
-				}
-
-				// 4. Optionally create profile photos
+				// 3. Optionally create profile photos
 				if (
-					createUserDto.additionalDetails.photos &&
-					createUserDto.additionalDetails.photos.length > 0
+					createUserProfileDto.additionalDetails.photos &&
+					createUserProfileDto.additionalDetails.photos.length > 0
 				) {
-					const photoInserts = createUserDto.additionalDetails.photos.map((photo) => ({
-						profile_details_id: detailsData.id,
-						url: photo.url,
-						is_primary: photo.isPrimary || false,
-						is_verified: photo.isVerified || false,
-					}));
-
-					const { error: photosError } = await this.supabaseService.client
-						.from("profile_photos")
-						.insert(photoInserts);
-
-					if (photosError) {
-						// Roll back everything if photos fail
-						await this.supabaseService.client
-							.from(this.PROFILE_DETAILS_TABLE)
-							.delete()
-							.eq("id", detailsData.id);
-
-						throw new Error(`Failed to create profile photos: ${photosError.message}`);
-					}
+					await this.createPhotos(
+						detailsData.id,
+						createUserProfileDto.additionalDetails.photos,
+					);
 				}
+			}
+
+			// 4. Optionally create user preferences
+			if (createUserProfileDto.userPreferences) {
+				// await this.createUserPreferences(detailsData.profile_id, createUserProfileDto.userPreferences);
+				await this.createUserProfilePreferences(
+					profileData.id,
+					createUserProfileDto.userPreferences,
+				);
 			}
 
 			// 5. Finally, return the complete user profile
-			return await this.fetchUserProfileByUserId(createUserDto.userId);
+			return await this.fetchUserProfileByUserId(createUserProfileDto.userId);
 		} catch (error) {
 			throw new Error(`Profile creation failed: ${error.message}`);
 		}
+	}
+
+	private async createPhotos(additionalDetailsId: string, photos: Photo[]): Promise<any> {
+		const photoInserts = photos.map((photo) => ({
+			profile_details_id: additionalDetailsId,
+			url: photo.url,
+			is_primary: photo.isPrimary || false,
+			is_verified: photo.isVerified || false,
+		}));
+
+		const { error: photosError } = await this.supabaseService.client
+			.from(this.PROFILE_PHOTOS)
+			.insert(photoInserts);
+
+		if (photosError) {
+			// Roll back everything if photos fail
+			await this.supabaseService.client
+				.from(this.PROFILE_DETAILS_TABLE)
+				.delete()
+				.eq("id", additionalDetailsId);
+
+			throw new Error(`Failed to create profile photos: ${photosError.message}`);
+		}
+
+		return photoInserts;
+	}
+
+	private async createProfileInfo(createUserProfileDto: CreateUserProfileRequest): Promise<any> {
+		const { data: profileData, error: profileError } = await this.supabaseService.client
+			.from(this.PROFILES_TABLE)
+			.insert({
+				user_id: createUserProfileDto.userId,
+				first_name: createUserProfileDto.info.firstName,
+				last_name: createUserProfileDto.info.lastName,
+				middle_name: createUserProfileDto.info.middleName,
+				email: createUserProfileDto.info.email,
+				date_of_birth: createUserProfileDto.info.dateOfBirth,
+				gender: createUserProfileDto.info.gender,
+				phone_number: createUserProfileDto.info.phoneNumber,
+				avatar_url: createUserProfileDto.info.avatarUrl,
+			})
+			.select()
+			.single();
+
+		if (profileError || !profileData) {
+			throw new Error(`Failed to create profile: ${profileError?.message}`);
+		}
+		return profileData;
+	}
+
+	private async createProfifileDetails(
+		profileId: string,
+		additionalDetails: UserAdditionalDetailsBase,
+	): Promise<any> {
+		const { data: detailsData, error: detailsError } = await this.supabaseService.client
+			.from(this.PROFILE_DETAILS)
+			.insert({
+				profile_id: profileId,
+				display_name: additionalDetails.displayName,
+				about_me: additionalDetails.aboutMe,
+				relationship_status: additionalDetails.relationshipStatus,
+				location: additionalDetails.location,
+				occupation: additionalDetails.occupation,
+				has_children: additionalDetails.hasChildren,
+				wants_children: additionalDetails.wantsChildren,
+				education_level: additionalDetails.educationLevel,
+				drinking_habit: additionalDetails.drinkingHabit,
+				smoking_habit: additionalDetails.smokingHabit,
+				religion: additionalDetails.religion,
+				languages: additionalDetails.languages,
+				height_value: additionalDetails.height?.height,
+				height_unit: additionalDetails.height?.unitOfMeasure,
+			})
+			.select()
+			.single();
+
+		if (detailsError || !detailsData) {
+			// Roll back the base profile if profile details fail
+			await this.supabaseService.client
+				.from(this.PROFILES_TABLE)
+				.delete()
+				.eq("id", profileId);
+
+			throw new Error(`Failed to create profile details: ${detailsError?.message}`);
+		}
+		// Return the details data
+		return detailsData;
+	}
+
+	private async createUserProfilePreferences(
+		profileId: string,
+		userPreferences: UserPreferencesRequest,
+	): Promise<any> {
+		const { data: preferencesData, error: preferencesError } = await this.supabaseService.client
+			.from(`${this.USER_PREFERENCES}`)
+			.insert({
+				// The foreign key to profile_details is profile_id
+				// profile_id: detailsData.profile_id, // or simply use profileData.id
+				profile_id: profileId,
+				preferred_min_age: userPreferences.preferredAgeRange.min,
+				preferred_max_age: userPreferences.preferredAgeRange.max,
+				preferred_genders: userPreferences.preferredGenders,
+				desired_relationship_types: userPreferences.desiredRelationshipTypes,
+				preferred_education_levels: userPreferences.preferredEducationLevels,
+				preferred_occupations: userPreferences.preferredOccupations,
+				partner_has_children_preference: userPreferences.partnerHasChildrenPreference,
+				drinking_habit_preference: userPreferences.drinkingHabitPreference,
+				smoking_habit_preference: userPreferences.smokingHabitPreference,
+				max_distance: userPreferences.maxDistance?.value,
+				max_distance_unit: userPreferences.maxDistance?.unit,
+				preferred_locations: userPreferences.preferredLocations,
+				preferred_languages: userPreferences.preferredLanguages,
+				preferred_religions: userPreferences.preferredReligions,
+			})
+			.select()
+			.single();
+
+		if (preferencesError || !preferencesData) {
+			// Roll back the entire profile if user preferences fail
+			await this.supabaseService.client
+				.from(this.PROFILES_TABLE)
+				.delete()
+				.eq("id", profileId);
+
+			throw new Error(`Failed to create user preferences: ${preferencesError?.message}`);
+		}
+
+		return preferencesData;
 	}
 }

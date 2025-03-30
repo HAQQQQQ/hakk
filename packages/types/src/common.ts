@@ -116,3 +116,9 @@ export type AgeRange = {
 	min: number;
 	max: number;
 };
+
+export interface AddUpdateOrRemove<T, K = T> {
+	toAdd: T[];
+	toUpdate: K[];
+	toRemove: string[] | number[]; // Typically IDs of items to remove
+}

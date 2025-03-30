@@ -17,8 +17,13 @@ export class ProfileController {
 
 	@Post("create-profile")
 	async createProfile(
-		@Body() createUserDto: CreateUserProfileRequest,
+		@Body() createUserProfileDto: CreateUserProfileRequest,
 	): Promise<UserProfileResponse> {
-		return this.profileService.createProfile(createUserDto);
+		return this.profileService.createProfile(createUserProfileDto);
 	}
+
+	// @Post('update-profile')
+	// async updateProfile(
+	//     @Body() updateUserProfile
+	// )
 }
