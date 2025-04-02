@@ -6,12 +6,12 @@
 		"access": "public"
 	},
 	"description": "",
-	"main": "dist/cjs/index.js",
-	"module": "dist/esm/index.js",
-	"types": "dist/index.d.ts",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "tsc && tsc --project tsconfig.cjs.json && echo \"\n========== 🔨 Building @hakk/types... ==========\n\"",
+		"build": "tsc --project tsconfig.json && echo \"\n========== 🔨 Building @hakk/types... ==========\n\"",
 		"prepublishOnly": "npm run build"
 	},
 	"keywords": [],
@@ -25,13 +25,15 @@
 		"class-validator": "^0.14.1"
 	},
 	"devDependencies": {
-		"@types/node": "^20.11.17",
+		"@types/node": "^22.10.7",
 		"typescript": "^5.3.3"
 	},
 	"exports": {
 		".": {
-			"import": "./dist/esm/index.js",
-			"require": "./dist/cjs/index.js"
+			"import": "./dist/index.js"
 		}
+	},
+	"engines": {
+		"node": ">=20.0.0"
 	}
 }

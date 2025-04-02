@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { RedisClientService } from "./redis-client.service";
+import { RedisClientService } from "./redis-client.service.js";
 
 describe("RedisClientService", () => {
 	let service: RedisClientService;

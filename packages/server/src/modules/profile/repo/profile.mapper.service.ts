@@ -12,10 +12,10 @@ import {
 	Religion,
 	UserType,
 } from "@hakk/types";
-import { UserProfile } from "../models/profile.userprofile.model";
-import { UserInfo } from "../models/profile.userinfo.model";
-import { AdditionalDetails } from "../models/profile.details.model";
-import { UserPreferences } from "../models/profile.preferences.model";
+import { UserProfile } from "../models/profile.userprofile.model.js";
+import { UserInfo } from "../models/profile.userinfo.model.js";
+import { AdditionalDetails } from "../models/profile.details.model.js";
+import { UserPreferences } from "../models/profile.preferences.model.js";
 
 @Injectable()
 export class ProfileMapperService {

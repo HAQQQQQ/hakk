@@ -5,6 +5,7 @@
 	"author": "",
 	"private": true,
 	"license": "UNLICENSED",
+	"type": "module",
 	"main": "dist/main.js",
 	"scripts": {
 		"build": "nest build && echo \"\n========== 🔨 Building @hakk/server... ==========\n\"",

@@ -1,4 +1,4 @@
-import { GraphToken } from "./pre-compute.types";
+import { GraphToken } from "./pre-compute.types.js";
 
 export const precomputedGraphs: GraphToken[] = [GraphToken.MUSIC_GENRES];
 

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { CacheService } from './cache.service';
+import { CacheService } from './cache.service.js';
 
 @Controller('cache')
 export class CacheController {

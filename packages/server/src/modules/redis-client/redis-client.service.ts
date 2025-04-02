@@ -1,4 +1,4 @@
-import { EnvConfig } from "@/config/env.config";
+import { EnvConfig } from "@/config/env.config.js";
 import { Injectable, HttpException, HttpStatus } from "@nestjs/common";
 import axios from "axios";
 

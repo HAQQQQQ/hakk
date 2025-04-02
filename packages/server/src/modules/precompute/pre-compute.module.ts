@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
-import { PreComputeService } from "./pre-compute.service";
-import { PrecomputedGraphArrayProvider } from "./pre-compute.provider";
-import { PreComputeController } from "./pre-compute.controller";
-import { PrecomputeRepository } from "./pre-compute.repository";
-import { SupabaseService } from "../supabase/supabase.service";
-import { PreComputeApiService } from "./pre-compute.api";
+import { PreComputeService } from "./pre-compute.service.js";
+import { PrecomputedGraphArrayProvider } from "./pre-compute.provider.js";
+import { PreComputeController } from "./pre-compute.controller.js";
+import { PrecomputeRepository } from "./pre-compute.repository.js";
+import { SupabaseService } from "../supabase/supabase.service.js";
+import { PreComputeApiService } from "./pre-compute.api.js";
 
 @Module({
 	providers: [

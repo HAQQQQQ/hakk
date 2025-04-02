@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import axios from "axios";
-import { EnvConfig } from "@/config/env.config";
-import { ConceptPair, ConceptPairResult } from "./pre-compute.types";
+import { EnvConfig } from "@/config/env.config.js";
+import { ConceptPair, ConceptPairResult } from "./pre-compute.types.js";
 
 @Injectable()
 export class PreComputeApiService {

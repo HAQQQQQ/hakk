@@ -1,6 +1,6 @@
 import { Body, Controller, Get, NotFoundException, Param, Post } from "@nestjs/common";
 import type { CreateUserProfileRequest, UserProfileResponse } from "@hakk/types";
-import { ProfileService } from "../services/profile.service";
+import { ProfileService } from "../services/profile.service.js";
 
 @Controller("profile")
 export class ProfileController {

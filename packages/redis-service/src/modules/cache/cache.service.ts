@@ -1,10 +1,10 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
 import { createClient, RedisClientType } from 'redis';
-import { Config } from 'src/config/config';
+import { Config } from 'src/config/config.js';
 
 @Injectable()
 export class CacheService implements OnModuleInit, OnModuleDestroy {
-	private client: RedisClientType;
+	private client!: RedisClientType;
 
 	async onModuleInit() {
 		const url = `redis://${Config.redisHost}:${Config.redisPort}`;

@@ -1,10 +1,10 @@
 import { Module } from "@nestjs/common";
-import { PreferencesService } from "./preferences.service";
-import { PreferencesController } from "./preferences.controller";
-import { SupabaseService } from "@modules/supabase/supabase.service";
-import { InterestsModule } from "../interests/interests.module";
-import { PreferenceRepository } from "./preferences.repository";
-import { ProfileModule } from "../profile/profile.module";
+import { PreferencesService } from "./preferences.service.js";
+import { PreferencesController } from "./preferences.controller.js";
+import { SupabaseService } from "@modules/supabase/supabase.service.js";
+import { InterestsModule } from "../interests/interests.module.js";
+import { PreferenceRepository } from "./preferences.repository.js";
+import { ProfileModule } from "../profile/profile.module.js";
 
 @Module({
 	imports: [InterestsModule, ProfileModule],

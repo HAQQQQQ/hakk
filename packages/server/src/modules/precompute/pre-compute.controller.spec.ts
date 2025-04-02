@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { PreComputeController } from "./pre-compute.controller";
+import { PreComputeController } from "./pre-compute.controller.js";
 
 describe("PreComputeController", () => {
 	let controller: PreComputeController;

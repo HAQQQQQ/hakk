@@ -1,4 +1,4 @@
-import { EnvConfig } from "./env.config";
+import { EnvConfig } from "./env.config.js";
 
 export class AppConfig {
 	static validate(): void {

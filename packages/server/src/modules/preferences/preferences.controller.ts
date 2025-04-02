@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from "@nestjs/common";
 import { Preference } from "@hakk/types";
-import { PreferencesService } from "./preferences.service";
+import { PreferencesService } from "./preferences.service.js";
 
 @Controller("preferences")
 export class PreferencesController {

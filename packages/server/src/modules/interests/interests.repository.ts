@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { SupabaseService } from "../supabase/supabase.service";
-import { InterestAnalysis } from "./interests.types";
+import { SupabaseService } from "../supabase/supabase.service.js";
+import { InterestAnalysis } from "./interests.types.js";
 
 // In interests module
 @Injectable()

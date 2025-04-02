@@ -1,4 +1,4 @@
-import { UserAdditionalDetailsBase, UserInfoBase, UserPreferencesBase } from "./profile-base";
+import { UserAdditionalDetailsBase, UserInfoBase, UserPreferencesBase } from "./profile-base.js";
 
 export type CreateUserInfoRequest = UserInfoBase;
 // export interface CreateUserAdditionalDetailsRequest extends UserAdditionalDetailsBase {

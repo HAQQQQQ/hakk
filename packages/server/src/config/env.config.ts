@@ -1,4 +1,4 @@
-import { OpenAIModel } from "@/modules/openai/openai.types";
+import { OpenAIModel } from "@/modules/openai/openai.types.js";
 import { config } from "dotenv";
 import { resolve } from "path";
 

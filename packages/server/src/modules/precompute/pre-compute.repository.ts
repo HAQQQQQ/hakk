@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { SupabaseService } from "../supabase/supabase.service";
-import { Concept, ConceptPairResult, Topic } from "./pre-compute.types";
+import { SupabaseService } from "../supabase/supabase.service.js";
+import { Concept, ConceptPairResult, Topic } from "./pre-compute.types.js";
 import { InternalServerErrorException } from "@nestjs/common";
 @Injectable()
 export class PrecomputeRepository {

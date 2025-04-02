@@ -1,8 +1,8 @@
 // src/openai/openai.module.ts
 import { Module } from "@nestjs/common";
-import { OpenAIService } from "./openai.service";
-import { OpenAIController } from "./openai.controller";
-import { OpenAIProviders } from "./openai.provider";
+import { OpenAIService } from "./openai.service.js";
+import { OpenAIController } from "./openai.controller.js";
+import { OpenAIProviders } from "./openai.provider.js";
 
 @Module({
 	providers: [OpenAIService, ...OpenAIProviders],

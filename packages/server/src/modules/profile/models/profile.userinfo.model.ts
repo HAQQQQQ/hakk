@@ -1,5 +1,4 @@
-import { IDTOConvertible, UserInfoDto, UserType } from "@hakk/types";
-import { Gender } from "@hakk/types";
+import { IDTOConvertible, UserInfoDto, UserType, Gender } from "@hakk/types";
 
 export class UserInfo implements IDTOConvertible<UserInfoDto> {
 	private readonly firstName: string;

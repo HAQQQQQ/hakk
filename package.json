@@ -4,6 +4,7 @@
 	"private": true,
 	"description": "Monorepo for hakk project with Next.js client and NestJS backend",
 	"license": "UNLICENSED",
+	"type": "module",
 	"workspaces": [
 		"packages/*"
 	],

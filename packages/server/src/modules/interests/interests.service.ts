@@ -1,11 +1,11 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { OpenAIService } from "../openai/openai.service";
+import { OpenAIService } from "../openai/openai.service.js";
 import { Preference } from "@hakk/types";
-import { OpenAIResponse, OpenAIResponseStatus } from "../openai/openai.types";
-import { generateInterestsPrompt } from "@/prompts/generate-interests.prompt";
-import { InterestAnalysis, interestAnalysisSchema } from "./interests.types";
-import { InterestsRepository } from "./interests.repository";
-import { ProfileService } from "../profile/services/profile.service";
+import { OpenAIResponse, OpenAIResponseStatus } from "../openai/openai.types.js";
+import { generateInterestsPrompt } from "@/prompts/generate-interests.prompt.js";
+import { InterestAnalysis, interestAnalysisSchema } from "./interests.types.js";
+import { InterestsRepository } from "./interests.repository.js";
+import { ProfileService } from "../profile/services/profile.service.js";
 
 @Injectable()
 export class InterestsService {

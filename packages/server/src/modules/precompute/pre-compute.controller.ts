@@ -1,7 +1,7 @@
 import type { NewTopicRequest } from "@hakk/types";
 import { Body, Controller, Post } from "@nestjs/common";
-import { PreComputeService } from "./pre-compute.service";
-import { Topic } from "./pre-compute.types";
+import { PreComputeService } from "./pre-compute.service.js";
+import { Topic } from "./pre-compute.types.js";
 
 @Controller("pre-compute")
 export class PreComputeController {

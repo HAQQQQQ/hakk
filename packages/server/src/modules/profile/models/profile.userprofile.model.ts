@@ -1,7 +1,7 @@
 import { UserProfileResponse, IDTOConvertible } from "@hakk/types";
-import { UserInfo } from "./profile.userinfo.model";
-import { AdditionalDetails } from "./profile.details.model";
-import { UserPreferences } from "./profile.preferences.model";
+import { UserInfo } from "./profile.userinfo.model.js";
+import { AdditionalDetails } from "./profile.details.model.js";
+import { UserPreferences } from "./profile.preferences.model.js";
 
 export class UserProfile implements IDTOConvertible<UserProfileResponse> {
 	private readonly userId: string;

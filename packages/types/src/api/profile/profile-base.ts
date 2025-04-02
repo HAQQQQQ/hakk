@@ -11,7 +11,7 @@ import {
 	RelationshipStatus,
 	Religion,
 	UserType,
-} from "../../common";
+} from "../../common.js";
 
 export interface UserInfoBase {
 	firstName: string;

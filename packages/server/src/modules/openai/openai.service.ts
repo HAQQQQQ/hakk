@@ -8,7 +8,7 @@ import {
 	OpenAIResponse,
 	OpenAIResponseStatus,
 	OpenAITokens,
-} from "./openai.types";
+} from "./openai.types.js";
 
 @Injectable()
 export class OpenAIService {

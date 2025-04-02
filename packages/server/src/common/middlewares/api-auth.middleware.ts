@@ -1,4 +1,4 @@
-import { EnvConfig } from "@/config/env.config";
+import { EnvConfig } from "@/config/env.config.js";
 import { Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
 import { Request, Response, NextFunction } from "express";
 

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { ProfileRepository } from "../repo/profile.repository";
+import { ProfileRepository } from "../repo/profile.repository.js";
 import { CreateUserProfileRequest, UserProfileResponse } from "@hakk/types";
 
 @Injectable()

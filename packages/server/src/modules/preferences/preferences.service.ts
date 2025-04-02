@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Preference } from "@hakk/types";
-import { InterestsService } from "../interests/interests.service";
-import { PreferenceRepository } from "./preferences.repository";
-import { ProfileService } from "../profile/services/profile.service";
+import { InterestsService } from "../interests/interests.service.js";
+import { PreferenceRepository } from "./preferences.repository.js";
+import { ProfileService } from "../profile/services/profile.service.js";
 
 @Injectable()
 export class PreferencesService {

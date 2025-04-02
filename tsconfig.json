@@ -1,25 +1,25 @@
 {
 	"compilerOptions": {
-		"strict": false,
+		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"strictBindCallApply": true,
 		"noFallthroughCasesInSwitch": true,
-		"noImplicitAny": false,
+		"noImplicitAny": true,
 		"strictNullChecks": true,
 		"resolveJsonModule": true,
-		"moduleResolution": "node",
+		"moduleResolution": "NodeNext",
 		"isolatedModules": true,
-		"target": "ES2021", // Common Target
-		"baseUrl": ".", // Workspace-wide base URL
+		"target": "ES2022",
+		"module": "NodeNext",
+		"baseUrl": ".",
 		"paths": {
 			"@/*": ["packages/server/src/*"],
 			"@app/*": ["packages/server/src/app/*"],
 			"@config/*": ["packages/server/src/config/*"],
 			"@modules/*": ["packages/server/src/modules/*"],
-			"@common/*": ["packages/server/src/common/*"],
-			"@client/*": ["packages/client/src/*"] // client alias added
+			"@common/*": ["packages/server/src/common/*"]
 		}
 	},
 	"exclude": ["node_modules"],

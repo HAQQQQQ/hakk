@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CacheController } from './cache.controller';
+import { CacheController } from './cache.controller.js';
 
 describe('CacheController', () => {
 	let controller: CacheController;

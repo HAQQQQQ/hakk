@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { SupabaseService } from "../../supabase/supabase.service";
-import { UserProfile } from "../models/profile.userprofile.model";
-import { ProfileNotFoundError } from "./profile-errors";
-import { ProfileMapperService } from "./profile.mapper.service";
+import { SupabaseService } from "../../supabase/supabase.service.js";
+import { UserProfile } from "../models/profile.userprofile.model.js";
+import { ProfileNotFoundError } from "./profile-errors.js";
+import { ProfileMapperService } from "./profile.mapper.service.js";
 import {
 	CreateUserProfileRequest,
 	Photo,

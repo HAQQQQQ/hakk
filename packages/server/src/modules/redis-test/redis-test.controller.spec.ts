@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { RedisTestController } from "./redis-test.controller";
+import { RedisTestController } from "./redis-test.controller.js";
 
 describe("RedisTestController", () => {
 	let controller: RedisTestController;

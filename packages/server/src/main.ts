@@ -1,9 +1,9 @@
 import { NestFactory } from "@nestjs/core";
-import { AppModule } from "./app.module";
-import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
-import { ResponseInterceptor } from "./common/interceptors/response.interceptor";
-import { AppConfig } from "./config/app.config";
-import { EnvConfig } from "./config/env.config";
+import { AppModule } from "./app.module.js";
+import { HttpExceptionFilter } from "./common/filters/http-exception.filter.js";
+import { ResponseInterceptor } from "./common/interceptors/response.interceptor.js";
+import { AppConfig } from "./config/app.config.js";
+import { EnvConfig } from "./config/env.config.js";
 import { ValidationPipe } from "@nestjs/common";
 
 // Validate critical environment variables before starting the app

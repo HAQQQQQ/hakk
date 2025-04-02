@@ -1,15 +1,15 @@
-import { EnvConfig } from "@/config/env.config";
+import { EnvConfig } from "@/config/env.config.js";
 import { Inject, Injectable, InternalServerErrorException, OnModuleInit } from "@nestjs/common";
-import { PrecomputeRepository } from "./pre-compute.repository";
+import { PrecomputeRepository } from "./pre-compute.repository.js";
 import {
 	Concept,
 	ConceptPair,
 	GraphToken,
 	PrecomputedGraphTokens,
 	Topic,
-} from "./pre-compute.types";
-import { PreComputeConfig } from "./pre-compute.config";
-import { PreComputeApiService } from "./pre-compute.api";
+} from "./pre-compute.types.js";
+import { PreComputeConfig } from "./pre-compute.config.js";
+import { PreComputeApiService } from "./pre-compute.api.js";
 
 @Injectable()
 export class PreComputeService implements OnModuleInit {

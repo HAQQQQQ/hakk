@@ -1,8 +1,8 @@
 import { Provider } from "@nestjs/common";
 import OpenAI from "openai";
-import { EnvConfig } from "@/config/env.config";
-import { OpenAIConfig } from "./openai.config";
-import { OpenAITokens } from "./openai.types";
+import { EnvConfig } from "@/config/env.config.js";
+import { OpenAIConfig } from "./openai.config.js";
+import { OpenAITokens } from "./openai.types.js";
 
 /**
  * NestJS providers for OpenAI-related services
