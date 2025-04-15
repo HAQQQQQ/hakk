@@ -7,3 +7,8 @@ export interface NewTopicRequest {
 	name: string;
 	concepts: BaseConcept[];
 }
+
+export interface CreateTranscriptionRequest {
+	text: string;
+	timestamp?: string;
+}

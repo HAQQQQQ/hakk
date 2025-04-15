@@ -14,6 +14,7 @@ import { EnvConfig } from "./config/env.config";
 import { PreComputeModule } from "./modules/precompute/pre-compute.module";
 import { MatchingService } from "./modules/matching/matching.service";
 import { MatchingModule } from "./modules/matching/matching.module";
+import { TranscriptionsModule } from "./modules/transcriptions/transcriptions.module";
 
 @Module({
 	imports: [
@@ -25,7 +26,7 @@ import { MatchingModule } from "./modules/matching/matching.module";
 		RedisClientModule,
 		PreComputeModule,
 		MatchingModule,
-
+		TranscriptionsModule,
 		// **** Tech Debt: Maybe use NesJs ConfigModule to fetch env stuff ****
 		// ConfigModule.forRoot({
 		//     // Order matters - later files override earlier ones
