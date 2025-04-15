@@ -16,8 +16,10 @@ async function bootstrap() {
 	// Set global prefix for all routes
 	app.setGlobalPrefix("api");
 	app.enableCors({
-		origin: `http://localhost:${EnvConfig.clientPort}`,
-		credentials: true, // if you're using cookies or auth headers
+		origin: "*", // set it to all so that it works with react-native app
+		credentials: false,
+		// origin: `http://localhost:${EnvConfig.clientPort}`,
+		// credentials: true, // if you're using cookies or auth headers
 	});
 
 	// Apply global interceptors and filters
