@@ -1,4 +1,4 @@
-import { Controller, Get } from "@nestjs/common";
+import { Body, Controller, Get, Post } from "@nestjs/common";
 import { InterestsService } from "./interests.service";
 
 @Controller("interests")
@@ -16,6 +16,19 @@ export class InterestsController {
 			{ id: 1, name: "Fitness" },
 			{ id: 2, name: "Music" },
 			{ id: 3, name: "Gaming" },
+		];
+	}
+
+	@Post("test")
+	async testPost(@Body() body: string): Promise<any> {
+		console.log("POST /api/test route was hit"); // Log to confirm the route is being hit
+
+		console.log("_body:", body);
+
+		return [
+			{ id: 1, name: "Dancing" },
+			{ id: 2, name: "Lifting" },
+			{ id: 3, name: "Running" },
 		];
 	}
 }
