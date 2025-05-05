@@ -51,13 +51,14 @@ export class InterestsService {
 		preference: Preference,
 	): Promise<OpenAIResponse<InterestAnalysis>> {
 		// Generate the prompt
-		const openAiPrompt = generateInterestsPrompt(preference);
+		// const openAiPrompt = generateInterestsPrompt(preference);
 
-		// Call OpenAI with validation
-		return this.openAiService.executeValidatedPrompt<InterestAnalysis>(
-			openAiPrompt,
-			interestAnalysisSchema,
-		);
+		// // Call OpenAI with validation
+		// return this.openAiService.executeValidatedPrompt<InterestAnalysis>(
+		// 	openAiPrompt,
+		// 	interestAnalysisSchema,
+		// );
+		return {} as OpenAIResponse<InterestAnalysis>;
 	}
 
 	// New function: Retrieve interests for a given user by leveraging the repository function

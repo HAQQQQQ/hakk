@@ -1,172 +1,214 @@
-// src/openai/openai.service.ts
-import { Injectable, Inject } from "@nestjs/common";
-import { OpenAI } from "openai";
-import { z } from "zod";
+import { Inject, Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import {
+	ChatCompletionToolDefinition,
 	OpenAIErrorStatus,
-	OpenAIModel,
 	OpenAIResponse,
 	OpenAIResponseStatus,
 	OpenAITokens,
+	ToolSchema,
 } from "./openai.types";
+import type { OpenAIConfigSettings } from "./openai.types";
+import { OpenAIConfigResponseDto, UpdateOpenAIConfigRequestDto } from "./openai-config.dto";
+import OpenAI from "openai";
+import { ZodError, ZodSchema } from "zod";
+import { ChatCompletion } from "openai/resources.mjs";
+import { OpenAIConfigRepository } from "./openai-config.repository";
+import { OpenAIConfigMapper } from "./openai-config.mapper";
 
 @Injectable()
-export class OpenAIService {
+export class OpenAIService implements OnModuleInit {
+	private readonly logger = new Logger(OpenAIService.name);
+
+	// In-memory configuration cache
+	private configSettings: OpenAIConfigSettings;
+
 	constructor(
 		@Inject(OpenAITokens.CLIENT) private readonly openai: OpenAI,
-		@Inject(OpenAITokens.MODEL) private readonly model: OpenAIModel,
-		@Inject(OpenAITokens.TEMPERATURE) private readonly temperature: number,
-		@Inject(OpenAITokens.RETRY_CONFIG)
-		private readonly retryConfig: {
-			maxRetries: number;
-			retryDelay: number;
-		},
-	) {}
+		@Inject(OpenAITokens.DEFAULT_CONFIG) private readonly defaultConfig: OpenAIConfigSettings,
+		private readonly configRepository: OpenAIConfigRepository,
+		private readonly configMapper: OpenAIConfigMapper,
+	) {
+		// Initialize with injected defaults
+		this.configSettings = { ...defaultConfig };
+	}
 
-	async executeValidatedPrompt<T>(
+	/**
+	 * On module initialization, load configuration from the database
+	 */
+	async onModuleInit() {
+		try {
+			// Try to load configuration from database
+			const storedConfig = await this.configRepository.getConfig();
+
+			if (storedConfig) {
+				this.logger.log("Loaded OpenAI configuration from database");
+				this.configSettings = storedConfig;
+			} else {
+				this.logger.log("No stored configuration found, using defaults");
+			}
+		} catch (error) {
+			this.logger.error(`Failed to load configuration: ${error.message}`);
+			this.logger.log("Using default configuration");
+		}
+	}
+
+	/**
+	 * Update the configuration settings and persist to database
+	 */
+	async updateConfiguration(
+		newConfig: UpdateOpenAIConfigRequestDto,
+	): Promise<OpenAIConfigResponseDto> {
+		try {
+			// Use mapper to merge configurations
+			const updatedConfig = this.configMapper.toEntityForUpdate(
+				newConfig,
+				this.configSettings,
+			);
+
+			// Save to database
+			const savedConfig = await this.configRepository.saveConfig(updatedConfig);
+
+			// Update in-memory cache
+			this.configSettings = savedConfig;
+
+			this.logger.log("OpenAI service configuration updated and persisted");
+			return this.configMapper.toResponseDto(this.configSettings);
+		} catch (error) {
+			this.logger.error(`Failed to update configuration: ${error.message}`);
+			throw error;
+		}
+	}
+
+	/**
+	 * Reset configuration to system defaults and persist to database
+	 */
+	async resetConfiguration(): Promise<OpenAIConfigResponseDto> {
+		try {
+			// Reset in database
+			const defaults = await this.configRepository.resetToDefaults();
+
+			// Update in-memory cache
+			this.configSettings = defaults;
+
+			this.logger.log("OpenAI service configuration reset to defaults");
+			return this.configMapper.toResponseDto(this.configSettings);
+		} catch (error) {
+			this.logger.error(`Failed to reset configuration: ${error.message}`);
+			throw error;
+		}
+	}
+
+	/**
+	 * Get the current configuration settings
+	 */
+	getConfiguration(): OpenAIConfigResponseDto {
+		return this.configMapper.toResponseDto(this.configSettings);
+	}
+
+	async executeToolCall<T>(
 		prompt: string,
-		schema: z.ZodSchema<T>,
-		options: {
-			maxRetries?: number;
-			retryDelay?: number;
-		} = {},
+		tool: ToolSchema,
+		validator: ZodSchema<T>,
+		systemMessage?: string,
 	): Promise<OpenAIResponse<T>> {
-		const {
-			maxRetries = this.retryConfig.maxRetries,
-			retryDelay = this.retryConfig.retryDelay,
-		} = options;
+		// Use provided systemMessage or the current configSettings.systemMessage
+		const effectiveSystemMessage = systemMessage || this.configSettings.systemMessage;
 
-		let lastError: Error | null = null;
+		const toolDef = this.buildToolDefinition(tool);
+		let lastError: unknown;
 
-		for (let attempt = 1; attempt <= maxRetries; attempt++) {
+		// Use the current config settings for retries
+		for (let attempt = 1; attempt <= this.configSettings.maxRetries; attempt++) {
+			this.logAttempt(attempt, tool.name);
 			try {
-				const currentPrompt =
-					attempt === 1 ? prompt : this.addErrorFeedbackToPrompt(prompt, lastError);
-				const responseText = await this.sendOpenAIRequest(currentPrompt);
-				const parsed = JSON.parse(responseText);
-				const data = schema.parse(parsed);
-
-				// Return success response with guaranteed data
-				return {
-					status: OpenAIResponseStatus.SUCCESS,
-					data, // This will always be defined for SUCCESS status
-					originalPrompt: prompt,
-				};
-			} catch (error) {
-				lastError = error;
-
-				// Log the error
-				this.logPromptError(attempt, maxRetries, error);
-
-				if (attempt === maxRetries) {
-					// Return error response after all retries
-					return {
-						status: this.getErrorStatus(error),
-						error,
-						originalPrompt: prompt,
-						// No data field for error responses
-					};
+				const response = await this.callOpenAI(prompt, effectiveSystemMessage, toolDef);
+				const data = this.parseAndValidate(response, validator);
+				return this.successResponse(data, prompt, tool.name);
+			} catch (err) {
+				lastError = err;
+				const status = this.getErrorStatus(err);
+				this.logger.error(
+					`Attempt ${attempt} for ${tool.name} failed: ${status} - ${(err as Error).message}`,
+				);
+				if (attempt < this.configSettings.maxRetries) {
+					await this.backoff(attempt);
+				} else {
+					return this.errorResponse(err as Error, status, prompt);
 				}
-
-				// Wait before retrying
-				await this.delayNextAttempt(attempt, retryDelay);
 			}
 		}
 
-		// Should never reach here but TypeScript needs it
-		return {
-			status: OpenAIResponseStatus.UNKNOWN_ERROR,
-			error: "Max retries exceeded with no result",
-			originalPrompt: prompt,
-			// No data field for error responses
-		};
+		return this.errorResponse(lastError as Error, OpenAIResponseStatus.UNKNOWN_ERROR, prompt);
 	}
 
-	private getErrorStatus(error: Error): OpenAIErrorStatus {
-		if (error instanceof z.ZodError) {
-			return OpenAIResponseStatus.SCHEMA_VALIDATION_FAILED;
-		} else if (error instanceof SyntaxError) {
-			return OpenAIResponseStatus.INVALID_JSON;
-		} else if (error.name === "OpenAIError") {
-			return OpenAIResponseStatus.API_ERROR;
+	private buildToolDefinition(tool: ToolSchema): ChatCompletionToolDefinition {
+		return { type: "function", function: tool };
+	}
+
+	private async callOpenAI(
+		prompt: string,
+		systemMessage: string,
+		toolDef: ChatCompletionToolDefinition,
+	): Promise<ChatCompletion> {
+		const start = Date.now();
+		// Use current config settings
+		const response = await this.openai.chat.completions.create({
+			model: this.configSettings.model,
+			messages: [
+				{ role: "system", content: systemMessage },
+				{ role: "user", content: prompt },
+			],
+			tools: [toolDef],
+			tool_choice: "auto",
+			temperature: this.configSettings.temperature,
+		});
+		this.logger.debug(`API call duration: ${Date.now() - start}ms`);
+		return response;
+	}
+
+	private parseAndValidate<T>(response: ChatCompletion, validator: ZodSchema<T>): T {
+		const call = response.choices[0].message.tool_calls?.[0];
+		if (!call) {
+			throw new Error("No function call in response");
 		}
-		return OpenAIResponseStatus.UNKNOWN_ERROR;
-	}
-
-	private addErrorFeedbackToPrompt(originalPrompt: string, error: Error | null): string {
-		if (!error) return originalPrompt;
-
-		let errorFeedback = "";
-
-		if (error instanceof z.ZodError) {
-			// Extract specific validation issues
-			const issues = error.errors
-				.map((e) => `- ${e.path.join(".")}: ${e.message}`)
-				.join("\n");
-			errorFeedback = `
-                    Your previous response had these validation issues:
-                    ${issues}
-      
-                    Please fix these issues and ensure your response exactly matches the requested format.
-            `;
-		} else if (error instanceof SyntaxError) {
-			errorFeedback = `
-                    Your previous response was not valid JSON. 
-                    Please ensure you return a properly formatted JSON object.
-            `;
-		} else {
-			errorFeedback = `
-                    There was a problem with your previous response.
-                    Please ensure you follow the instructions exactly.
-            `;
+		const args = JSON.parse(call.function.arguments);
+		try {
+			return validator.parse(args);
+		} catch (e) {
+			throw e;
 		}
-
-		return `
-            ${originalPrompt}
-    
-            IMPORTANT: Previous attempt failed.
-            ${errorFeedback}
-    
-            Return ONLY the JSON object in the exact format specified.
-        `;
 	}
 
-	private logPromptError(attempt: number, maxRetries: number, error: Error): void {
-		console.error(
-			`Attempt ${attempt}/${maxRetries} failed:`,
-			error instanceof z.ZodError ? JSON.stringify(error.errors, null, 2) : error.message,
+	private async backoff(attempt: number) {
+		// Use current config settings
+		const delay = this.configSettings.retryDelay * 2 ** (attempt - 1);
+		this.logger.debug(`Waiting ${delay}ms before retry`);
+		await new Promise((res) => setTimeout(res, delay));
+	}
+
+	private logAttempt(attempt: number, toolName: string) {
+		this.logger.debug(
+			`Attempt ${attempt}/${this.configSettings.maxRetries} - tool: ${toolName}`,
 		);
 	}
 
-	private async delayNextAttempt(attempt: number, baseDelay: number): Promise<void> {
-		await new Promise((resolve) => setTimeout(resolve, baseDelay * Math.pow(2, attempt - 1)));
+	private successResponse<T>(data: T, prompt: string, toolName: string): OpenAIResponse<T> {
+		this.logger.debug(`Tool ${toolName} succeeded`);
+		return { status: OpenAIResponseStatus.SUCCESS, data, originalPrompt: prompt };
 	}
 
-	private async sendOpenAIRequest(prompt: string): Promise<string> {
-		try {
-			const response = await this.openai.chat.completions.create({
-				model: this.model,
-				messages: [
-					{
-						role: "system",
-						content: "You are a helpful assistant that responds in valid JSON format.",
-					},
-					{ role: "user", content: prompt },
-				],
-				temperature: this.temperature,
-				response_format: { type: "json_object" }, // If using a model that supports this
-			});
+	private errorResponse<T>(
+		error: Error,
+		status: OpenAIErrorStatus,
+		prompt: string,
+	): OpenAIResponse<T> {
+		return { status, error, originalPrompt: prompt };
+	}
 
-			const messageContent = response.choices[0].message.content;
-
-			if (!messageContent) {
-				throw new Error("OpenAI returned empty response");
-			}
-
-			return messageContent;
-		} catch (error) {
-			console.error("Error calling OpenAI:", error.message);
-			throw error; // Re-throw to be handled by the retry logic
-		}
+	private getErrorStatus(err: unknown): OpenAIErrorStatus {
+		if (err instanceof SyntaxError) return OpenAIResponseStatus.INVALID_JSON;
+		if (err instanceof ZodError) return OpenAIResponseStatus.SCHEMA_VALIDATION_FAILED;
+		if ((err as any).name === "OpenAIError") return OpenAIResponseStatus.API_ERROR;
+		return OpenAIResponseStatus.UNKNOWN_ERROR;
 	}
 }

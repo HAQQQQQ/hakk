@@ -14,6 +14,8 @@ export const OpenAITokens = {
 	MODEL: "OPENAI_MODEL",
 	TEMPERATURE: "OPENAI_TEMPERATURE",
 	RETRY_CONFIG: "OPENAI_RETRY_CONFIG",
+	SYSTEM_MESSAGE: "SYSTEM_MESSAGE",
+	DEFAULT_CONFIG: "OPENAI_DEFAULT_CONFIG",
 } as const;
 
 /**
@@ -72,4 +74,29 @@ export interface OpenAIErrorResponse {
 	status: OpenAIErrorStatus;
 	error: Error | string;
 	originalPrompt?: string;
+}
+
+// openai-tool.types.ts
+export type ToolSchema = {
+	name: string;
+	description?: string;
+	parameters: {
+		type: "object";
+		properties: Record<string, any>;
+		required?: string[];
+	};
+};
+
+// Defines the shape expected by the OpenAI client for tool calling
+export type ChatCompletionToolDefinition = {
+	type: "function";
+	function: ToolSchema;
+};
+
+export interface OpenAIConfigSettings {
+	model: OpenAIModel;
+	temperature: number;
+	maxRetries: number;
+	retryDelay: number;
+	systemMessage: string;
 }

@@ -1,6 +1,6 @@
+// src/modules/openai/openai.providers.ts
 import { Provider } from "@nestjs/common";
 import OpenAI from "openai";
-import { EnvConfig } from "@/config/env.config";
 import { OpenAIConfig } from "./openai.config";
 import { OpenAITokens } from "./openai.types";
 
@@ -8,35 +8,42 @@ import { OpenAITokens } from "./openai.types";
  * NestJS providers for OpenAI-related services
  */
 export const OpenAIProviders: Provider[] = [
+	// OpenAI client instance with API key validation
 	{
 		provide: OpenAITokens.CLIENT,
-		useFactory: () => {
-			const apiKey = EnvConfig.openaiApiKey;
-			if (!apiKey) {
-				throw new Error("OPENAI_API_KEY is not defined in environment variables.");
-			}
-			return new OpenAI({ apiKey });
-		},
+		useFactory: () => new OpenAI({ apiKey: OpenAIConfig.getApiKey() }),
 	},
+
+	// Default OpenAI model from environment config
 	{
 		provide: OpenAITokens.MODEL,
-		useFactory: () => {
-			// Model is already validated and converted in AppConfig
-			return EnvConfig.gptModel;
-		},
+		useFactory: () => OpenAIConfig.MODEL,
 	},
+
+	// Temperature for controlling response randomness
 	{
 		provide: OpenAITokens.TEMPERATURE,
-		useFactory: () => {
-			// Temperature is already validated in AppConfig
-			return EnvConfig.openaiTemperature;
-		},
+		useFactory: () => OpenAIConfig.TEMPERATURE,
 	},
+
+	// Retry configuration for API calls
 	{
 		provide: OpenAITokens.RETRY_CONFIG,
 		useValue: {
-			maxRetries: OpenAIConfig.DEFAULT_MAX_RETRIES,
-			retryDelay: OpenAIConfig.DEFAULT_RETRY_DELAY,
+			maxRetries: OpenAIConfig.MAX_RETRIES,
+			retryDelay: OpenAIConfig.RETRY_DELAY,
 		},
+	},
+
+	// Default system message for AI prompts
+	{
+		provide: OpenAITokens.SYSTEM_MESSAGE,
+		useValue: OpenAIConfig.SYSTEM_MESSAGE,
+	},
+
+	// Complete default configuration (alternative simplified approach)
+	{
+		provide: OpenAITokens.DEFAULT_CONFIG,
+		useFactory: () => OpenAIConfig.getDefaults(),
 	},
 ];

@@ -1,12 +1,16 @@
 // src/openai/openai.module.ts
 import { Module } from "@nestjs/common";
 import { OpenAIService } from "./openai.service";
-import { OpenAIController } from "./openai.controller";
 import { OpenAIProviders } from "./openai.provider";
+import { OpenAIConfigController } from "./openai.controller";
+import { SupabaseModule } from "../supabase/supabase.module";
+import { OpenAIConfigRepository } from "./openai-config.repository";
+import { OpenAIConfigMapper } from "./openai-config.mapper";
 
 @Module({
-	providers: [OpenAIService, ...OpenAIProviders],
-	controllers: [OpenAIController],
+	imports: [SupabaseModule],
+	providers: [...OpenAIProviders, OpenAIService, OpenAIConfigRepository, OpenAIConfigMapper],
+	controllers: [OpenAIConfigController],
 	exports: [OpenAIService],
 })
 export class OpenAIModule {}

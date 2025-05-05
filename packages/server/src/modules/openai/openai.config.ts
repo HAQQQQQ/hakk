@@ -1,17 +1,34 @@
 // src/modules/openai/openai.config.ts
+import { EnvConfig } from "@/config/env.config";
+import { OpenAIConfigSettings } from "./openai.types";
 
 /**
- * Configuration values for OpenAI API client operations
+ * Centralized configuration for OpenAI service
  */
 export const OpenAIConfig = {
-	/**
-	 * Default number of retry attempts for API calls
-	 */
-	DEFAULT_MAX_RETRIES: 3,
+	MAX_RETRIES: EnvConfig.openaiMaxRetries,
+	RETRY_DELAY: EnvConfig.openaiRetryDelay,
+	SYSTEM_MESSAGE: EnvConfig.openaiSystemMessage,
+	MODEL: EnvConfig.gptModel,
+	TEMPERATURE: EnvConfig.openaiTemperature,
 
-	/**
-	 * Default delay between retry attempts in milliseconds
-	 * This will be multiplied by 2^(attempt-1) for exponential backoff
-	 */
-	DEFAULT_RETRY_DELAY: 500,
+	// API key with validation (keeps function approach)
+	getApiKey: () => {
+		const apiKey = EnvConfig.openaiApiKey;
+		if (!apiKey) {
+			throw new Error("OPENAI_API_KEY is not defined in environment variables.");
+		}
+		return apiKey;
+	},
+
+	// Complete configuration object
+	getDefaults(): OpenAIConfigSettings {
+		return {
+			model: this.MODEL,
+			temperature: this.TEMPERATURE,
+			maxRetries: this.MAX_RETRIES,
+			retryDelay: this.RETRY_DELAY,
+			systemMessage: this.SYSTEM_MESSAGE,
+		};
+	},
 };
