@@ -11,8 +11,8 @@ interface OpenAIConfigRecord {
 	max_retries: number;
 	retry_delay: number;
 	system_message: string;
-	created_at: string;
-	updated_at: string;
+	created_at?: string;
+	updated_at?: string;
 }
 
 @Injectable()
@@ -77,7 +77,7 @@ export class OpenAIConfigRepository {
 				max_retries: config.maxRetries,
 				retry_delay: config.retryDelay,
 				system_message: config.systemMessage,
-				updated_at: new Date().toISOString(),
+				// updated_at: new Date().toISOString(),
 			};
 
 			let savedRecord: OpenAIConfigRecord;

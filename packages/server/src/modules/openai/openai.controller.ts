@@ -1,7 +1,7 @@
 // src/modules/openai/openai-config.controller.ts
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { OpenAIService } from "./openai.service";
-import { OpenAIConfigResponseDto, UpdateOpenAIConfigRequestDto } from "./openai-config.dto";
+import { OpenAIConfigResponseDto, UpdateOpenAIConfigRequestDto } from "./openai.dto";
 
 @Controller("openai/config")
 export class OpenAIConfigController {

@@ -8,12 +8,12 @@ import {
 	ToolSchema,
 } from "./openai.types";
 import type { OpenAIConfigSettings } from "./openai.types";
-import { OpenAIConfigResponseDto, UpdateOpenAIConfigRequestDto } from "./openai-config.dto";
+import { OpenAIConfigResponseDto, UpdateOpenAIConfigRequestDto } from "./openai.dto";
 import OpenAI from "openai";
 import { ZodError, ZodSchema } from "zod";
 import { ChatCompletion } from "openai/resources.mjs";
-import { OpenAIConfigRepository } from "./openai-config.repository";
-import { OpenAIConfigMapper } from "./openai-config.mapper";
+import { OpenAIConfigRepository } from "./openai.repository";
+import { OpenAIConfigMapper } from "./openai.mapper";
 
 @Injectable()
 export class OpenAIService implements OnModuleInit {

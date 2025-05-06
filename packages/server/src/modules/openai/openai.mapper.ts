@@ -2,7 +2,7 @@
 import { Injectable } from "@nestjs/common";
 import { IMapper } from "@/common/interfaces/mapper.interface";
 import { OpenAIConfigSettings } from "./openai.types";
-import { OpenAIConfigResponseDto, UpdateOpenAIConfigRequestDto } from "./openai-config.dto";
+import { OpenAIConfigResponseDto, UpdateOpenAIConfigRequestDto } from "./openai.dto";
 
 @Injectable()
 export class OpenAIConfigMapper
