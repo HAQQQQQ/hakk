@@ -14,6 +14,9 @@ import { PreComputeModule } from "./modules/precompute/pre-compute.module";
 import { MatchingModule } from "./modules/matching/matching.module";
 import { TranscriptionModule } from "./modules/transcription/transcription.module";
 import { SupabaseModule } from "./modules/supabase/supabase.module";
+import { DataModule } from "./modules/data/data.module";
+import { DataController } from "./modules/data/controllers/data.controller";
+import { DataService } from "./modules/data/services/data.service";
 
 @Module({
 	imports: [
@@ -27,6 +30,7 @@ import { SupabaseModule } from "./modules/supabase/supabase.module";
 		MatchingModule,
 		TranscriptionModule,
 		SupabaseModule,
+		DataModule,
 		// **** Tech Debt: Maybe use NestJS ConfigModule to fetch env stuff ****
 		// ConfigModule.forRoot({
 		//     // Order matters - later files override earlier ones
@@ -39,8 +43,8 @@ import { SupabaseModule } from "./modules/supabase/supabase.module";
 		//     isGlobal: true,
 		// }),
 	],
-	controllers: [AppController],
-	providers: [AppService, SupabaseService],
+	controllers: [AppController, DataController],
+	providers: [AppService, SupabaseService, DataService],
 	exports: [SupabaseService],
 })
 export class AppModule implements NestModule {
