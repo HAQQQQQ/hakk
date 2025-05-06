@@ -3,7 +3,6 @@ import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { UserModule } from "./modules/user/user.module";
 import { OpenAIModule } from "./modules/openai/openai.module";
-import { SupabaseService } from "./modules/supabase/supabase.service";
 import { TestModule } from "../test/test.module";
 import { RedisClientModule } from "./modules/redis-client/redis-client.module";
 import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
@@ -12,9 +11,7 @@ import { PreComputeModule } from "./modules/precompute/pre-compute.module";
 import { MatchingModule } from "./modules/matching/matching.module";
 import { TranscriptionModule } from "./modules/transcription/transcription.module";
 import { SupabaseModule } from "./modules/supabase/supabase.module";
-import { DataModule } from "./modules/pnl-data/data.module";
-import { DataController } from "./modules/pnl-data/controllers/pnl-data.controller";
-import { DataService } from "./modules/pnl-data/services/pnl-data.service";
+import { PnlDataModule } from "./modules/pnl-data/pnl-data.module";
 import { CsvParserModule } from "./modules/csv-parser/csv-parser.module";
 
 @Module({
@@ -27,7 +24,7 @@ import { CsvParserModule } from "./modules/csv-parser/csv-parser.module";
 		MatchingModule,
 		TranscriptionModule,
 		SupabaseModule,
-		DataModule,
+		PnlDataModule,
 		CsvParserModule,
 		// **** Tech Debt: Maybe use NestJS ConfigModule to fetch env stuff ****
 		// ConfigModule.forRoot({
@@ -41,9 +38,8 @@ import { CsvParserModule } from "./modules/csv-parser/csv-parser.module";
 		//     isGlobal: true,
 		// }),
 	],
-	controllers: [AppController, DataController],
-	providers: [AppService, SupabaseService, DataService],
-	exports: [SupabaseService],
+	controllers: [AppController],
+	providers: [AppService],
 })
 export class AppModule implements NestModule {
 	configure(consumer: MiddlewareConsumer) {

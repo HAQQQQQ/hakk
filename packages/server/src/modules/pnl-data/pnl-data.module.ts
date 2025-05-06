@@ -11,4 +11,4 @@ import { PnlDataController } from "./controllers/pnl-data.controller";
 	providers: [PnlDataService, PnlDataRepository],
 	controllers: [PnlDataController],
 })
-export class DataModule {}
+export class PnlDataModule {}

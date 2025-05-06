@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Post, UploadedFile, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { PnlDataService, ImportResult } from "../services/pnl-data.service";
 import { ImportCsvRequestDto } from "../dto/import-csv-request.dto";
