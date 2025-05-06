@@ -12,9 +12,10 @@ import { PreComputeModule } from "./modules/precompute/pre-compute.module";
 import { MatchingModule } from "./modules/matching/matching.module";
 import { TranscriptionModule } from "./modules/transcription/transcription.module";
 import { SupabaseModule } from "./modules/supabase/supabase.module";
-import { DataModule } from "./modules/data/data.module";
-import { DataController } from "./modules/data/controllers/data.controller";
-import { DataService } from "./modules/data/services/data.service";
+import { DataModule } from "./modules/pnl-data/data.module";
+import { DataController } from "./modules/pnl-data/controllers/pnl-data.controller";
+import { DataService } from "./modules/pnl-data/services/pnl-data.service";
+import { CsvParserModule } from "./modules/csv-parser/csv-parser.module";
 
 @Module({
 	imports: [
@@ -27,6 +28,7 @@ import { DataService } from "./modules/data/services/data.service";
 		TranscriptionModule,
 		SupabaseModule,
 		DataModule,
+		CsvParserModule,
 		// **** Tech Debt: Maybe use NestJS ConfigModule to fetch env stuff ****
 		// ConfigModule.forRoot({
 		//     // Order matters - later files override earlier ones

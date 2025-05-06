@@ -1,9 +1,9 @@
 import { SupabaseService } from "@/modules/supabase/supabase.service";
 import { Injectable } from "@nestjs/common";
-import { CSVRecord, ImportResult } from "../services/data.service";
+import { ImportResult } from "../services/pnl-data.service";
 
 @Injectable()
-export class DataRepository {
+export class PnlDataRepository {
 	private readonly TRADES_JSON_TABLE: string = "trades_json";
 
 	constructor(private readonly supabaseService: SupabaseService) {}
@@ -13,7 +13,7 @@ export class DataRepository {
 	 * @param tradeRecords - Array of trade records to insert
 	 * @returns Array of inserted records
 	 */
-	async insertTrades<T extends CSVRecord>(tradeRecords: ImportResult<T>): Promise<any[]> {
+	async insertTrades(tradeRecords: ImportResult): Promise<any[]> {
 		try {
 			const { data, error } = await this.supabaseService.client
 				.from(this.TRADES_JSON_TABLE)
