@@ -5,11 +5,11 @@ import { BrokerageFirm } from "../types/brokerage-firm.enum";
 export class ImportCsvRequestDto {
 	@IsString()
 	@IsNotEmpty()
-	userId: string;
+	userId!: string;
 
 	@IsEnum(BrokerageFirm, {
 		message: `firm must be one of: ${Object.values(BrokerageFirm).join(", ")}`,
 	})
 	@IsNotEmpty()
-	firm: BrokerageFirm;
+	firm!: BrokerageFirm;
 }

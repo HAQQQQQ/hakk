@@ -1,13 +1,13 @@
-export class ProfileNotFoundError extends Error {
+export class UserNotFoundError extends Error {
 	constructor(
-		message: string = "User profile not found",
+		message: string = "User not found",
 		public userId?: string,
 	) {
 		super(message);
-		this.name = "ProfileNotFoundError";
+		this.name = "UserNotFoundError";
 
 		// Ensures the correct prototype chain is maintained
-		Object.setPrototypeOf(this, ProfileNotFoundError.prototype);
+		Object.setPrototypeOf(this, UserNotFoundError.prototype);
 	}
 
 	toString() {

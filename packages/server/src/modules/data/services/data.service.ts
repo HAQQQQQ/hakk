@@ -1,7 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { parse, Parser, Options } from "csv-parse";
 import { Readable } from "stream";
 import { BrokerageFirm } from "../types/brokerage-firm.enum";
+import { DataRepository } from "../repo/data.repository";
+import { UserService } from "@/modules/user/services/user.service";
 
 /**
  * Interface for CSV Parser options with strong typing
@@ -22,7 +24,7 @@ export type CSVRecord<T = Record<string, string | number | boolean | null>> = T;
  * Response type for import operations
  */
 export interface ImportResult<T> {
-	imported: number;
+	imported?: number;
 	records: T[];
 	userId: string;
 	firm: BrokerageFirm;
@@ -30,6 +32,11 @@ export interface ImportResult<T> {
 
 @Injectable()
 export class DataService<T extends CSVRecord = CSVRecord> {
+	constructor(
+		private readonly dataRepository: DataRepository,
+		private readonly usersService: UserService,
+	) {}
+
 	/**
 	 * Imports and parses a CSV file from a multipart form upload
 	 * @param file - The uploaded file from Multer middleware
@@ -42,6 +49,11 @@ export class DataService<T extends CSVRecord = CSVRecord> {
 		firm: BrokerageFirm,
 		file: Express.Multer.File,
 	): Promise<ImportResult<T>> {
+		const userExists = await this.usersService.validateUser(userId);
+		// Move this to a nestjs guard in the future
+		if (!userExists) {
+			throw new NotFoundException(`User with ID "${userId}" not found`);
+		}
 		try {
 			// Create parser with options
 			const parserOptions: CSVParserOptions = {
@@ -51,7 +63,15 @@ export class DataService<T extends CSVRecord = CSVRecord> {
 			};
 
 			// Stream buffer through parser
-			const records = await this.parseCSVStream(file.buffer, parserOptions);
+			const records: T[] = await this.parseCSVStream(file.buffer, parserOptions);
+
+			// Persist the records to database
+			// Persist the records to database - fixed to pass individual parameters
+			const insertedRecords = await this.dataRepository.insertTrades<T>({
+				userId,
+				firm,
+				records,
+			} as ImportResult<T>);
 
 			// Here you could add additional processing:
 			// - Data validation
@@ -65,7 +85,7 @@ export class DataService<T extends CSVRecord = CSVRecord> {
 				records,
 				userId,
 				firm,
-			};
+			} as ImportResult<T>;
 		} catch (error: unknown) {
 			// Ensure type safety when handling errors
 			const message = error instanceof Error ? error.message : String(error);
