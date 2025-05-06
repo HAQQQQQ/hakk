@@ -76,15 +76,17 @@ export interface OpenAIErrorResponse {
 	originalPrompt?: string;
 }
 
+export type ToolSchemaParams = {
+	type: "object";
+	properties: Record<string, any>;
+	required?: string[];
+};
+
 // openai-tool.types.ts
 export type ToolSchema = {
 	name: string;
 	description?: string;
-	parameters: {
-		type: "object";
-		properties: Record<string, any>;
-		required?: string[];
-	};
+	parameters: ToolSchemaParams;
 };
 
 // Defines the shape expected by the OpenAI client for tool calling
