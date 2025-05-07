@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PromptBuilder } from "../prompt-builder.interface";
+import { PromptBuilder } from "../../prompt-builder.interface";
 
 @Injectable()
 export class PsychologyPlanPromptBuilder implements PromptBuilder<string[]> {

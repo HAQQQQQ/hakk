@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { TradingContext } from "../types/trading-sentiment.types";
-import { PromptBuilder } from "../prompt-builder.interface";
+import { PromptBuilder } from "../../prompt-builder.interface";
 
 @Injectable()
 export class ContextualPromptBuilder implements PromptBuilder<string, TradingContext> {
