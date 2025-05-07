@@ -3,6 +3,14 @@ import { OpenAIModule } from "../openai/openai.module";
 import { AgentFactory } from "./agent.factory";
 import { TradingSentimentAnalysisAgent } from "./trading-sentiment/trading-sentimental-analysis.agent";
 import { TradingPromptBuilderService } from "./trading-sentiment/services/prompt-builder.service";
+import {
+	BasePromptBuilder,
+	ContextualPromptBuilder,
+	IssuesPromptBuilder,
+	PsychologyPlanPromptBuilder,
+	ResultsAnalysisPromptBuilder,
+	TrendAnalysisPromptBuilder,
+} from "./trading-sentiment/prompts";
 
 /**
  * Module that provides all LLM agents
@@ -10,10 +18,18 @@ import { TradingPromptBuilderService } from "./trading-sentiment/services/prompt
 @Module({
 	imports: [OpenAIModule],
 	providers: [
+		// Main agent and service
 		TradingSentimentAnalysisAgent,
 		TradingPromptBuilderService,
 		AgentFactory,
-		// Add more agents here as needed
+
+		// All prompt builders
+		BasePromptBuilder,
+		ContextualPromptBuilder,
+		TrendAnalysisPromptBuilder,
+		ResultsAnalysisPromptBuilder,
+		IssuesPromptBuilder,
+		PsychologyPlanPromptBuilder,
 	],
 	exports: [
 		AgentFactory,
