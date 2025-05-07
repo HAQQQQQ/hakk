@@ -15,7 +15,8 @@ import {
 import { TradingPromptBuilderService } from "./services/prompt-builder.service";
 
 @Injectable()
-export class TradingSentimentAnalysisAgent extends BaseAgent<TradingSentimentAnalysis> {
+export class TradingSentimentAnalysisAgent extends BaseAgent {
+	//BaseAgent<TradingSentimentAnalysis> {
 	constructor(
 		openaiClient: OpenAIClientService,
 		private readonly promptBuilder: TradingPromptBuilderService,
@@ -74,9 +75,11 @@ export class TradingSentimentAnalysisAgent extends BaseAgent<TradingSentimentAna
 	 * @param journalEntry The trading journal entry text
 	 * @returns A comprehensive trading sentiment analysis
 	 */
-	async execute(journalEntry: string): Promise<TradingSentimentAnalysis> {
+	async execute<TradingSentimentAnalysis>(
+		journalEntry: string,
+	): Promise<TradingSentimentAnalysis> {
 		const prompt = this.promptBuilder.buildBasePrompt(journalEntry);
-		return this._execute(prompt);
+		return this._execute<TradingSentimentAnalysis>(prompt);
 	}
 
 	/**
@@ -90,7 +93,7 @@ export class TradingSentimentAnalysisAgent extends BaseAgent<TradingSentimentAna
 		context: TradingContext,
 	): Promise<TradingSentimentAnalysis> {
 		const prompt = this.promptBuilder.buildContextualPrompt(journalEntry, context);
-		return this._execute(prompt);
+		return this._execute<TradingSentimentAnalysis>(prompt);
 	}
 
 	/**
@@ -107,7 +110,7 @@ export class TradingSentimentAnalysisAgent extends BaseAgent<TradingSentimentAna
 		}>,
 	): Promise<TradingSentimentTrendAnalysis> {
 		const prompt = this.promptBuilder.buildTrendAnalysisPrompt(journalEntries);
-		return this._execute(prompt) as Promise<TradingSentimentTrendAnalysis>;
+		return this._execute<TradingSentimentTrendAnalysis>(prompt);
 	}
 
 	/**
@@ -131,7 +134,7 @@ export class TradingSentimentAnalysisAgent extends BaseAgent<TradingSentimentAna
 		},
 	): Promise<TradingSentimentPerformanceAnalysis> {
 		const prompt = this.promptBuilder.buildResultsAnalysisPrompt(journalEntry, results);
-		return this._execute(prompt) as Promise<TradingSentimentPerformanceAnalysis>;
+		return this._execute<TradingSentimentPerformanceAnalysis>(prompt);
 	}
 
 	/**
@@ -141,7 +144,7 @@ export class TradingSentimentAnalysisAgent extends BaseAgent<TradingSentimentAna
 	 */
 	async identifyPsychologicalIssues(journalEntry: string): Promise<PsychologicalIssuesAnalysis> {
 		const prompt = this.promptBuilder.buildIssuesPrompt(journalEntry);
-		return this._execute(prompt);
+		return this._execute<PsychologicalIssuesAnalysis>(prompt);
 	}
 
 	/**
@@ -151,6 +154,6 @@ export class TradingSentimentAnalysisAgent extends BaseAgent<TradingSentimentAna
 	 */
 	async createTradingPsychologyPlan(recentEntries: string[]): Promise<TradingPsychologyPlan> {
 		const prompt = this.promptBuilder.buildPsychologyPlanPrompt(recentEntries);
-		return this._execute(prompt);
+		return this._execute<TradingPsychologyPlan>(prompt);
 	}
 }

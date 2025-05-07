@@ -1,8 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { JournalReflectionAgent } from "./journal-reflection.agent";
+import { TradingSentimentAnalysisAgent } from "./trading-sentiment/trading-sentimental-analysis.agent";
 
 export enum AgentName {
-	JOURNAL_REFLECTION = "journal-reflection",
 	TRADING_SENTIMENT_ANALYSIS = "trading-sentiment-analysis",
 	// Add more agents here as needed
 }
@@ -12,30 +11,18 @@ export enum AgentName {
  * Provides a clean interface for external services to get agent instances
  */
 type AgentMap = {
-	[AgentName.JOURNAL_REFLECTION]: JournalReflectionAgent;
-	[AgentName.TRADING_SENTIMENT_ANALYSIS]: JournalReflectionAgent;
+	[AgentName.TRADING_SENTIMENT_ANALYSIS]: TradingSentimentAnalysisAgent;
 	// Add other agents here as needed
 };
 
-// Check at compile time that all enum keys are in AgentMap
-// type CheckAllEnumKeysAreMapped<T extends Record<AgentName, any>> = {
-//     [K in AgentName]: K extends keyof T ? T[K] : never;
-// };
-
-// // This will cause a type error if AgentMap doesn't have all AgentName keys
-// type EnsureAllAgentsMapped = CheckAllEnumKeysAreMapped<AgentMap>;
-
 @Injectable()
 export class AgentFactory {
-	private agents = new Map<AgentName, AgentMap[AgentName]>();
+	private agents = new Map<AgentName, any>();
 
 	constructor(
-		private readonly journalReflectionAgent: JournalReflectionAgent,
-		private readonly tradingSentimentAnalysisAgent: JournalReflectionAgent,
+		private readonly tradingSentimentAnalysisAgent: TradingSentimentAnalysisAgent,
 		// Add other agents here as they are created
-		// private readonly sentimentAnalysisAgent: SentimentAnalysisAgent,
 	) {
-		this.agents.set(AgentName.JOURNAL_REFLECTION, journalReflectionAgent);
 		this.agents.set(AgentName.TRADING_SENTIMENT_ANALYSIS, tradingSentimentAnalysisAgent);
 	}
 

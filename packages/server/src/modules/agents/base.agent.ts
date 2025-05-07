@@ -13,12 +13,12 @@ import { AgentName } from "./agent.factory";
  * Interface for LLM tool agents
  * Provides a consistent structure for creating agent classes
  */
-export interface LLMToolAgent<T> {
+export interface LLMToolAgent {
 	readonly name: AgentName;
 	readonly systemMessage: string;
 	getTool(): ToolSchema;
 	getSchema(): z.ZodTypeAny;
-	execute(prompt: string): Promise<T>;
+	execute<T>(prompt: string): Promise<T>;
 }
 
 /**
@@ -26,7 +26,7 @@ export interface LLMToolAgent<T> {
  * Provides common functionality and execution capabilities
  */
 @Injectable()
-export abstract class BaseAgent<T> implements LLMToolAgent<T> {
+export abstract class BaseAgent implements LLMToolAgent {
 	/**
 	 * @param openaiClient - OpenAI client service for making API calls
 	 * @param name - Unique identifier for this agent
@@ -60,14 +60,14 @@ export abstract class BaseAgent<T> implements LLMToolAgent<T> {
 		};
 	}
 
-	abstract execute(prompt: string): Promise<T>;
+	abstract execute<T>(prompt: string): Promise<T>;
 
 	/**
 	 * Execute the agent with the given prompt
 	 * @param prompt - The user's input prompt
 	 * @returns The structured response according to the agent's schema
 	 */
-	async _execute(prompt: string): Promise<T> {
+	async _execute<T>(prompt: string): Promise<T> {
 		const response = await this.openaiClient.executeToolCall<T>(
 			prompt,
 			this.getTool(),

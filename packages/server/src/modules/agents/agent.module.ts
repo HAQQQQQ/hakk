@@ -1,6 +1,5 @@
 import { Module } from "@nestjs/common";
 import { OpenAIModule } from "../openai/openai.module";
-import { JournalReflectionAgent } from "./journal-reflection.agent";
 import { AgentFactory } from "./agent.factory";
 import { TradingSentimentAnalysisAgent } from "./trading-sentiment/trading-sentimental-analysis.agent";
 import { TradingPromptBuilderService } from "./trading-sentiment/services/prompt-builder.service";
@@ -11,7 +10,6 @@ import { TradingPromptBuilderService } from "./trading-sentiment/services/prompt
 @Module({
 	imports: [OpenAIModule],
 	providers: [
-		JournalReflectionAgent,
 		TradingSentimentAnalysisAgent,
 		TradingPromptBuilderService,
 		AgentFactory,

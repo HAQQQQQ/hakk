@@ -1,8 +1,10 @@
-import { Injectable, InternalServerErrorException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { TranscriptionRepository } from "./transcription.repository";
-import { generateTranscriptionPrompt } from "./generate-transcription.prompt";
-import { JournalReflection, JournalReflectionAgent } from "../agents/journal-reflection.agent";
 import { AgentFactory, AgentName } from "../agents/agent.factory";
+import {
+	TradingContext,
+	TradingSentimentAnalysis,
+} from "../agents/trading-sentiment/types/trading-sentiment.types";
 
 @Injectable()
 export class TranscriptionService {
@@ -11,28 +13,56 @@ export class TranscriptionService {
 		private readonly agentFactory: AgentFactory,
 	) {}
 
-	async transcribeLogs(logs: string): Promise<JournalReflection> {
-		// If no logs provided, fetch them from the repository
-		if (!logs) {
-			logs = await this.transcriptionRepository.fetchLogs("123");
-		}
+	/**
+	 * Analyze a trading journal entry for sentiment and psychological patterns
+	 */
+	async analyzeTradingJournal(journalEntry: string): Promise<TradingSentimentAnalysis> {
+		// Get the trading sentiment agent from the factory
+		const tradingSentimentAgent = this.agentFactory.get(AgentName.TRADING_SENTIMENT_ANALYSIS);
 
-		// Generate the prompt for the reflection
-		const prompt = generateTranscriptionPrompt(logs);
+		// Execute the analysis
+		return tradingSentimentAgent.execute(journalEntry);
+	}
 
-		try {
-			// Use the JournalReflectionAgent to analyze the logs
-			// const journalReflectionAgent = this.agentFactory.getJournalReflectionAgent();
-			const journalAgent = this.agentFactory.get(AgentName.JOURNAL_REFLECTION);
-			const reflection = await journalAgent.execute(prompt);
+	/**
+	 * Analyze with trading context
+	 */
+	async analyzeWithContext(
+		journalEntry: string,
+		context: TradingContext,
+	): Promise<TradingSentimentAnalysis> {
+		const tradingSentimentAgent = this.agentFactory.get(AgentName.TRADING_SENTIMENT_ANALYSIS);
+		return tradingSentimentAgent.executeWithContext(journalEntry, context);
+	}
 
-			// Optionally save the reflection result
-			// await this.saveReflectionResult(reflection);
+	/**
+	 * Analyze trading results correlation with psychology
+	 */
+	async analyzeTradeResults(
+		journalEntry: string,
+		profitLoss: number,
+		trades: Array<{
+			ticker: string;
+			direction: "long" | "short";
+			result: "win" | "loss" | "breakeven";
+			profitLoss: number;
+			notes?: string;
+		}>,
+	) {
+		const tradingSentimentAgent = this.agentFactory.get(AgentName.TRADING_SENTIMENT_ANALYSIS);
 
-			return reflection;
-		} catch (error) {
-			console.error("Error analyzing journal logs:", error);
-			throw new InternalServerErrorException("Failed to analyze journal logs");
-		}
+		return tradingSentimentAgent.analyzeWithResults(journalEntry, {
+			profitLoss,
+			trades,
+			sessionNotes: "Analysis requested through TradingJournalService",
+		});
+	}
+
+	/**
+	 * Create a trading psychology improvement plan
+	 */
+	async createPsychologyPlan(journalEntries: string[]) {
+		const tradingSentimentAgent = this.agentFactory.get(AgentName.TRADING_SENTIMENT_ANALYSIS);
+		return tradingSentimentAgent.createTradingPsychologyPlan(journalEntries);
 	}
 }
