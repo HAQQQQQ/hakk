@@ -1,10 +1,5 @@
 // src/data/services/data.service.ts
-import {
-	Injectable,
-	NotFoundException,
-	BadRequestException,
-	InternalServerErrorException,
-} from "@nestjs/common";
+import { Injectable, BadRequestException, InternalServerErrorException } from "@nestjs/common";
 import { BrokerageFirm } from "../types/brokerage-firm.enum";
 import { PnlDataRepository } from "../repo/pnl-data.repository";
 import { UserService } from "@/modules/user/services/user.service";
@@ -21,7 +16,7 @@ export interface TimeRange {
 }
 
 export interface ImportResult {
-	imported?: number;
+	numberOfRows?: number;
 	records: CSVRecord[];
 	userId: string;
 	firm: BrokerageFirm;
@@ -33,7 +28,7 @@ export class PnlDataService {
 	constructor(
 		private readonly csvParser: CsvParserService,
 		private readonly dataRepository: PnlDataRepository,
-		private readonly usersService: UserService,
+		private readonly userService: UserService,
 	) {}
 
 	async importCsv(
@@ -41,96 +36,100 @@ export class PnlDataService {
 		firm: BrokerageFirm,
 		file: Express.Multer.File,
 	): Promise<ImportResult> {
-		// 1) ensure user exists
-		const exists = await this.usersService.validateUser(userId);
-		if (!exists) {
-			throw new NotFoundException(`User with ID "${userId}" not found`);
-		}
+		// 1) Validate + resolve user_firm_id
+		const userFirmId = await this.validateAndGetUserFirmId(userId, firm);
 
-		// 2) parse CSV, catching parse errors explicitly
-		let records: CSVRecord[];
-		const options: CSVParserOptions = {
-			columns: true,
-			skip_empty_lines: true,
-			trim: true,
-		};
+		// 2) Parse CSV into records
+		const records = await this.parseCsv(file.buffer);
+
+		// 3) Compute the time range
+		const timeRange = this.computeTimeRange(records);
+
+		// 4) Persist
+		await this.saveRecords(userFirmId, records, timeRange);
+
+		// 5) Build and return the result
+		return this.buildResult(userId, firm, records, timeRange);
+	}
+
+	private async validateAndGetUserFirmId(userId: string, firm: BrokerageFirm): Promise<number> {
+		// throws NotFoundException if user or firm not found
+		return this.userService.findUserFirmId(userId, firm);
+	}
+
+	private async parseCsv(buffer: Buffer): Promise<CSVRecord[]> {
 		try {
-			records = await this.csvParser.parseBuffer(file.buffer, options);
+			const options: CSVParserOptions = {
+				columns: true,
+				skip_empty_lines: true,
+				trim: true,
+			};
+			const records = await this.csvParser.parseBuffer(buffer, options);
 			if (records.length === 0) {
-				throw new Error("No records provided");
+				throw new BadRequestException("CSV contained no records");
 			}
+			return records;
 		} catch (err) {
 			if (err instanceof CsvParseError) {
 				throw new BadRequestException(`Invalid CSV format: ${err.message}`);
 			}
 			throw err;
 		}
+	}
 
-		// 3) compute min/max timestamps
-		const timeRange: TimeRange = this.getTimeRangeFromCsvRecords(records);
+	private computeTimeRange(records: CSVRecord[]): TimeRange {
+		// reuse your existing logic
+		const allMs: number[] = [];
+		for (const r of records) {
+			const e = r["EnteredAt"];
+			const x = r["ExitedAt"];
+			if (typeof e !== "string" || typeof x !== "string") {
+				throw new BadRequestException("Missing EnteredAt/ExitedAt fields");
+			}
+			const eMs = Date.parse(e);
+			const xMs = Date.parse(x);
+			if (isNaN(eMs) || isNaN(xMs)) {
+				throw new BadRequestException("Unparseable timestamps");
+			}
+			allMs.push(eMs, xMs);
+		}
+		return {
+			minTime: new Date(Math.min(...allMs)),
+			maxTime: new Date(Math.max(...allMs)),
+		};
+	}
 
-		// 4) persist & catch DB errors
+	private async saveRecords(
+		userFirmId: number,
+		records: CSVRecord[],
+		{ minTime, maxTime }: TimeRange,
+	) {
 		try {
 			await this.dataRepository.insertTrades({
-				user_id: userId,
-				firm,
+				user_firm_id: userFirmId,
 				records,
-				min_time: timeRange.minTime,
-				max_time: timeRange.maxTime,
+				min_time: minTime,
+				max_time: maxTime,
 			});
 		} catch (err) {
-			const msg = err instanceof Error ? err.message : String(err);
-			throw new InternalServerErrorException(`Failed to save CSV records: ${msg}`);
+			throw new InternalServerErrorException(
+				`Failed to save CSV records: ${err instanceof Error ? err.message : err}`,
+			);
 		}
+	}
 
-		// 4) return summary
+	private buildResult(
+		userId: string,
+		firm: BrokerageFirm,
+		records: CSVRecord[],
+		timeRange: TimeRange,
+	): ImportResult {
 		return {
-			imported: records.length,
+			numberOfRows: records.length,
 			records,
 			userId,
 			firm,
 			timeRange,
 		};
-	}
-
-	/**
-	 * Given an array of generic CSVRecord objects, find the earliest and
-	 * latest instants among the `EnteredAt` and `ExitedAt` fields.
-	 *
-	 * @param rows       An array of records, each with `EnteredAt` and `ExitedAt` strings
-	 * @param enterKey   The property name for entry time (default "EnteredAt")
-	 * @param exitKey    The property name for exit time  (default "ExitedAt")
-	 */
-	getTimeRangeFromCsvRecords(
-		rows: CSVRecord[],
-		enterKey: string = "EnteredAt",
-		exitKey: string = "ExitedAt",
-	): TimeRange {
-		const allMs: number[] = [];
-
-		for (const row of rows) {
-			const ent = row[enterKey];
-			const ext = row[exitKey];
-
-			if (typeof ent !== "string" || typeof ext !== "string") {
-				throw new Error(
-					`Missing or invalid timestamp fields on row: ${JSON.stringify(row)}`,
-				);
-			}
-
-			const entMs = Date.parse(ent);
-			const extMs = Date.parse(ext);
-
-			if (isNaN(entMs) || isNaN(extMs)) {
-				throw new Error(`Unable to parse timestamps: ${ent} / ${ext}`);
-			}
-
-			allMs.push(entMs, extMs);
-		}
-
-		const minMs = Math.min(...allMs);
-		const maxMs = Math.max(...allMs);
-
-		return { minTime: new Date(minMs), maxTime: new Date(maxMs) };
 	}
 }

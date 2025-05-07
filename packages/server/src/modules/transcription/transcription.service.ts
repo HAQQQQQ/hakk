@@ -1,5 +1,4 @@
 import { Injectable, InternalServerErrorException } from "@nestjs/common";
-import { OpenAIService } from "../openai/openai.service";
 import { TranscriptionRepository } from "./transcription.repository";
 import {
 	JournalReflection,
@@ -8,11 +7,12 @@ import {
 } from "./transcription-tool.schema";
 import { OpenAIResponseStatus } from "../openai/openai.types";
 import { generateTranscriptionPrompt } from "./generate-transcription.prompt";
+import { OpenAIClientService } from "../openai/openai-client.service";
 
 @Injectable()
 export class TranscriptionService {
 	constructor(
-		private readonly openAiService: OpenAIService,
+		private readonly openAiClientService: OpenAIClientService,
 		private readonly transcriptionRepository: TranscriptionRepository,
 	) {}
 
@@ -23,7 +23,7 @@ export class TranscriptionService {
 
 		const prompt = generateTranscriptionPrompt(logs);
 
-		const result = await this.openAiService.executeToolCall<JournalReflection>(
+		const result = await this.openAiClientService.executeToolCall<JournalReflection>(
 			prompt,
 			JournalReflectionTool,
 			JournalReflectionSchema,

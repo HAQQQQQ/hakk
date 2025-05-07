@@ -2,8 +2,7 @@ import { SupabaseService } from "@/modules/supabase/supabase.service";
 import { Injectable } from "@nestjs/common";
 
 export interface InsertTradeDto {
-	user_id: string;
-	firm: string;
+	user_firm_id: number;
 	records: any[];
 	min_time: Date;
 	max_time: Date;
