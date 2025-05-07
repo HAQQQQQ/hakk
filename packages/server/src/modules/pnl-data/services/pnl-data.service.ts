@@ -80,18 +80,18 @@ export class PnlDataService {
 	private computeTimeRange(records: CSVRecord[]): TimeRange {
 		// reuse your existing logic
 		const allMs: number[] = [];
-		for (const r of records) {
-			const e = r["EnteredAt"];
-			const x = r["ExitedAt"];
-			if (typeof e !== "string" || typeof x !== "string") {
+		for (const record of records) {
+			const enteredAt = record["EnteredAt"];
+			const exitedAt = record["ExitedAt"];
+			if (typeof enteredAt !== "string" || typeof exitedAt !== "string") {
 				throw new BadRequestException("Missing EnteredAt/ExitedAt fields");
 			}
-			const eMs = Date.parse(e);
-			const xMs = Date.parse(x);
-			if (isNaN(eMs) || isNaN(xMs)) {
+			const enteredAtMs = Date.parse(enteredAt);
+			const exitedAtMs = Date.parse(exitedAt);
+			if (isNaN(enteredAtMs) || isNaN(exitedAtMs)) {
 				throw new BadRequestException("Unparseable timestamps");
 			}
-			allMs.push(eMs, xMs);
+			allMs.push(enteredAtMs, exitedAtMs);
 		}
 		return {
 			minTime: new Date(Math.min(...allMs)),
