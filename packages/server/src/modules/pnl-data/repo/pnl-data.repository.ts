@@ -1,6 +1,13 @@
 import { SupabaseService } from "@/modules/supabase/supabase.service";
 import { Injectable } from "@nestjs/common";
-import { ImportResult } from "../services/pnl-data.service";
+
+export interface InsertTradeDto {
+	user_id: string;
+	firm: string;
+	records: any[];
+	min_time: Date;
+	max_time: Date;
+}
 
 @Injectable()
 export class PnlDataRepository {
@@ -13,7 +20,7 @@ export class PnlDataRepository {
 	 * @param tradeRecords - Array of trade records to insert
 	 * @returns Array of inserted records
 	 */
-	async insertTrades(tradeRecords: ImportResult): Promise<any[]> {
+	async insertTrades(tradeRecords: InsertTradeDto): Promise<any[]> {
 		try {
 			const { data, error } = await this.supabaseService.client
 				.from(this.TRADES_JSON_TABLE)

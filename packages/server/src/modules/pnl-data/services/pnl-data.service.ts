@@ -15,11 +15,17 @@ import {
 } from "@/modules/csv-parser/csv-parser.service";
 import { CsvParseError } from "@/modules/csv-parser/csv-parse-error";
 
+export interface TimeRange {
+	minTime: Date;
+	maxTime: Date;
+}
+
 export interface ImportResult {
 	imported?: number;
 	records: CSVRecord[];
 	userId: string;
 	firm: BrokerageFirm;
+	timeRange: TimeRange;
 }
 
 @Injectable()
@@ -50,6 +56,9 @@ export class PnlDataService {
 		};
 		try {
 			records = await this.csvParser.parseBuffer(file.buffer, options);
+			if (records.length === 0) {
+				throw new Error("No records provided");
+			}
 		} catch (err) {
 			if (err instanceof CsvParseError) {
 				throw new BadRequestException(`Invalid CSV format: ${err.message}`);
@@ -57,12 +66,17 @@ export class PnlDataService {
 			throw err;
 		}
 
-		// 3) persist & catch DB errors
+		// 3) compute min/max timestamps
+		const timeRange: TimeRange = this.getTimeRangeFromCsvRecords(records);
+
+		// 4) persist & catch DB errors
 		try {
 			await this.dataRepository.insertTrades({
-				userId,
+				user_id: userId,
 				firm,
 				records,
+				min_time: timeRange.minTime,
+				max_time: timeRange.maxTime,
 			});
 		} catch (err) {
 			const msg = err instanceof Error ? err.message : String(err);
@@ -75,6 +89,48 @@ export class PnlDataService {
 			records,
 			userId,
 			firm,
+			timeRange,
 		};
+	}
+
+	/**
+	 * Given an array of generic CSVRecord objects, find the earliest and
+	 * latest instants among the `EnteredAt` and `ExitedAt` fields.
+	 *
+	 * @param rows       An array of records, each with `EnteredAt` and `ExitedAt` strings
+	 * @param enterKey   The property name for entry time (default "EnteredAt")
+	 * @param exitKey    The property name for exit time  (default "ExitedAt")
+	 */
+	getTimeRangeFromCsvRecords(
+		rows: CSVRecord[],
+		enterKey: string = "EnteredAt",
+		exitKey: string = "ExitedAt",
+	): TimeRange {
+		const allMs: number[] = [];
+
+		for (const row of rows) {
+			const ent = row[enterKey];
+			const ext = row[exitKey];
+
+			if (typeof ent !== "string" || typeof ext !== "string") {
+				throw new Error(
+					`Missing or invalid timestamp fields on row: ${JSON.stringify(row)}`,
+				);
+			}
+
+			const entMs = Date.parse(ent);
+			const extMs = Date.parse(ext);
+
+			if (isNaN(entMs) || isNaN(extMs)) {
+				throw new Error(`Unable to parse timestamps: ${ent} / ${ext}`);
+			}
+
+			allMs.push(entMs, extMs);
+		}
+
+		const minMs = Math.min(...allMs);
+		const maxMs = Math.max(...allMs);
+
+		return { minTime: new Date(minMs), maxTime: new Date(maxMs) };
 	}
 }
