@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { TradingSentimentAnalysisAgent } from "./trading-sentiment/trading-sentimental-analysis.agent";
+import { LLMToolAgent } from "./base.agent";
 
 export enum AgentName {
 	TRADING_SENTIMENT_ANALYSIS = "trading-sentiment-analysis",
@@ -17,7 +18,7 @@ type AgentMap = {
 
 @Injectable()
 export class AgentFactory {
-	private agents = new Map<AgentName, any>();
+	private agents = new Map<AgentName, LLMToolAgent>();
 
 	constructor(
 		private readonly tradingSentimentAnalysisAgent: TradingSentimentAnalysisAgent,
