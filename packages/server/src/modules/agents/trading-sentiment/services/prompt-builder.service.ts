@@ -1,5 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { TradingContext } from "../types/trading-sentiment.types";
+import {
+	JournalEntryWithMetadata,
+	TradingContext,
+	TradingSessionResults,
+} from "../types/trading-sentiment.types";
 import { BasePromptBuilder } from "../prompts/base-prompt";
 import { ContextualPromptBuilder } from "../prompts/contextual-prompt";
 import { TrendAnalysisPromptBuilder } from "../prompts/trend-analysis-prompt";
@@ -35,34 +39,14 @@ export class TradingPromptBuilderService {
 	/**
 	 * Build a prompt for trend analysis across multiple journal entries
 	 */
-	buildTrendAnalysisPrompt(
-		journalEntries: Array<{
-			entry: string;
-			timestamp: Date;
-			tradingResults?: string;
-			marketConditions?: string;
-		}>,
-	): string {
+	buildTrendAnalysisPrompt(journalEntries: JournalEntryWithMetadata[]): string {
 		return this.trendAnalysisPromptBuilder.build(journalEntries);
 	}
 
 	/**
 	 * Build a prompt for analysis with trading results
 	 */
-	buildResultsAnalysisPrompt(
-		journalEntry: string,
-		results: {
-			profitLoss: number;
-			trades: Array<{
-				ticker: string;
-				direction: "long" | "short";
-				result: "win" | "loss" | "breakeven";
-				profitLoss: number;
-				notes?: string;
-			}>;
-			sessionNotes?: string;
-		},
-	): string {
+	buildResultsAnalysisPrompt(journalEntry: string, results: TradingSessionResults): string {
 		return this.resultsAnalysisPromptBuilder.build(journalEntry, results);
 	}
 

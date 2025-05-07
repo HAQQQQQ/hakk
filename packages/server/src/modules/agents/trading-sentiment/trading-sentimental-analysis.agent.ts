@@ -11,6 +11,8 @@ import {
 	PsychologicalIssuesAnalysis,
 	TradingPsychologyPlan,
 	TradingContext,
+	JournalEntryWithMetadata,
+	TradingSessionResults,
 } from "./types/trading-sentiment.types";
 import { TradingPromptBuilderService } from "./services/prompt-builder.service";
 
@@ -102,12 +104,7 @@ export class TradingSentimentAnalysisAgent extends BaseAgent {
 	 * @returns Sentiment analysis with trading psychology trends
 	 */
 	async analyzeTradingJournalTrend(
-		journalEntries: Array<{
-			entry: string;
-			timestamp: Date;
-			tradingResults?: string;
-			marketConditions?: string;
-		}>,
+		journalEntries: JournalEntryWithMetadata[],
 	): Promise<TradingSentimentTrendAnalysis> {
 		const prompt = this.promptBuilder.buildTrendAnalysisPrompt(journalEntries);
 		return this._execute<TradingSentimentTrendAnalysis>(prompt);
@@ -121,17 +118,7 @@ export class TradingSentimentAnalysisAgent extends BaseAgent {
 	 */
 	async analyzeWithResults(
 		journalEntry: string,
-		results: {
-			profitLoss: number;
-			trades: Array<{
-				ticker: string;
-				direction: "long" | "short";
-				result: "win" | "loss" | "breakeven";
-				profitLoss: number;
-				notes?: string;
-			}>;
-			sessionNotes?: string;
-		},
+		results: TradingSessionResults,
 	): Promise<TradingSentimentPerformanceAnalysis> {
 		const prompt = this.promptBuilder.buildResultsAnalysisPrompt(journalEntry, results);
 		return this._execute<TradingSentimentPerformanceAnalysis>(prompt);

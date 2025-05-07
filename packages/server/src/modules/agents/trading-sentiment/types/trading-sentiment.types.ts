@@ -95,3 +95,30 @@ export interface TradingContext {
 	tradingPlan?: string;
 	tickers?: string[];
 }
+
+export interface JournalEntryWithMetadata {
+	entry: string;
+	timestamp: Date;
+	tradingResults?: string;
+	marketConditions?: string;
+}
+
+/**
+ * Information about a specific trade
+ */
+export interface TradeInfo {
+	ticker: string;
+	direction: "long" | "short";
+	result: "win" | "loss" | "breakeven";
+	profitLoss: number;
+	notes?: string;
+}
+
+/**
+ * Complete trading session results
+ */
+export interface TradingSessionResults {
+	profitLoss: number;
+	trades: TradeInfo[];
+	sessionNotes?: string;
+}
