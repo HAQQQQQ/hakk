@@ -8,7 +8,6 @@ import { RedisClientModule } from "./modules/redis-client/redis-client.module";
 import { ApiAuthMiddleware } from "./common/middlewares/api-auth.middleware";
 import { EnvConfig } from "./config/env.config";
 import { PreComputeModule } from "./modules/precompute/pre-compute.module";
-import { MatchingModule } from "./modules/matching/matching.module";
 import { TranscriptionModule } from "./modules/transcription/transcription.module";
 import { SupabaseModule } from "./modules/supabase/supabase.module";
 import { PnlDataModule } from "./modules/pnl-data/pnl-data.module";
@@ -21,7 +20,6 @@ import { CsvParserModule } from "./modules/csv-parser/csv-parser.module";
 		OpenAIModule,
 		RedisClientModule,
 		PreComputeModule,
-		MatchingModule,
 		TranscriptionModule,
 		SupabaseModule,
 		PnlDataModule,
