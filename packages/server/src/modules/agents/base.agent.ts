@@ -7,7 +7,7 @@ import {
 } from "@/modules/openai/openai.types";
 import { OpenAIClientService } from "../openai/openai-client.service";
 import { Injectable } from "@nestjs/common";
-import { AgentName } from "./agent-name.enum";
+import { AgentName } from "./agent.factory";
 
 /**
  * Interface for LLM tool agents

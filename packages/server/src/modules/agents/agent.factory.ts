@@ -1,6 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { JournalReflectionAgent, JournalReflection } from "./journal-reflection.agent";
-import { BaseAgent, LLMToolAgent } from "./base.agent";
+import { JournalReflectionAgent } from "./journal-reflection.agent";
 
 export enum AgentName {
 	JOURNAL_REFLECTION = "journal-reflection",
@@ -14,19 +13,30 @@ export enum AgentName {
  */
 type AgentMap = {
 	[AgentName.JOURNAL_REFLECTION]: JournalReflectionAgent;
+	[AgentName.SENTIMENT_ANALYSIS]: JournalReflectionAgent;
 	// Add other agents here as needed
 };
 
+// Check at compile time that all enum keys are in AgentMap
+// type CheckAllEnumKeysAreMapped<T extends Record<AgentName, any>> = {
+//     [K in AgentName]: K extends keyof T ? T[K] : never;
+// };
+
+// // This will cause a type error if AgentMap doesn't have all AgentName keys
+// type EnsureAllAgentsMapped = CheckAllEnumKeysAreMapped<AgentMap>;
+
 @Injectable()
 export class AgentFactory {
-	myMap: Map<keyof AgentMap, AgentMap[keyof AgentMap]> = new Map();
+	private agents = new Map<AgentName, AgentMap[AgentName]>();
 
 	constructor(
 		private readonly journalReflectionAgent: JournalReflectionAgent,
+		private readonly sentimentAnalysisAgent: JournalReflectionAgent,
 		// Add other agents here as they are created
 		// private readonly sentimentAnalysisAgent: SentimentAnalysisAgent,
 	) {
-		this.myMap.set(AgentName.JOURNAL_REFLECTION, journalReflectionAgent);
+		this.agents.set(AgentName.JOURNAL_REFLECTION, journalReflectionAgent);
+		this.agents.set(AgentName.SENTIMENT_ANALYSIS, sentimentAnalysisAgent);
 	}
 
 	/**
@@ -36,14 +46,10 @@ export class AgentFactory {
 	 * @returns The requested agent instance with the correct type.
 	 */
 	get<K extends keyof AgentMap>(agentName: K): AgentMap[K] {
-		const agent = this.myMap.get(agentName);
+		const agent = this.agents.get(agentName);
 		if (!agent) {
 			throw new Error(`Agent with name "${agentName}" not found.`);
 		}
 		return agent as AgentMap[K];
 	}
-
-	// getJournalReflectionAgent(): JournalReflectionAgent {
-	// 	return this.journalReflectionAgent;
-	// }
 }

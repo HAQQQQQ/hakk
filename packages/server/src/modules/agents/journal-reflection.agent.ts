@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Injectable } from "@nestjs/common";
 import { BaseAgent } from "./base.agent";
 import { OpenAIClientService } from "../openai/openai-client.service";
-import { AgentName } from "./agent-name.enum";
+import { AgentName } from "./agent.factory";
 
 // Export a type for easy use with z.infer
 export type JournalReflection = z.infer<typeof JournalReflectionAgent.schema>;
@@ -35,13 +35,4 @@ export class JournalReflectionAgent extends BaseAgent<JournalReflection> {
 	async execute(prompt: string): Promise<JournalReflection> {
 		return this._execute(prompt);
 	}
-
-	// /**
-	//  * Execute the journal reflection agent
-	//  * @param prompt - The journal entry to analyze
-	//  * @returns A structured journal reflection analysis
-	//  */
-	// async analyzeJournal(prompt: string): Promise<JournalReflection> {
-	//     return this.execute<JournalReflection>(prompt);
-	// }
 }

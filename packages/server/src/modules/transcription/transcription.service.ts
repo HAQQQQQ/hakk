@@ -2,8 +2,7 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { TranscriptionRepository } from "./transcription.repository";
 import { generateTranscriptionPrompt } from "./generate-transcription.prompt";
 import { JournalReflection, JournalReflectionAgent } from "../agents/journal-reflection.agent";
-import { AgentFactory } from "../agents/agent.factory";
-import { AgentName } from "../agents/agent-name.enum";
+import { AgentFactory, AgentName } from "../agents/agent.factory";
 
 @Injectable()
 export class TranscriptionService {
