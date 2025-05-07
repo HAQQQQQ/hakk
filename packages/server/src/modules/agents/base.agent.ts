@@ -21,6 +21,24 @@ export interface LLMToolAgent {
 	execute<T>(prompt: string): Promise<T>;
 }
 
+export interface RetryOptions {
+	maxRetries: number;
+	initialDelayMs: number;
+	maxDelayMs: number;
+	backoffFactor: number;
+	jitter: boolean;
+	shouldRetry: (error: any) => boolean;
+}
+
+const DefaultRetryConfig: RetryOptions = {
+	maxRetries: 3,
+	initialDelayMs: 200,
+	maxDelayMs: 30000,
+	backoffFactor: 3,
+	jitter: true,
+	shouldRetry: (error) => error.status === 429 || error.status >= 500,
+};
+
 /**
  * Abstract base class for LLM tool agents
  * Provides common functionality and execution capabilities
@@ -40,6 +58,7 @@ export abstract class BaseAgent implements LLMToolAgent {
 		public readonly systemMessage: string,
 		protected readonly toolName: string,
 		protected readonly toolDescription: string,
+		protected readonly retryOptions: RetryOptions = DefaultRetryConfig,
 	) {}
 
 	/**
@@ -84,5 +103,68 @@ export abstract class BaseAgent implements LLMToolAgent {
 				}`,
 			);
 		}
+	}
+
+	async executeWithRetry<T>(
+		prompt: string,
+		retryOptions: RetryOptions = this.retryOptions,
+	): Promise<T> {
+		return this.retry(() => this.execute<T>(prompt), retryOptions);
+	}
+
+	/**
+	 * Retries an operation with exponential backoff
+	 * @param operation Function to retry
+	 * @param options Retry configuration options
+	 * @returns Result of the operation
+	 */
+	private async retry<T>(
+		operation: () => Promise<T>,
+		options: RetryOptions = {
+			maxRetries: 3,
+			initialDelayMs: 100,
+			maxDelayMs: 10000,
+			backoffFactor: 2,
+			jitter: true,
+			shouldRetry: () => true,
+		},
+	): Promise<T> {
+		let attempt = 0;
+		let delay = options.initialDelayMs;
+
+		while (attempt < options.maxRetries) {
+			try {
+				return await operation();
+			} catch (error) {
+				attempt++;
+
+				// Check if we should retry
+				if (attempt >= options.maxRetries || !options.shouldRetry(error)) {
+					throw error; // Rethrow if max retries reached or retry condition not met
+				}
+
+				// Calculate exponential backoff with optional jitter
+				if (options.jitter) {
+					// Add random jitter between 0-30% of the current delay
+					const jitterAmount = delay * 0.3 * Math.random();
+					delay = Math.min(
+						options.maxDelayMs,
+						delay * options.backoffFactor + jitterAmount,
+					);
+				} else {
+					delay = Math.min(options.maxDelayMs, delay * options.backoffFactor);
+				}
+
+				// Log retry attempt (optional)
+				console.log(
+					`Retry attempt ${attempt}/${options.maxRetries}. Waiting ${delay}ms before next attempt.`,
+				);
+
+				// Wait for the calculated delay
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			}
+		}
+
+		throw new Error("Retry failed after maximum attempts");
 	}
 }

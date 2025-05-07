@@ -1,4 +1,3 @@
-// src/modules/openai/openai.service.ts
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import OpenAI from "openai";
 import {
@@ -23,7 +22,7 @@ export class OpenAIClientService {
 	) {}
 
 	/**
-	 * Call OpenAI with function‐calling.  Retries & parses according to current config.
+	 * Call OpenAI with function‐calling. Parses according to current config.
 	 */
 	async executeToolCall<T>(
 		prompt: string,
@@ -35,29 +34,15 @@ export class OpenAIClientService {
 		const systemMessage = overrideSystemMessage ?? cfg.systemMessage;
 		const toolDef = this.buildToolDefinition(tool);
 
-		let lastError: unknown;
-		for (let attempt = 1; attempt <= cfg.maxRetries; attempt++) {
-			this.logger.debug(`Attempt ${attempt}/${cfg.maxRetries} for tool ${tool.name}`);
-			try {
-				const response = await this.callOpenAI(prompt, systemMessage, toolDef, cfg);
-				const data = this.parseAndValidate(response, validator);
-				return this.successResponse(data, prompt, tool.name);
-			} catch (err) {
-				lastError = err;
-				const status = this.getErrorStatus(err);
-				this.logger.error(
-					`Attempt ${attempt} failed (${status}): ${(err as Error).message}`,
-				);
-				if (attempt < cfg.maxRetries) {
-					await this.backoff(attempt, cfg.retryDelay);
-				} else {
-					return this.errorResponse(err as Error, status, prompt);
-				}
-			}
+		try {
+			const response = await this.callOpenAI(prompt, systemMessage, toolDef, cfg);
+			const data = this.parseAndValidate(response, validator);
+			return this.successResponse(data, prompt, tool.name);
+		} catch (err) {
+			const status = this.getErrorStatus(err);
+			this.logger.error(`Tool call failed (${status}): ${(err as Error).message}`);
+			return this.errorResponse(err as Error, status, prompt);
 		}
-
-		// should not reach here
-		return this.errorResponse(lastError as Error, OpenAIResponseStatus.UNKNOWN_ERROR, prompt);
 	}
 
 	private buildToolDefinition(tool: ToolSchema): ChatCompletionToolDefinition {
@@ -95,12 +80,6 @@ export class OpenAIClientService {
 			if (e instanceof ZodError) throw e;
 			throw new Error(`Validation error: ${(e as Error).message}`);
 		}
-	}
-
-	private async backoff(attempt: number, baseDelay: number) {
-		const delay = baseDelay * 2 ** (attempt - 1);
-		this.logger.debug(`Waiting ${delay}ms before retry`);
-		await new Promise((r) => setTimeout(r, delay));
 	}
 
 	private successResponse<T>(data: T, prompt: string, toolName: string): OpenAIResponse<T> {

@@ -16,17 +16,7 @@ import {
 } from "./types/trading-sentiment.types";
 import { TradingPromptBuilderService } from "./services/prompt-builder.service";
 
-@Injectable()
-export class TradingSentimentAnalysisAgent extends BaseAgent {
-	//BaseAgent<TradingSentimentAnalysis> {
-	constructor(
-		openaiClient: OpenAIClientService,
-		private readonly promptBuilder: TradingPromptBuilderService,
-	) {
-		super(
-			openaiClient,
-			AgentName.TRADING_SENTIMENT_ANALYSIS,
-			`You are an expert trading psychologist and sentiment analyst specializing in day trading.
+const systemMessage = `You are an expert trading psychologist and sentiment analyst specializing in day trading.
       You analyze traders' journal entries to extract insights about their psychological state, 
       emotional patterns, cognitive biases, and trading decision quality.
       
@@ -62,7 +52,19 @@ export class TradingSentimentAnalysisAgent extends BaseAgent {
       - Managing emotions during market volatility
       
       Assume the trader is using this analysis to improve their performance and 
-      psychological approach to trading.`,
+      psychological approach to trading.`;
+
+@Injectable()
+export class TradingSentimentAnalysisAgent extends BaseAgent {
+	//BaseAgent<TradingSentimentAnalysis> {
+	constructor(
+		openaiClient: OpenAIClientService,
+		private readonly promptBuilder: TradingPromptBuilderService,
+	) {
+		super(
+			openaiClient,
+			AgentName.TRADING_SENTIMENT_ANALYSIS,
+			systemMessage,
 			"analyze_trading_sentiment",
 			"You analyze day trading journal entries to extract detailed psychological insights, emotions, cognitive biases, and actionable recommendations to improve trading performance.",
 		);
