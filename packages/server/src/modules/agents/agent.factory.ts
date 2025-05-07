@@ -3,7 +3,7 @@ import { JournalReflectionAgent } from "./journal-reflection.agent";
 
 export enum AgentName {
 	JOURNAL_REFLECTION = "journal-reflection",
-	SENTIMENT_ANALYSIS = "sentiment-analysis",
+	TRADING_SENTIMENT_ANALYSIS = "trading-sentiment-analysis",
 	// Add more agents here as needed
 }
 
@@ -13,7 +13,7 @@ export enum AgentName {
  */
 type AgentMap = {
 	[AgentName.JOURNAL_REFLECTION]: JournalReflectionAgent;
-	[AgentName.SENTIMENT_ANALYSIS]: JournalReflectionAgent;
+	[AgentName.TRADING_SENTIMENT_ANALYSIS]: JournalReflectionAgent;
 	// Add other agents here as needed
 };
 
@@ -31,12 +31,12 @@ export class AgentFactory {
 
 	constructor(
 		private readonly journalReflectionAgent: JournalReflectionAgent,
-		private readonly sentimentAnalysisAgent: JournalReflectionAgent,
+		private readonly tradingSentimentAnalysisAgent: JournalReflectionAgent,
 		// Add other agents here as they are created
 		// private readonly sentimentAnalysisAgent: SentimentAnalysisAgent,
 	) {
 		this.agents.set(AgentName.JOURNAL_REFLECTION, journalReflectionAgent);
-		this.agents.set(AgentName.SENTIMENT_ANALYSIS, sentimentAnalysisAgent);
+		this.agents.set(AgentName.TRADING_SENTIMENT_ANALYSIS, tradingSentimentAnalysisAgent);
 	}
 
 	/**

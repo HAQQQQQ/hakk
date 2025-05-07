@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { OpenAIModule } from "../openai/openai.module";
 import { JournalReflectionAgent } from "./journal-reflection.agent";
 import { AgentFactory } from "./agent.factory";
-import { SentimentAnalysisAgent } from "./sentimental-analysis.agent";
+import { TradingSentimentAnalysisAgent } from "./trading-sentimental-analysis.agent";
 
 /**
  * Module that provides all LLM agents
@@ -11,7 +11,7 @@ import { SentimentAnalysisAgent } from "./sentimental-analysis.agent";
 	imports: [OpenAIModule],
 	providers: [
 		JournalReflectionAgent,
-		SentimentAnalysisAgent,
+		TradingSentimentAnalysisAgent,
 		AgentFactory,
 		// Add more agents here as needed
 	],
