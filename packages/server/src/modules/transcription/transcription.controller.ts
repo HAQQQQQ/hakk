@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Post } from "@nestjs/common";
 import { TranscriptionService } from "./transcription.service";
-import { JournalReflection } from "./transcription-tool.schema";
+import { JournalReflection } from "../agents/journal-reflection.agent";
 
 @Controller("transcription")
 export class TranscriptionController {

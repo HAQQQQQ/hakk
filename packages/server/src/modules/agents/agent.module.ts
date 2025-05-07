@@ -1,9 +1,19 @@
 import { Module } from "@nestjs/common";
-import { AgentRegistryService } from "./agent-registry.service";
-import { OpenAIClientService } from "../openai/openai-client.service";
+import { OpenAIModule } from "../openai/openai.module";
+import { JournalReflectionAgent } from "./journal-reflection.agent";
 
+/**
+ * Module that provides all LLM agents
+ */
 @Module({
-	providers: [AgentRegistryService, OpenAIClientService],
-	exports: [AgentRegistryService],
+	imports: [OpenAIModule],
+	providers: [
+		JournalReflectionAgent,
+		// Add more agents here as needed
+	],
+	exports: [
+		JournalReflectionAgent,
+		// Export any agents that should be accessible outside this module
+	],
 })
-export class AgentModule {}
+export class AgentsModule {}

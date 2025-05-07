@@ -4,10 +4,10 @@ import { TranscriptionController } from "./transcription.controller";
 import { TranscriptionRepository } from "./transcription.repository";
 import { SupabaseModule } from "../supabase/supabase.module";
 import { OpenAIModule } from "../openai/openai.module";
-import { AgentRegistryService } from "../agents/agent-registry.service";
+import { AgentsModule } from "../agents/agent.module";
 
 @Module({
-	imports: [SupabaseModule, OpenAIModule, AgentRegistryService],
+	imports: [SupabaseModule, OpenAIModule, AgentsModule],
 	controllers: [TranscriptionController],
 	providers: [TranscriptionService, TranscriptionRepository],
 })

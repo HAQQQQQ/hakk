@@ -12,6 +12,7 @@ import { TranscriptionModule } from "./modules/transcription/transcription.modul
 import { SupabaseModule } from "./modules/supabase/supabase.module";
 import { PnlDataModule } from "./modules/pnl-data/pnl-data.module";
 import { CsvParserModule } from "./modules/csv-parser/csv-parser.module";
+import { AgentsModule } from "./modules/agents/agent.module";
 
 @Module({
 	imports: [
@@ -24,6 +25,7 @@ import { CsvParserModule } from "./modules/csv-parser/csv-parser.module";
 		SupabaseModule,
 		PnlDataModule,
 		CsvParserModule,
+		AgentsModule,
 		// **** Tech Debt: Maybe use NestJS ConfigModule to fetch env stuff ****
 		// ConfigModule.forRoot({
 		//     // Order matters - later files override earlier ones
