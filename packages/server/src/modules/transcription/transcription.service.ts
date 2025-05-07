@@ -2,12 +2,13 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { TranscriptionRepository } from "./transcription.repository";
 import { generateTranscriptionPrompt } from "./generate-transcription.prompt";
 import { JournalReflection, JournalReflectionAgent } from "../agents/journal-reflection.agent";
+import { AgentFactory } from "../agents/agent.factory";
 
 @Injectable()
 export class TranscriptionService {
 	constructor(
 		private readonly transcriptionRepository: TranscriptionRepository,
-		private readonly journalReflectionAgent: JournalReflectionAgent,
+		private readonly agentFactory: AgentFactory,
 	) {}
 
 	async transcribeLogs(logs: string): Promise<JournalReflection> {
@@ -21,7 +22,8 @@ export class TranscriptionService {
 
 		try {
 			// Use the JournalReflectionAgent to analyze the logs
-			const reflection = await this.journalReflectionAgent.execute(prompt);
+			const journalReflectionAgent = this.agentFactory.getJournalReflectionAgent();
+			const reflection = await journalReflectionAgent.execute(prompt);
 
 			// Optionally save the reflection result
 			// await this.saveReflectionResult(reflection);
