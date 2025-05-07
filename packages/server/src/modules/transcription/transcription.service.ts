@@ -3,6 +3,7 @@ import { TranscriptionRepository } from "./transcription.repository";
 import { generateTranscriptionPrompt } from "./generate-transcription.prompt";
 import { JournalReflection, JournalReflectionAgent } from "../agents/journal-reflection.agent";
 import { AgentFactory } from "../agents/agent.factory";
+import { AgentName } from "../agents/agent-name.enum";
 
 @Injectable()
 export class TranscriptionService {
@@ -22,8 +23,9 @@ export class TranscriptionService {
 
 		try {
 			// Use the JournalReflectionAgent to analyze the logs
-			const journalReflectionAgent = this.agentFactory.getJournalReflectionAgent();
-			const reflection = await journalReflectionAgent.execute(prompt);
+			// const journalReflectionAgent = this.agentFactory.getJournalReflectionAgent();
+			const journalAgent = this.agentFactory.get(AgentName.JOURNAL_REFLECTION);
+			const reflection = await journalAgent.execute(prompt);
 
 			// Optionally save the reflection result
 			// await this.saveReflectionResult(reflection);
