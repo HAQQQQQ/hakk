@@ -7,14 +7,14 @@ import {
 } from "@/modules/openai/openai.types";
 import { OpenAIClientService } from "../openai/openai-client.service";
 import { Injectable } from "@nestjs/common";
+import { AgentName } from "./agent-name.enum";
 
 /**
  * Interface for LLM tool agents
  * Provides a consistent structure for creating agent classes
  */
 export interface LLMToolAgent<T> {
-	readonly name: string;
-	readonly description: string;
+	readonly name: AgentName;
 	readonly systemMessage: string;
 	getTool(): ToolSchema;
 	getSchema(): z.ZodTypeAny;
@@ -30,15 +30,13 @@ export abstract class BaseAgent<T> implements LLMToolAgent<T> {
 	/**
 	 * @param openaiClient - OpenAI client service for making API calls
 	 * @param name - Unique identifier for this agent
-	 * @param description - Human-readable description of what this agent does
 	 * @param systemMessage - System message to provide context to the LLM
 	 * @param toolName - Name of the tool for OpenAI API
 	 * @param toolDescription - Description of what the tool does
 	 */
 	constructor(
 		protected readonly openaiClient: OpenAIClientService,
-		public readonly name: string,
-		public readonly description: string,
+		public readonly name: AgentName,
 		public readonly systemMessage: string,
 		protected readonly toolName: string,
 		protected readonly toolDescription: string,

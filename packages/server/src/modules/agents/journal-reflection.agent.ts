@@ -22,10 +22,9 @@ export class JournalReflectionAgent extends BaseAgent<JournalReflection> {
 		super(
 			openaiClient,
 			AgentName.JOURNAL_REFLECTION,
-			"Reflects on journal logs",
-			"You are a journaling coach. Reflect on the user's logs.",
+			"You are a journaling coach. Analyze a journal entry and extract structured reflection data",
 			"reflect_journal",
-			"Analyze a journal entry and extract structured reflection data",
+			"You are a helpful assistant that responds by calling the provided function.",
 		);
 	}
 
