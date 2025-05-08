@@ -16,12 +16,13 @@ export const marketTradeSchema = z.object({
 							.describe("Sentiment toward this specific market"),
 						confidence: z
 							.number()
-							.min(0)
-							.max(1)
-							.describe("Confidence in this market sentiment assessment"),
+							// .min(0)
+							// .max(1)
+							.describe("Confidence in this market sentiment assessment (0-1)"),
 					}),
 				)
-				.optional()
+				// .optional()
+				.nullable()
 				.describe("Sentiment toward specific markets or sectors mentioned"),
 		})
 		.describe("Analysis of the trader's market sentiment and outlook"),
@@ -30,7 +31,8 @@ export const marketTradeSchema = z.object({
 	tradeAnalysis: z
 		.array(
 			z.object({
-				ticker: z.string().optional().describe("Stock or asset ticker symbol"),
+				// ticker: z.string().optional().describe("Stock or asset ticker symbol"),
+				ticker: z.string().nullable().describe("Stock or asset ticker symbol"),
 				tradeDirection: z
 					.enum([
 						"long",
@@ -47,15 +49,16 @@ export const marketTradeSchema = z.object({
 					.describe("Sentiment toward this specific trade"),
 				confidence: z
 					.number()
-					.min(0)
-					.max(1)
-					.describe("Trader's confidence level in this trade or analysis"),
+					// .min(0)
+					// .max(1)
+					.describe("Trader's confidence level in this trade or analysis (0-1)"),
 				rationale: z
 					.array(z.string())
 					.describe("Trading rationales mentioned for this trade"),
 				emotionalDrivers: z
 					.array(z.string())
-					.optional()
+					.nullable()
+					// .optional()
 					.describe("Emotional factors potentially driving this trade decision"),
 			}),
 		)

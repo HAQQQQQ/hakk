@@ -14,7 +14,8 @@ export const recommendationsSchema = z.object({
 				rationale: z.string().describe("Psychological rationale for this recommendation"),
 				implementationSteps: z
 					.array(z.string())
-					.optional()
+					// .optional()
+					.nullable()
 					.describe("Suggested steps for implementing this recommendation"),
 			}),
 		)

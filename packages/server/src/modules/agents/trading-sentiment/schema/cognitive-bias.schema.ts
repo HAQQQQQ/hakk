@@ -6,7 +6,8 @@ export const cognitiveBiasSchema = z.object({
 		.array(
 			z.object({
 				biasType: z.string().describe("Type of cognitive bias or trading distortion"),
-				confidence: z.number().min(0).max(1).describe("Confidence in bias detection (0-1)"),
+				// confidence: z.number().min(0).max(1).describe("Confidence in bias detection (0-1)"),
+				confidence: z.number().describe("Confidence in bias detection (0-1)"),
 				evidence: z.string().describe("Text evidence supporting this bias detection"),
 				potentialConsequence: z
 					.string()

@@ -9,6 +9,8 @@ export class TranscriptionController {
 	@Post("transcribe")
 	async transcribe(@Body("logs") logs: string): Promise<TradingSentimentAnalysis> {
 		//Promise<{ reflection: JournalReflection }> {
+		console.log("In transcribe endpoint");
+		console.log("logs are:", logs);
 		if (!logs?.trim()) {
 			throw new BadRequestException("Entry text is required");
 		}

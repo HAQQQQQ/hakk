@@ -1,3 +1,4 @@
+// trading-sentiment-analysis.agent.ts
 import { z } from "zod";
 import { Injectable } from "@nestjs/common";
 import { BaseAgent } from "../base.agent";
@@ -56,7 +57,6 @@ const systemMessage = `You are an expert trading psychologist and sentiment anal
 
 @Injectable()
 export class TradingSentimentAnalysisAgent extends BaseAgent {
-	//BaseAgent<TradingSentimentAnalysis> {
 	constructor(
 		openaiClient: OpenAIClientService,
 		private readonly promptBuilder: TradingPromptBuilderService,
@@ -65,7 +65,7 @@ export class TradingSentimentAnalysisAgent extends BaseAgent {
 			openaiClient,
 			AgentName.TRADING_SENTIMENT_ANALYSIS,
 			systemMessage,
-			"analyze_trading_sentiment",
+			"trading_sentiment_analysis", // Schema name
 			"You analyze day trading journal entries to extract detailed psychological insights, emotions, cognitive biases, and actionable recommendations to improve trading performance.",
 		);
 	}

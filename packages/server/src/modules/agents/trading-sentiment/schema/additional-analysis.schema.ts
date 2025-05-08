@@ -47,8 +47,8 @@ export const additionalAnalysisSchema = z.object({
 				phrase: z.string().describe("Important trading-related phrase from the journal"),
 				significanceLevel: z
 					.number()
-					.min(0)
-					.max(1)
+					// .min(0)
+					// .max(1)
 					.describe("Significance of this phrase to trading psychology (0-1)"),
 				implication: z.string().describe("Psychological implication of this phrase"),
 			}),
@@ -60,8 +60,8 @@ export const additionalAnalysisSchema = z.object({
 		.object({
 			selfAwareness: z
 				.number()
-				.min(0)
-				.max(1)
+				// .min(0)
+				// .max(1)
 				.describe("Level of trading self-awareness demonstrated (0-1)"),
 			lessonsDerived: z
 				.array(z.string())

@@ -1,25 +1,9 @@
+// base.agent.ts
 import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
-import {
-	OpenAIResponseStatus,
-	type ToolSchema,
-	type ToolSchemaParams,
-} from "@/modules/openai/openai.types";
 import { OpenAIClientService } from "../openai/openai-client.service";
+import { OpenAIResponseStatus } from "@/modules/openai/openai.types";
 import { Injectable } from "@nestjs/common";
 import { AgentName } from "./agent.factory";
-
-/**
- * Interface for LLM tool agents
- * Provides a consistent structure for creating agent classes
- */
-export interface LLMToolAgent {
-	readonly name: AgentName;
-	readonly systemMessage: string;
-	getTool(): ToolSchema;
-	getSchema(): z.ZodTypeAny;
-	execute<T>(prompt: string): Promise<T>;
-}
 
 export interface RetryOptions {
 	maxRetries: number;
@@ -40,58 +24,37 @@ const DefaultRetryConfig: RetryOptions = {
 };
 
 /**
- * Abstract base class for LLM tool agents
- * Provides common functionality and execution capabilities
+ * Abstract base class for LLM agents using structured outputs
  */
 @Injectable()
-export abstract class BaseAgent implements LLMToolAgent {
-	/**
-	 * @param openaiClient - OpenAI client service for making API calls
-	 * @param name - Unique identifier for this agent
-	 * @param systemMessage - System message to provide context to the LLM
-	 * @param toolName - Name of the tool for OpenAI API
-	 * @param toolDescription - Description of what the tool does
-	 */
+export abstract class BaseAgent {
 	constructor(
 		protected readonly openaiClient: OpenAIClientService,
 		public readonly name: AgentName,
 		public readonly systemMessage: string,
-		protected readonly toolName: string,
+		protected readonly schemaName: string,
 		protected readonly toolDescription: string,
 		protected readonly retryOptions: RetryOptions = DefaultRetryConfig,
 	) {}
 
 	/**
 	 * Abstract method that must be implemented by subclasses
-	 * Should return a static Zod schema defining the expected output structure
+	 * Should return a Zod schema defining the expected output structure
 	 */
+	// abstract getSchema(): z.ZodSchema<any>;
 	abstract getSchema(): z.ZodTypeAny;
 
 	/**
-	 * Creates and returns the OpenAI tool definition
-	 * Uses the schema from getSchema() to generate JSON schema
-	 */
-	getTool(): ToolSchema {
-		return {
-			name: this.toolName,
-			description: this.toolDescription,
-			parameters: zodToJsonSchema(this.getSchema()) as ToolSchemaParams,
-		};
-	}
-
-	abstract execute<T>(prompt: string): Promise<T>;
-
-	/**
-	 * Execute the agent with the given prompt
+	 * Execute the agent with the given prompt using structured outputs
 	 * @param prompt - The user's input prompt
 	 * @returns The structured response according to the agent's schema
 	 */
 	async _execute<T>(prompt: string): Promise<T> {
-		const response = await this.openaiClient.executeToolCall<T>(
+		const response = await this.openaiClient.executeStructuredOutput<T>(
 			prompt,
-			this.getTool(),
-			this.getSchema(),
+			this.getSchema() as z.ZodSchema<T>,
 			this.systemMessage,
+			this.schemaName,
 		);
 
 		if (response.status === OpenAIResponseStatus.SUCCESS) {
@@ -105,11 +68,19 @@ export abstract class BaseAgent implements LLMToolAgent {
 		}
 	}
 
+	// Generic execute method for subclasses
+	// abstract execute<T = any>(input: any, options?: any): Promise<T>;
+
+	abstract execute<T>(prompt: string): Promise<T>;
+
+	/**
+	 * Execute with exponential backoff retry
+	 */
 	async executeWithRetry<T>(
 		prompt: string,
 		retryOptions: RetryOptions = this.retryOptions,
 	): Promise<T> {
-		return this.retry(() => this.execute<T>(prompt), retryOptions);
+		return this.retry(() => this._execute<T>(prompt), retryOptions);
 	}
 
 	/**
@@ -120,14 +91,7 @@ export abstract class BaseAgent implements LLMToolAgent {
 	 */
 	private async retry<T>(
 		operation: () => Promise<T>,
-		options: RetryOptions = {
-			maxRetries: 3,
-			initialDelayMs: 100,
-			maxDelayMs: 10000,
-			backoffFactor: 2,
-			jitter: true,
-			shouldRetry: () => true,
-		},
+		options: RetryOptions = DefaultRetryConfig,
 	): Promise<T> {
 		let attempt = 0;
 		let delay = options.initialDelayMs;

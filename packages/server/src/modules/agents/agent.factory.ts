@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import { BaseAgent } from "./base.agent";
 import { TradingSentimentAnalysisAgent } from "./trading-sentiment/trading-sentimental-analysis.agent";
-import { LLMToolAgent } from "./base.agent";
 
 export enum AgentName {
 	TRADING_SENTIMENT_ANALYSIS = "trading-sentiment-analysis",
@@ -18,7 +18,7 @@ type AgentMap = {
 
 @Injectable()
 export class AgentFactory {
-	private agents = new Map<AgentName, LLMToolAgent>();
+	private agents = new Map<AgentName, BaseAgent>();
 
 	constructor(
 		private readonly tradingSentimentAnalysisAgent: TradingSentimentAnalysisAgent,
@@ -39,5 +39,30 @@ export class AgentFactory {
 			throw new Error(`Agent with name "${agentName}" not found.`);
 		}
 		return agent as AgentMap[K];
+	}
+
+	/**
+	 * Alternative method that returns the complete agent with all its methods
+	 * Useful when you need access to the agent's full interface
+	 */
+	getAgent<K extends keyof AgentMap>(agentName: K): AgentMap[K] {
+		return this.get(agentName);
+	}
+
+	/**
+	 * Check if an agent exists in the factory
+	 * @param agentName - The name of the agent to check
+	 * @returns True if the agent exists, false otherwise
+	 */
+	hasAgent(agentName: AgentName): boolean {
+		return this.agents.has(agentName);
+	}
+
+	/**
+	 * Get all available agent names
+	 * @returns Array of all available agent names
+	 */
+	getAvailableAgents(): AgentName[] {
+		return Array.from(this.agents.keys());
 	}
 }

@@ -66,7 +66,7 @@ export const EnvConfig: EnvConfigI = {
 		const envModel = process.env.GPT_MODEL ?? "";
 		return Object.values(OpenAIModel).includes(envModel as OpenAIModel)
 			? (envModel as OpenAIModel)
-			: OpenAIModel.GPT_3_5_TURBO;
+			: OpenAIModel.GPT_4O;
 	})(),
 
 	// OpenAI temperature (0-2) for randomness control, defaults to 0
