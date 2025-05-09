@@ -1,9 +1,21 @@
 import { Injectable } from "@nestjs/common";
 import { BaseAgent } from "./base.agent";
-import { TradingSentimentAnalysisAgent } from "./trading-sentiment/trading-sentimental-analysis.agent";
+import { TradingSentimentAnalysisAgent } from "./trading-sentiment/base-trading-sentiment-agent";
 
+// export enum AgentName {
+//     TRADING_SENTIMENT_ANALYSIS = "trading-sentiment-analysis",
+//     // Add more agents here as needed
+// }
+// agent-name.enum.ts
 export enum AgentName {
+	JOURNAL_REFLECTION = "journal-reflection",
+	SENTIMENT_ANALYSIS = "sentiment-analysis",
 	TRADING_SENTIMENT_ANALYSIS = "trading-sentiment-analysis",
+	TRADING_SENTIMENT_CONTEXTUAL = "trading-sentiment-contextual",
+	TRADING_SENTIMENT_TREND = "trading-sentiment-trend",
+	TRADING_SENTIMENT_PERFORMANCE = "trading-sentiment-performance",
+	TRADING_PSYCHOLOGICAL_ISSUES = "trading-psychological-issues",
+	TRADING_PSYCHOLOGY_PLAN = "trading-psychology-plan",
 	// Add more agents here as needed
 }
 

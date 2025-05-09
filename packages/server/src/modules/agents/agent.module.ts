@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { OpenAIModule } from "../openai/openai.module";
 import { AgentFactory } from "./agent.factory";
-import { TradingSentimentAnalysisAgent } from "./trading-sentiment/trading-sentimental-analysis.agent";
+import { TradingSentimentAnalysisAgent } from "./trading-sentiment/base-trading-sentiment-agent";
 import { TradingPromptBuilderService } from "./trading-sentiment/services/prompt-builder.service";
 import {
 	BasePromptBuilder,
