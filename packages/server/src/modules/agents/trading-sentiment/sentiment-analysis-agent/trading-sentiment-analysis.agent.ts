@@ -2,13 +2,13 @@
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
 import { AgentName } from "../../agent.factory";
-import { BaseTradingSentimentAgent } from "../../__trading-sentiment/trading-sentimental-analysis.agent";
+import { TradingSentimentBaseAgent } from "../trading-sentiment-base.agent";
 import { JournalEntryParams } from "../../__trading-sentiment/analysis/agent-params.types";
 import { TradingSentimentAnalysis } from "../../__trading-sentiment/types/trading-sentiment.types";
 import { SentimentAnalysisPromptBuilder } from "./sentiment-analysis-prompt.builder";
 
 @Injectable()
-export class SentimentAnalysisAgent extends BaseTradingSentimentAgent<
+export class SentimentAnalysisAgent extends TradingSentimentBaseAgent<
 	JournalEntryParams,
 	TradingSentimentAnalysis
 > {
