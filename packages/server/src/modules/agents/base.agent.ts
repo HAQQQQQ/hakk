@@ -4,6 +4,8 @@ import { OpenAIClientService } from "../openai/openai-client.service";
 import { OpenAIResponseStatus } from "@/modules/openai/openai.types";
 import { Injectable } from "@nestjs/common";
 import { AgentName } from "./agent.factory";
+// Use 'import type' syntax for interfaces used in decorated class signatures
+import type { PromptBuilder } from "./prompt-builder.interface";
 
 export interface RetryOptions {
 	maxRetries: number;
@@ -30,6 +32,7 @@ const DefaultRetryConfig: RetryOptions = {
 export abstract class BaseAgent<TParams, TResult> {
 	constructor(
 		protected readonly openaiClient: OpenAIClientService,
+		protected readonly promptBuilder: PromptBuilder<TParams>,
 		public readonly name: AgentName,
 		public readonly systemMessage: string,
 		protected readonly schemaName: string,
@@ -38,10 +41,16 @@ export abstract class BaseAgent<TParams, TResult> {
 	) {}
 
 	/**
+	 * Build prompt using the injected prompt builder
+	 */
+	buildPrompt(params: TParams): string {
+		return this.promptBuilder.build(params);
+	}
+
+	/**
 	 * Abstract method that must be implemented by subclasses
 	 * Should return a Zod schema defining the expected output structure
 	 */
-	// abstract getSchema(): z.ZodSchema<any>;
 	abstract getSchema(): z.ZodTypeAny;
 
 	/**
@@ -68,10 +77,13 @@ export abstract class BaseAgent<TParams, TResult> {
 		}
 	}
 
-	// Generic execute method for subclasses
-	// abstract execute<T = any>(input: any, options?: any): Promise<T>;
-
-	abstract execute(prompt: TParams): Promise<TResult>;
+	/**
+	 * Execute method for all agents - builds prompt and calls _execute
+	 */
+	async execute(params: TParams): Promise<TResult> {
+		const prompt = this.buildPrompt(params);
+		return this._execute(prompt);
+	}
 
 	/**
 	 * Execute with exponential backoff retry
