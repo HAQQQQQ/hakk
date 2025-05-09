@@ -3,7 +3,9 @@ import { TranscriptionRepository } from "./transcription.repository";
 import { AgentFactory, AgentName } from "../agents/agent.factory";
 import {
 	TradingContext,
+	TradingPsychologyPlan,
 	TradingSentimentAnalysis,
+	TradingSentimentPerformanceAnalysis,
 } from "../agents/trading-sentiment/types/trading-sentiment.types";
 
 @Injectable()
@@ -48,7 +50,7 @@ export class TranscriptionService {
 			profitLoss: number;
 			notes?: string;
 		}>,
-	) {
+	): Promise<TradingSentimentPerformanceAnalysis> {
 		const tradingSentimentAgent = this.agentFactory.get(AgentName.TRADING_SENTIMENT_ANALYSIS);
 
 		return tradingSentimentAgent.analyzeWithResults(journalEntry, {
@@ -61,7 +63,7 @@ export class TranscriptionService {
 	/**
 	 * Create a trading psychology improvement plan
 	 */
-	async createPsychologyPlan(journalEntries: string[]) {
+	async createPsychologyPlan(journalEntries: string[]): Promise<TradingPsychologyPlan> {
 		const tradingSentimentAgent = this.agentFactory.get(AgentName.TRADING_SENTIMENT_ANALYSIS);
 		return tradingSentimentAgent.createTradingPsychologyPlan(journalEntries);
 	}
