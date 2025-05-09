@@ -191,7 +191,10 @@ const systemMessage = `You are an expert trading psychologist and sentiment anal
       psychological approach to trading.`;
 
 @Injectable()
-export abstract class BaseTradingSentimentAgent<TParams, TResult> extends BaseAgent {
+export abstract class BaseTradingSentimentAgent<TParams, TResult> extends BaseAgent<
+	TParams,
+	TResult
+> {
 	constructor(
 		protected readonly openaiClient: OpenAIClientService,
 		protected readonly promptBuilder: TradingPromptBuilderService,
@@ -217,7 +220,7 @@ export abstract class BaseTradingSentimentAgent<TParams, TResult> extends BaseAg
 	 * Leverages the buildPrompt method from the subclass
 	 */
 	async execute(params: TParams): Promise<TResult> {
-		const prompt = this.buildPrompt(params);
-		return this._execute<TResult>(prompt);
+		const prompt: string = this.buildPrompt(params);
+		return this._execute(prompt);
 	}
 }

@@ -27,7 +27,7 @@ const DefaultRetryConfig: RetryOptions = {
  * Abstract base class for LLM agents using structured outputs
  */
 @Injectable()
-export abstract class BaseAgent {
+export abstract class BaseAgent<TParams, TResult> {
 	constructor(
 		protected readonly openaiClient: OpenAIClientService,
 		public readonly name: AgentName,
@@ -49,10 +49,10 @@ export abstract class BaseAgent {
 	 * @param prompt - The user's input prompt
 	 * @returns The structured response according to the agent's schema
 	 */
-	async _execute<T>(prompt: string): Promise<T> {
-		const response = await this.openaiClient.executeStructuredOutput<T>(
+	async _execute(prompt: string): Promise<TResult> {
+		const response = await this.openaiClient.executeStructuredOutput(
 			prompt,
-			this.getSchema() as z.ZodSchema<T>,
+			this.getSchema() as z.ZodSchema<TResult>,
 			this.systemMessage,
 			this.schemaName,
 		);
@@ -71,16 +71,16 @@ export abstract class BaseAgent {
 	// Generic execute method for subclasses
 	// abstract execute<T = any>(input: any, options?: any): Promise<T>;
 
-	abstract execute<T>(prompt: string): Promise<T>;
+	abstract execute(prompt: TParams): Promise<TResult>;
 
 	/**
 	 * Execute with exponential backoff retry
 	 */
-	async executeWithRetry<T>(
+	async executeWithRetry(
 		prompt: string,
 		retryOptions: RetryOptions = this.retryOptions,
-	): Promise<T> {
-		return this.retry(() => this._execute<T>(prompt), retryOptions);
+	): Promise<TResult> {
+		return this.retry(() => this._execute(prompt), retryOptions);
 	}
 
 	/**
@@ -89,10 +89,10 @@ export abstract class BaseAgent {
 	 * @param options Retry configuration options
 	 * @returns Result of the operation
 	 */
-	private async retry<T>(
-		operation: () => Promise<T>,
+	private async retry(
+		operation: () => Promise<TResult>,
 		options: RetryOptions = DefaultRetryConfig,
-	): Promise<T> {
+	): Promise<TResult> {
 		let attempt = 0;
 		let delay = options.initialDelayMs;
 
