@@ -1,140 +1,29 @@
-// // agent.factory.ts
-// import { Injectable, OnModuleInit } from "@nestjs/common";
-// import { BaseAgent } from "./base.agent";
-// import { TradingSentimentAnalysisAgent } from "../modules/trading-sentiment/agents/trading-sentiment-analysis.agent";
-// import { ContextualTradingSentimentAgent } from "../modules/trading-sentiment/agents/contextual-sentiment.agent";
-// import { TradingSentimentTrendAgent } from "../modules/trading-sentiment/agents/trend-analysis.agent";
-// import { TradingSentimentPerformanceAgent } from "../modules/trading-sentiment/agents/performance-analysis.agent";
-// import { PsychologicalIssuesAgent } from "../modules/trading-sentiment/agents/psychological-issues.agent";
-// import { TradingPsychologyPlanAgent } from "../modules/trading-sentiment/agents/psychology-plan.agent";
-
-// export enum AgentName {
-//     TRADING_SENTIMENT_ANALYSIS = "trading-sentiment-analysis",
-//     TRADING_SENTIMENT_CONTEXTUAL = "trading-sentiment-contextual",
-//     TRADING_SENTIMENT_TREND = "trading-sentiment-trend",
-//     TRADING_SENTIMENT_PERFORMANCE = "trading-sentiment-performance",
-//     TRADING_PSYCHOLOGICAL_ISSUES = "trading-psychological-issues",
-//     TRADING_PSYCHOLOGY_PLAN = "trading-psychology-plan",
-//     // Add more agents here as needed
-// }
-
-// /**
-//  * Type mapping of agent names to their concrete agent types
-//  * This provides type safety when retrieving agents from the factory
-//  */
-// export interface AgentMap {
-//     [AgentName.TRADING_SENTIMENT_ANALYSIS]: TradingSentimentAnalysisAgent;
-//     [AgentName.TRADING_SENTIMENT_CONTEXTUAL]: ContextualTradingSentimentAgent;
-//     [AgentName.TRADING_SENTIMENT_TREND]: TradingSentimentTrendAgent;
-//     [AgentName.TRADING_SENTIMENT_PERFORMANCE]: TradingSentimentPerformanceAgent;
-//     [AgentName.TRADING_PSYCHOLOGICAL_ISSUES]: PsychologicalIssuesAgent;
-//     [AgentName.TRADING_PSYCHOLOGY_PLAN]: TradingPsychologyPlanAgent;
-// }
-
-// /**
-//  * Factory for getting LLM agents
-//  * Provides a clean interface for external services to get agent instances
-//  */
-// @Injectable()
-// export class AgentFactory implements OnModuleInit {
-//     private agents = new Map<AgentName, BaseAgent<any, any>>();
-
-//     constructor(
-//         private readonly tradingSentimentAnalysisAgent: TradingSentimentAnalysisAgent,
-//         private readonly contextualTradingSentimentAgent: ContextualTradingSentimentAgent,
-//         private readonly tradingSentimentTrendAgent: TradingSentimentTrendAgent,
-//         private readonly tradingSentimentPerformanceAgent: TradingSentimentPerformanceAgent,
-//         private readonly psychologicalIssuesAgent: PsychologicalIssuesAgent,
-//         private readonly tradingPsychologyPlanAgent: TradingPsychologyPlanAgent,
-//     ) { }
-
-//     /**
-//      * Initialize the factory by registering all agents
-//      */
-//     onModuleInit() {
-//         this.registerAgents();
-//     }
-
-//     /**
-//      * Register all available agents with the factory
-//      */
-//     private registerAgents() {
-//         this.agents.set(AgentName.TRADING_SENTIMENT_ANALYSIS, this.tradingSentimentAnalysisAgent);
-//         this.agents.set(AgentName.TRADING_SENTIMENT_CONTEXTUAL, this.contextualTradingSentimentAgent);
-//         this.agents.set(AgentName.TRADING_SENTIMENT_TREND, this.tradingSentimentTrendAgent);
-//         this.agents.set(AgentName.TRADING_SENTIMENT_PERFORMANCE, this.tradingSentimentPerformanceAgent);
-//         this.agents.set(AgentName.TRADING_PSYCHOLOGICAL_ISSUES, this.psychologicalIssuesAgent);
-//         this.agents.set(AgentName.TRADING_PSYCHOLOGY_PLAN, this.tradingPsychologyPlanAgent);
-//     }
-
-//     /**
-//      * Retrieves an agent by its name.
-//      * The factory infers the type of the agent based on the AgentName.
-//      * @param agentName - The name of the agent to retrieve.
-//      * @returns The requested agent instance with the correct type.
-//      */
-//     get<K extends keyof AgentMap>(agentName: K): AgentMap[K] {
-//         const agent = this.agents.get(agentName);
-//         if (!agent) {
-//             throw new Error(`Agent with name "${agentName}" not found.`);
-//         }
-//         return agent as AgentMap[K];
-//     }
-
-//     /**
-//      * Alternative method that returns the complete agent with all its methods
-//      * Useful when you need access to the agent's full interface
-//      */
-//     getAgent<K extends keyof AgentMap>(agentName: K): AgentMap[K] {
-//         return this.get(agentName);
-//     }
-
-//     /**
-//      * Check if an agent exists in the factory
-//      * @param agentName - The name of the agent to check
-//      * @returns True if the agent exists, false otherwise
-//      */
-//     hasAgent(agentName: AgentName): boolean {
-//         return this.agents.has(agentName);
-//     }
-
-//     /**
-//      * Get all available agent names
-//      * @returns Array of all available agent names
-//      */
-//     getAvailableAgents(): AgentName[] {
-//         return Array.from(this.agents.keys());
-//     }
-// }
-
 import { Injectable } from "@nestjs/common";
-import {
-	ContextualTradingSentimentAgent,
-	PsychologicalIssuesAgent,
-	TradingPsychologyPlanAgent,
-	TradingSentimentAnalysisAgent,
-	TradingSentimentPerformanceAgent,
-	TradingSentimentTrendAgent,
-} from "./trading-sentiment/analysis/all-agents";
+import { SentimentAnalysisAgent } from "./trading-sentiment/sentiment-analysis-agent/trading-sentiment-analysis.agent";
+import { ContextualSentimentAgent } from "./trading-sentiment/contextual-sentiment-agent/contextual-sentiment-analysis.agent";
+import { TrendAnalysisAgent } from "./trading-sentiment/trend-analysis-agent/trend-analysis.agent";
+import { PerformanceAnalysisAgent } from "./trading-sentiment/performance-analysis-agent/performance-analysis.agent";
+import { PsychologicalAnalysisAgent } from "./trading-sentiment/psychological-issues-agent/psychological-issues-analysis.agent";
+import { PsychologyPlanAgent } from "./trading-sentiment/psychology-plan-agent/psychology-plan-analysis.agent";
 
-// agent-name.enum.ts
+// Updated AgentName enum
 export enum AgentName {
-	TRADING_SENTIMENT_ANALYSIS = "trading-sentiment-analysis",
-	TRADING_SENTIMENT_CONTEXTUAL = "trading-sentiment-contextual",
-	TRADING_SENTIMENT_TREND = "trading-sentiment-trend",
-	TRADING_SENTIMENT_PERFORMANCE = "trading-sentiment-performance",
-	TRADING_PSYCHOLOGICAL_ISSUES = "trading-psychological-issues",
-	TRADING_PSYCHOLOGY_PLAN = "trading-psychology-plan",
-	// Add more agents here as needed
+	SENTIMENT_ANALYSIS = "sentiment_analysis",
+	CONTEXTUAL_SENTIMENT_ANALYSIS = "contextual_sentiment_analysis",
+	TREND_ANALYSIS = "trend_analysis",
+	PERFORMANCE_ANALYSIS = "performance_analysis",
+	PSYCHOLOGICAL_ANALYSIS = "psychological_analysis",
+	PSYCHOLOGY_PLAN = "psychology_plan",
 }
 
+// Updated AgentTypeMap with new AgentName enums
 type AgentTypeMap = {
-	[AgentName.TRADING_SENTIMENT_ANALYSIS]: TradingSentimentAnalysisAgent;
-	[AgentName.TRADING_SENTIMENT_CONTEXTUAL]: ContextualTradingSentimentAgent;
-	[AgentName.TRADING_SENTIMENT_TREND]: TradingSentimentTrendAgent;
-	[AgentName.TRADING_SENTIMENT_PERFORMANCE]: TradingSentimentPerformanceAgent;
-	[AgentName.TRADING_PSYCHOLOGICAL_ISSUES]: PsychologicalIssuesAgent;
-	[AgentName.TRADING_PSYCHOLOGY_PLAN]: TradingPsychologyPlanAgent;
+	[AgentName.SENTIMENT_ANALYSIS]: SentimentAnalysisAgent;
+	[AgentName.CONTEXTUAL_SENTIMENT_ANALYSIS]: ContextualSentimentAgent;
+	[AgentName.TREND_ANALYSIS]: TrendAnalysisAgent;
+	[AgentName.PERFORMANCE_ANALYSIS]: PerformanceAnalysisAgent;
+	[AgentName.PSYCHOLOGICAL_ANALYSIS]: PsychologicalAnalysisAgent;
+	[AgentName.PSYCHOLOGY_PLAN]: PsychologyPlanAgent;
 };
 
 @Injectable()
@@ -142,23 +31,30 @@ export class AgentFactory {
 	private readonly agents: AgentTypeMap;
 
 	constructor(
-		tradingSentimentAnalysisAgent: TradingSentimentAnalysisAgent,
-		contextualTradingSentimentAgent: ContextualTradingSentimentAgent,
-		tradingSentimentTrendAgent: TradingSentimentTrendAgent,
-		tradingSentimentPerformanceAgent: TradingSentimentPerformanceAgent,
-		psychologicalIssuesAgent: PsychologicalIssuesAgent,
-		tradingPsychologyPlanAgent: TradingPsychologyPlanAgent,
+		sentimentAnalysisAgent: SentimentAnalysisAgent,
+		contextualSentimentAgent: ContextualSentimentAgent,
+		trendAnalysisAgent: TrendAnalysisAgent,
+		performanceAnalysisAgent: PerformanceAnalysisAgent,
+		psychologicalAnalysisAgent: PsychologicalAnalysisAgent,
+		psychologyPlanAgent: PsychologyPlanAgent,
 	) {
+		// Updated agents object with new AgentName enums
 		this.agents = {
-			[AgentName.TRADING_SENTIMENT_ANALYSIS]: tradingSentimentAnalysisAgent,
-			[AgentName.TRADING_SENTIMENT_CONTEXTUAL]: contextualTradingSentimentAgent,
-			[AgentName.TRADING_SENTIMENT_TREND]: tradingSentimentTrendAgent,
-			[AgentName.TRADING_SENTIMENT_PERFORMANCE]: tradingSentimentPerformanceAgent,
-			[AgentName.TRADING_PSYCHOLOGICAL_ISSUES]: psychologicalIssuesAgent,
-			[AgentName.TRADING_PSYCHOLOGY_PLAN]: tradingPsychologyPlanAgent,
+			[AgentName.SENTIMENT_ANALYSIS]: sentimentAnalysisAgent,
+			[AgentName.CONTEXTUAL_SENTIMENT_ANALYSIS]: contextualSentimentAgent,
+			[AgentName.TREND_ANALYSIS]: trendAnalysisAgent,
+			[AgentName.PERFORMANCE_ANALYSIS]: performanceAnalysisAgent,
+			[AgentName.PSYCHOLOGICAL_ANALYSIS]: psychologicalAnalysisAgent,
+			[AgentName.PSYCHOLOGY_PLAN]: psychologyPlanAgent,
 		};
 	}
 
+	/**
+	 * Retrieves an agent by its name.
+	 * The factory infers the type of the agent based on the AgentName.
+	 * @param agentName - The name of the agent to retrieve.
+	 * @returns The requested agent instance with the correct type.
+	 */
 	getAgent<K extends AgentName>(agentName: K): AgentTypeMap[K] {
 		const agent = this.agents[agentName];
 		if (!agent) {
