@@ -20,6 +20,8 @@ import { PsychologicalAnalysisPromptBuilder } from "./trading-sentiment/agents/p
 import { PsychologyPlanPromptBuilder } from "./trading-sentiment/agents/psychology-plan-agent/psychology-plan-prompt.builder";
 import { SentimentAnalysisPromptBuilder } from "./trading-sentiment/agents/sentiment-analysis-agent/sentiment-analysis-prompt.builder";
 import { TrendAnalysisPromptBuilder } from "./trading-sentiment/agents/trend-analysis-agent/trend-analysis-prompt.builder";
+import { GeneralAnalysisAgent } from "./trading-sentiment/agents/general-analysis-agent/general-analysis.agent";
+import { GeneralTradingAnalysisPromptBuilder } from "./trading-sentiment/agents/general-analysis-agent/general-analysis-prompt.builder";
 
 /**
  * Module that provides all LLM agents
@@ -28,6 +30,7 @@ import { TrendAnalysisPromptBuilder } from "./trading-sentiment/agents/trend-ana
 	imports: [OpenAIModule],
 	providers: [
 		// All agents
+		GeneralAnalysisAgent,
 		ContextualSentimentAgent,
 		PerformanceAnalysisAgent,
 		PsychologicalAnalysisAgent,
@@ -36,6 +39,7 @@ import { TrendAnalysisPromptBuilder } from "./trading-sentiment/agents/trend-ana
 		TrendAnalysisAgent,
 
 		// All prompt builders
+		GeneralTradingAnalysisPromptBuilder,
 		ContextualSentimentPromptBuilder,
 		PerformanceAnalysisPromptBuilder,
 		PsychologicalAnalysisPromptBuilder,
@@ -47,6 +51,6 @@ import { TrendAnalysisPromptBuilder } from "./trading-sentiment/agents/trend-ana
 		TradingSentimentService,
 		AgentFactory,
 	],
-	exports: [AgentFactory, TradingSentimentService],
+	exports: [TradingSentimentService],
 })
 export class AgentsModule {}

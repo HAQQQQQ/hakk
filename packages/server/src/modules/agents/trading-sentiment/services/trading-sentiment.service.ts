@@ -20,37 +20,156 @@ import { PerformanceAnalysisResponse } from "../agents/performance-analysis-agen
 import { PsychologicalIssuesResponse } from "../agents/psychological-issues-agent/psychological-issues.schema";
 import { PsychologyPlanResponse } from "../agents/psychology-plan-agent/psychology-plan-response.schema";
 import { CognitiveBiasAnalysis } from "../agents/contextual-sentiment-agent/cognitive-bias.schema";
+import { AgentFactory } from "../../agent.factory";
+import { AgentName } from "../../agent-name.enum";
+import { GeneralAnalysisAgent } from "../agents/general-analysis-agent/general-analysis.agent";
+import { GeneralTradingAnalysis } from "../agents/general-analysis-agent/general-analysis.schema";
 
 @Injectable()
 export class TradingSentimentService {
-	constructor(
-		private readonly sentimentAgent: SentimentAnalysisAgent,
-		private readonly contextualAgent: ContextualSentimentAgent,
-		private readonly trendAgent: TrendAnalysisAgent,
-		private readonly performanceAgent: PerformanceAnalysisAgent,
-		private readonly psychologicalAgent: PsychologicalAnalysisAgent,
-		private readonly psychologyPlanAgent: PsychologyPlanAgent,
-	) {}
+	constructor(private readonly agentFactory: AgentFactory) {}
+
+	//     /**
+	//  * Run multiple analyses in parallel with error handling
+	//  */
+	//     async runParallelAnalyses(config: {
+	//         sentiment?: JournalEntryParams;
+	//         contextual?: ContextualAnalysisParams;
+	//         trend?: TrendAnalysisParams;
+	//         performance?: PerformanceAnalysisParams;
+	//         psychologicalIssues?: PsychologicalIssuesParams;
+	//         psychologyPlan?: PsychologyPlanParams;
+	//     }): Promise<{
+	//         sentiment?: CoreSentimentAnalysis | { error: string };
+	//         contextual?: CognitiveBiasAnalysis | { error: string };
+	//         trend?: TrendAnalysisResponse | { error: string };
+	//         performance?: PerformanceAnalysisResponse | { error: string };
+	//         psychologicalIssues?: PsychologicalIssuesResponse | { error: string };
+	//         psychologyPlan?: PsychologyPlanResponse | { error: string };
+	//     }> {
+	//         const result: any = {};
+
+	//         // Create an array of functions to execute in parallel
+	//         const tasks = [
+	//             {
+	//                 key: 'sentiment',
+	//                 fn: async () => {
+	//                     if (config.sentiment) {
+	//                         try {
+	//                             result.sentiment = await this.analyzeSentiment(config.sentiment);
+	//                         } catch (error) {
+	//                             result.sentiment = { error: error.message || 'Unknown error' };
+	//                         }
+	//                     }
+	//                 }
+	//             },
+	//             {
+	//                 key: 'contextual',
+	//                 fn: async () => {
+	//                     if (config.contextual) {
+	//                         try {
+	//                             result.contextual = await this.analyzeWithContext(config.contextual);
+	//                         } catch (error) {
+	//                             result.contextual = { error: error.message || 'Unknown error' };
+	//                         }
+	//                     }
+	//                 }
+	//             },
+	//             {
+	//                 key: 'trend',
+	//                 fn: async () => {
+	//                     if (config.trend) {
+	//                         try {
+	//                             result.trend = await this.analyzeTrend(config.trend);
+	//                         } catch (error) {
+	//                             result.trend = { error: error.message || 'Unknown error' };
+	//                         }
+	//                     }
+	//                 }
+	//             },
+	//             {
+	//                 key: 'performance',
+	//                 fn: async () => {
+	//                     if (config.performance) {
+	//                         try {
+	//                             result.performance = await this.analyzePerformance(config.performance);
+	//                         } catch (error) {
+	//                             result.performance = { error: error.message || 'Unknown error' };
+	//                         }
+	//                     }
+	//                 }
+	//             },
+	//             {
+	//                 key: 'psychologicalIssues',
+	//                 fn: async () => {
+	//                     if (config.psychologicalIssues) {
+	//                         try {
+	//                             result.psychologicalIssues = await this.analyzePsychologicalIssues(config.psychologicalIssues);
+	//                         } catch (error) {
+	//                             result.psychologicalIssues = { error: error.message || 'Unknown error' };
+	//                         }
+	//                     }
+	//                 }
+	//             },
+	//             {
+	//                 key: 'psychologyPlan',
+	//                 fn: async () => {
+	//                     if (config.psychologyPlan) {
+	//                         try {
+	//                             result.psychologyPlan = await this.createPsychologyPlan(config.psychologyPlan);
+	//                         } catch (error) {
+	//                             result.psychologyPlan = { error: error.message || 'Unknown error' };
+	//                         }
+	//                     }
+	//                 }
+	//             }
+	//         ];
+
+	//         // Filter tasks based on config
+	//         const applicableTasks = tasks.filter(task => config[task.key]);
+
+	//         // Execute all applicable tasks in parallel
+	//         await Promise.all(applicableTasks.map(task => task.fn()));
+
+	//         return result;
+	//     }
+
+	/**
+	 * General high level analysis of everything
+	 */
+	async generalAnalysis(params: JournalEntryParams): Promise<GeneralTradingAnalysis> {
+		const agent: GeneralAnalysisAgent = this.agentFactory.getAgent(
+			AgentName.GENERAL_TRADING_ANALYSIS_AGENT,
+		);
+		return agent.execute(params);
+	}
 
 	/**
 	 * Basic trading journal sentiment analysis
 	 */
 	async analyzeSentiment(params: JournalEntryParams): Promise<CoreSentimentAnalysis> {
-		return this.sentimentAgent.execute(params);
+		const agent: SentimentAnalysisAgent = this.agentFactory.getAgent(
+			AgentName.SENTIMENT_ANALYSIS,
+		);
+		return agent.execute(params);
 	}
 
 	/**
 	 * Contextual trading journal analysis
 	 */
 	async analyzeWithContext(params: ContextualAnalysisParams): Promise<CognitiveBiasAnalysis> {
-		return this.contextualAgent.execute(params);
+		const agent: ContextualSentimentAgent = this.agentFactory.getAgent(
+			AgentName.CONTEXTUAL_SENTIMENT_ANALYSIS,
+		);
+		return agent.execute(params);
 	}
 
 	/**
 	 * Trading trend analysis
 	 */
 	async analyzeTrend(params: TrendAnalysisParams): Promise<TrendAnalysisResponse> {
-		return this.trendAgent.execute(params);
+		const agent: TrendAnalysisAgent = this.agentFactory.getAgent(AgentName.TREND_ANALYSIS);
+		return agent.execute(params);
 	}
 
 	/**
@@ -59,7 +178,10 @@ export class TradingSentimentService {
 	async analyzePerformance(
 		params: PerformanceAnalysisParams,
 	): Promise<PerformanceAnalysisResponse> {
-		return this.performanceAgent.execute(params);
+		const agent: PerformanceAnalysisAgent = this.agentFactory.getAgent(
+			AgentName.PERFORMANCE_ANALYSIS,
+		);
+		return agent.execute(params);
 	}
 
 	/**
@@ -68,14 +190,18 @@ export class TradingSentimentService {
 	async analyzePsychologicalIssues(
 		params: PsychologicalIssuesParams,
 	): Promise<PsychologicalIssuesResponse> {
-		return this.psychologicalAgent.execute(params);
+		const agent: PsychologicalAnalysisAgent = this.agentFactory.getAgent(
+			AgentName.PSYCHOLOGICAL_ANALYSIS,
+		);
+		return agent.execute(params);
 	}
 
 	/**
 	 * Trading psychology plan
 	 */
 	async createPsychologyPlan(params: PsychologyPlanParams): Promise<PsychologyPlanResponse> {
-		return this.psychologyPlanAgent.execute(params);
+		const agent: PsychologyPlanAgent = this.agentFactory.getAgent(AgentName.PSYCHOLOGY_PLAN);
+		return agent.execute(params);
 	}
 
 	// /**

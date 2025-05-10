@@ -14,6 +14,6 @@ export class TranscriptionController {
 		if (!logs?.trim()) {
 			throw new BadRequestException("Entry text is required");
 		}
-		return this.transcriptionService.analyzeSentiment(logs);
+		return this.transcriptionService.generalAnalysis(logs);
 	}
 }

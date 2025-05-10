@@ -6,9 +6,11 @@ import { PerformanceAnalysisAgent } from "./trading-sentiment/agents/performance
 import { PsychologicalAnalysisAgent } from "./trading-sentiment/agents/psychological-issues-agent/psychological-issues-analysis.agent";
 import { PsychologyPlanAgent } from "./trading-sentiment/agents/psychology-plan-agent/psychology-plan-analysis.agent";
 import { AgentName } from "./agent-name.enum";
+import { GeneralAnalysisAgent } from "./trading-sentiment/agents/general-analysis-agent/general-analysis.agent";
 
 // Updated AgentTypeMap with new AgentName enums
 type AgentTypeMap = {
+	[AgentName.GENERAL_TRADING_ANALYSIS_AGENT]: GeneralAnalysisAgent;
 	[AgentName.SENTIMENT_ANALYSIS]: SentimentAnalysisAgent;
 	[AgentName.CONTEXTUAL_SENTIMENT_ANALYSIS]: ContextualSentimentAgent;
 	[AgentName.TREND_ANALYSIS]: TrendAnalysisAgent;
@@ -22,6 +24,7 @@ export class AgentFactory {
 	private readonly agents: AgentTypeMap;
 
 	constructor(
+		generalAnalysisAgent: GeneralAnalysisAgent,
 		sentimentAnalysisAgent: SentimentAnalysisAgent,
 		contextualSentimentAgent: ContextualSentimentAgent,
 		trendAnalysisAgent: TrendAnalysisAgent,
@@ -31,6 +34,7 @@ export class AgentFactory {
 	) {
 		// Updated agents object with new AgentName enums
 		this.agents = {
+			[AgentName.GENERAL_TRADING_ANALYSIS_AGENT]: generalAnalysisAgent,
 			[AgentName.SENTIMENT_ANALYSIS]: sentimentAnalysisAgent,
 			[AgentName.CONTEXTUAL_SENTIMENT_ANALYSIS]: contextualSentimentAgent,
 			[AgentName.TREND_ANALYSIS]: trendAnalysisAgent,
