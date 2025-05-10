@@ -1,7 +1,7 @@
 // 3. TrendAnalysisAgent
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { TradingSentimentBaseAgent } from "../../trading-sentiment-base.agent";
+import { TradingSentimentBaseAgent } from "../trading-sentiment-base.agent";
 import { TrendAnalysisParams } from "../../types/agent-params.types";
 import { TrendAnalysisPromptBuilder } from "./trend-analysis-prompt.builder";
 import {

@@ -1,7 +1,7 @@
 // 1. SentimentAnalysisAgent
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { TradingSentimentBaseAgent } from "../../trading-sentiment-base.agent";
+import { TradingSentimentBaseAgent } from "../trading-sentiment-base.agent";
 import { JournalEntryParams } from "../../types/agent-params.types";
 import { SentimentAnalysisPromptBuilder } from "./sentiment-analysis-prompt.builder";
 import { CoreSentimentAnalysis, coreSentimentSchema } from "./core-sentiment.schema";

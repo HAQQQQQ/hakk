@@ -1,7 +1,7 @@
 // 4. PerformanceAnalysisAgent
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { TradingSentimentBaseAgent } from "../../trading-sentiment-base.agent";
+import { TradingSentimentBaseAgent } from "../trading-sentiment-base.agent";
 import { PerformanceAnalysisPromptBuilder } from "./performance-analysis-prompt.builder";
 import {
 	PerformanceAnalysisResponse,

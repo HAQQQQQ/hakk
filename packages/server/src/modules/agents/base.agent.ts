@@ -2,7 +2,6 @@
 import { z } from "zod";
 import { OpenAIClientService } from "../openai/openai-client.service";
 import { OpenAIResponseStatus } from "@/modules/openai/openai.types";
-import { Injectable } from "@nestjs/common";
 // Use 'import type' syntax for interfaces used in decorated class signatures
 import type { PromptBuilder } from "./prompt-builder.interface";
 import { AgentName } from "./agent-name.enum";

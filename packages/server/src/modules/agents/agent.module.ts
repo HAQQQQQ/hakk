@@ -22,6 +22,8 @@ import { SentimentAnalysisPromptBuilder } from "./trading-sentiment/agents/senti
 import { TrendAnalysisPromptBuilder } from "./trading-sentiment/agents/trend-analysis-agent/trend-analysis-prompt.builder";
 import { GeneralAnalysisAgent } from "./trading-sentiment/agents/general-analysis-agent/general-analysis.agent";
 import { GeneralTradingAnalysisPromptBuilder } from "./trading-sentiment/agents/general-analysis-agent/general-analysis-prompt.builder";
+import { ProgressiveAnalysisAgent } from "./progressive-analysis/agents/progress-analysis-agent/iterative-prompt.agent";
+import { IterativePromptBuilder } from "./progressive-analysis/agents/progress-analysis-agent/iterative-prompt.builder";
 
 /**
  * Module that provides all LLM agents
@@ -37,6 +39,7 @@ import { GeneralTradingAnalysisPromptBuilder } from "./trading-sentiment/agents/
 		PsychologyPlanAgent,
 		SentimentAnalysisAgent,
 		TrendAnalysisAgent,
+		ProgressiveAnalysisAgent,
 
 		// All prompt builders
 		GeneralTradingAnalysisPromptBuilder,
@@ -46,6 +49,7 @@ import { GeneralTradingAnalysisPromptBuilder } from "./trading-sentiment/agents/
 		PsychologyPlanPromptBuilder,
 		SentimentAnalysisPromptBuilder,
 		TrendAnalysisPromptBuilder,
+		IterativePromptBuilder,
 
 		// Main agent and service
 		TradingSentimentService,

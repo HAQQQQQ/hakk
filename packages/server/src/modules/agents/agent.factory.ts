@@ -7,6 +7,7 @@ import { PsychologicalAnalysisAgent } from "./trading-sentiment/agents/psycholog
 import { PsychologyPlanAgent } from "./trading-sentiment/agents/psychology-plan-agent/psychology-plan-analysis.agent";
 import { AgentName } from "./agent-name.enum";
 import { GeneralAnalysisAgent } from "./trading-sentiment/agents/general-analysis-agent/general-analysis.agent";
+import { ProgressiveAnalysisAgent } from "./progressive-analysis/agents/progress-analysis-agent/iterative-prompt.agent";
 
 // Updated AgentTypeMap with new AgentName enums
 type AgentTypeMap = {
@@ -17,6 +18,7 @@ type AgentTypeMap = {
 	[AgentName.PERFORMANCE_ANALYSIS]: PerformanceAnalysisAgent;
 	[AgentName.PSYCHOLOGICAL_ANALYSIS]: PsychologicalAnalysisAgent;
 	[AgentName.PSYCHOLOGY_PLAN]: PsychologyPlanAgent;
+	[AgentName.PROGRESSIVE_ANALYSIS]: ProgressiveAnalysisAgent;
 };
 
 @Injectable()
@@ -31,6 +33,7 @@ export class AgentFactory {
 		performanceAnalysisAgent: PerformanceAnalysisAgent,
 		psychologicalAnalysisAgent: PsychologicalAnalysisAgent,
 		psychologyPlanAgent: PsychologyPlanAgent,
+		progressiveAnalysisAgent: ProgressiveAnalysisAgent,
 	) {
 		// Updated agents object with new AgentName enums
 		this.agents = {
@@ -41,6 +44,7 @@ export class AgentFactory {
 			[AgentName.PERFORMANCE_ANALYSIS]: performanceAnalysisAgent,
 			[AgentName.PSYCHOLOGICAL_ANALYSIS]: psychologicalAnalysisAgent,
 			[AgentName.PSYCHOLOGY_PLAN]: psychologyPlanAgent,
+			[AgentName.PROGRESSIVE_ANALYSIS]: progressiveAnalysisAgent,
 		};
 	}
 
