@@ -1,5 +1,32 @@
 import { z } from "zod";
 
+export const performanceCorrelationSchema = z.object({
+	sentimentPerformanceAlignment: z
+		.number()
+		// .min(-1)
+		// .max(1)
+		.describe("Correlation between sentiment and performance (-1 to 1)"),
+	overconfidenceIndicator: z
+		.number()
+		// .min(0)
+		// .max(1)
+		.describe("Measure of overconfidence (0-1)"),
+	underconfidenceIndicator: z
+		.number()
+		// .min(0)
+		// .max(1)
+		.describe("Measure of underconfidence (0-1)"),
+	sentimentAccuracy: z
+		.number()
+		// .min(0)
+		// .max(1)
+		.describe("Accuracy of sentiment predictions (0-1)"),
+	psychologicalObservations: z.array(z.string()).describe("List of psychological observations"),
+	recommendedAdjustments: z
+		.array(z.string())
+		.describe("List of recommended psychological adjustments"),
+});
+
 export const marketTradeSchema = z.object({
 	// Market sentiment analysis
 	marketPerception: z
@@ -64,3 +91,12 @@ export const marketTradeSchema = z.object({
 		)
 		.describe("Analysis of sentiment toward specific trades or potential trades"),
 });
+
+export const performanceAnalysisResponseSchema = z.object({
+	marketTrade: marketTradeSchema.describe("Market trade analysis results"),
+	performanceCorrelation: performanceCorrelationSchema.describe(
+		"Performance correlation analysis results",
+	),
+});
+
+export type PerformanceAnalysisResponse = z.infer<typeof performanceAnalysisResponseSchema>;

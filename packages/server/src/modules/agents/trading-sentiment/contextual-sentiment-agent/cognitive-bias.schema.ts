@@ -32,3 +32,5 @@ export const cognitiveBiasSchema = z.object({
 		)
 		.describe("Trading psychology patterns identified in journal entry"),
 });
+
+export type CognitiveBiasAnalysis = z.infer<typeof cognitiveBiasSchema>;

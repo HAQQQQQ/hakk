@@ -79,3 +79,51 @@ export const strategyRiskSchema = z.object({
 		})
 		.describe("Assessment of trading decision quality indicators"),
 });
+
+export const tradingPsychologyTrendsSchema = z.object({
+	emotionalTrend: z
+		.enum(["improving", "deteriorating", "stable", "fluctuating"])
+		.describe("Trend in emotional state over time"),
+	tradingDiscipline: z
+		.enum(["improving", "deteriorating", "stable", "fluctuating"])
+		.describe("Trend in trading discipline over time"),
+	riskManagement: z
+		.enum(["improving", "deteriorating", "stable", "fluctuating"])
+		.describe("Trend in risk management over time"),
+	decisionQuality: z
+		.enum(["improving", "deteriorating", "stable", "fluctuating"])
+		.describe("Trend in decision-making quality over time"),
+	significantChanges: z
+		.array(
+			z.object({
+				fromTimestamp: z.date().describe("Start timestamp of the change"),
+				toTimestamp: z.date().describe("End timestamp of the change"),
+				change: z.string().describe("Description of the significant change"),
+				likelyTriggers: z
+					.array(z.string())
+					.describe("List of likely triggers for the change"),
+				recommendedIntervention: z
+					.string()
+					.describe("Recommended intervention for the change"),
+			}),
+		)
+		.describe("List of significant psychological changes over time"),
+	habitFormation: z
+		.object({
+			positiveHabits: z.array(z.string()).describe("List of positive habits formed"),
+			negativeHabits: z.array(z.string()).describe("List of negative habits formed"),
+			interventionPriorities: z
+				.array(z.string())
+				.describe("List of prioritized interventions for habits"),
+		})
+		.describe("Details about habit formation and intervention priorities"),
+});
+
+export const trendAnalysisResponseSchema = z.object({
+	psychologyTrends: tradingPsychologyTrendsSchema.describe(
+		"Analysis of trading psychology trends over time",
+	),
+	strategyRisk: strategyRiskSchema.describe(
+		"Assessment of strategy adherence and risk management",
+	),
+});

@@ -1,5 +1,38 @@
 import { z } from "zod";
 
+export const tradingPsychologicalIssueSchema = z.object({
+	issue: z.string().describe("Description of the psychological issue"),
+	confidence: z
+		.number()
+		// .min(0)
+		// .max(1)
+		.describe("Confidence level in identifying the issue (0-1)"),
+	evidence: z
+		.array(z.string())
+		.describe("List of evidence supporting the identification of the issue"),
+	impact: z
+		.enum(["low", "medium", "high", "critical"])
+		.describe("Impact level of the issue on trading performance"),
+	recommendedIntervention: z.string().describe("Recommended intervention to address the issue"),
+	resources: z
+		.array(z.string())
+		.nullable()
+		// .optional()
+		.describe("Optional list of resources to help address the issue"),
+});
+
+export const psychologicalIssuesAnalysisSchema = z.object({
+	issues: z
+		.array(tradingPsychologicalIssueSchema)
+		.describe("List of identified psychological issues"),
+	prioritizedAction: z
+		.string()
+		.describe("The highest priority action to address psychological issues"),
+	overallRiskAssessment: z
+		.string()
+		.describe("Overall risk assessment based on psychological issues"),
+});
+
 export const additionalAnalysisSchema = z.object({
 	// Temporal analysis
 	temporalSentiment: z
@@ -75,4 +108,13 @@ export const additionalAnalysisSchema = z.object({
 			strengths: z.array(z.string()).describe("Psychological trading strengths demonstrated"),
 		})
 		.describe("Insights about trading psychology from journal content"),
+});
+
+export const psychologicalIssuesResponseSchema = z.object({
+	additionalAnalysis: additionalAnalysisSchema.describe(
+		"Additional analysis of trading psychology",
+	),
+	psychologicalIssues: psychologicalIssuesAnalysisSchema.describe(
+		"Analysis of psychological issues",
+	),
 });
