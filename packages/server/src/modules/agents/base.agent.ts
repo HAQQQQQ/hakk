@@ -105,14 +105,6 @@ export abstract class BaseAgent<TParams, TResult> {
 	}
 
 	/**
-	 * Helper method to extract just the response data
-	 */
-	async executeAndGetResponse(params: TParams): Promise<TResult> {
-		const result = await this.execute(params);
-		return result.response;
-	}
-
-	/**
 	 * Execute with exponential backoff retry
 	 */
 	async executeWithRetry(
