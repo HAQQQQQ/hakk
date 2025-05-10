@@ -24,6 +24,10 @@ import { TrendAnalysisPromptBuilder } from "./trading-sentiment/agents/trend-ana
 import { GeneralAnalysisAgent } from "./trading-sentiment/agents/general-analysis-agent/general-analysis.agent";
 import { GeneralTradingAnalysisPromptBuilder } from "./trading-sentiment/agents/general-analysis-agent/general-analysis-prompt.builder";
 import { ProgressiveAnalysisPromptBuilder } from "./progressive-analysis/agents/progress-analysis-agent/progressive-analysis-prompt.builder";
+import { ProgressiveJournalAnalysisAdapter } from "./progressive-analysis/agents/progress-analysis-agent/progressive-analysis-adapter";
+import { ProgressiveAnalysisService } from "./progressive-analysis/services/progressive-analysis.service";
+import { EnhancedPromptBuilder } from "./progressive-analysis/agents/progress-analysis-agent/enhanced-prompt.builder";
+import { TradingProgressiveAnalysisAgent } from "./progressive-analysis/agents/progress-analysis-agent/trading-progressive-analysis.agent";
 
 /**
  * Module that provides all LLM agents
@@ -32,7 +36,6 @@ import { ProgressiveAnalysisPromptBuilder } from "./progressive-analysis/agents/
 	imports: [OpenAIModule],
 	providers: [
 		// All agents
-		ProgressiveAnalysisAgent,
 		GeneralAnalysisAgent,
 		ContextualSentimentAgent,
 		PerformanceAnalysisAgent,
@@ -40,6 +43,8 @@ import { ProgressiveAnalysisPromptBuilder } from "./progressive-analysis/agents/
 		PsychologyPlanAgent,
 		SentimentAnalysisAgent,
 		TrendAnalysisAgent,
+		ProgressiveAnalysisAgent,
+		TradingProgressiveAnalysisAgent,
 
 		// All prompt builders
 		GeneralTradingAnalysisPromptBuilder,
@@ -50,8 +55,11 @@ import { ProgressiveAnalysisPromptBuilder } from "./progressive-analysis/agents/
 		SentimentAnalysisPromptBuilder,
 		TrendAnalysisPromptBuilder,
 		ProgressiveAnalysisPromptBuilder,
+		ProgressiveAnalysisService,
+		EnhancedPromptBuilder,
 
 		// Main agent and service
+		ProgressiveJournalAnalysisAdapter,
 		TradingSentimentService,
 		AgentFactory,
 	],

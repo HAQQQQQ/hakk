@@ -1,77 +1,83 @@
-// progressive-analysis/progressive-analysis.service.ts
 import { Injectable } from "@nestjs/common";
-import { AgentFactory } from "@/modules/agents/agent.factory";
-import { AgentName } from "@/modules/agents/agent-name.enum";
-import { ProgressiveAnalysisAgent } from "../agents/progress-analysis-agent/progressive-analysis.agent";
-import { ProgressiveAnalysisResult } from "../agents/progress-analysis-agent/progressive-analysis.schema";
+import { AgentFactory } from "../../agent.factory";
+import { AgentName } from "../../agent-name.enum";
+import { ProgressiveJournalAnalysisAdapter } from "../agents/progress-analysis-agent/progressive-analysis-adapter";
 
 @Injectable()
 export class ProgressiveAnalysisService {
-	constructor(private readonly agentFactory: AgentFactory) {}
+	constructor(
+		private readonly agentFactory: AgentFactory,
+		private readonly progressiveAnalysisAdapter: ProgressiveJournalAnalysisAdapter,
+	) {}
 
 	/**
-	 * Run a single iteration of progressive analysis
+	 * Analyze a trading journal entry with progressive improvement
+	 *
+	 * @param journalEntry - The trading journal entry to analyze
+	 * @param iterations - Number of iterations to perform (default: 3)
+	 * @returns The progressively improved analysis
 	 */
-	// async analyzeIteration(params: IterativePromptParams): Promise<IterativePromptResult> {
-	//     const agent: ProgressiveAnalysisAgent = this.agentFactory.getAgent(
-	//         AgentName.PROGRESSIVE_ANALYSIS
-	//     );
-	//     return agent.execute(params);
-	// }
+	async analyzeJournalEntry(journalEntry: string, iterations: number = 3) {
+		// Get the general analysis agent
+		const generalAnalysisAgent = this.agentFactory.getAgent(
+			AgentName.GENERAL_TRADING_ANALYSIS_AGENT,
+		);
 
-	// /**
-	//  * Run a complete progressive analysis through multiple iterations
-	//  * @param journalEntry The trading journal entry to analyze
-	//  * @param iterations Number of iterations to perform (default: 3)
-	//  */
-	// async runProgressiveAnalysis(
-	//     journalEntry: string,
-	//     iterations: number = 3,
-	//     analysisGoal: string = "trading psychology analysis",
-	// ): Promise<ProgressiveAnalysisResult[]> {
-	//     const agent: ProgressiveAnalysisAgent = this.agentFactory.getAgent(
-	//         AgentName.PROGRESSIVE_ANALYSIS,
-	//     );
+		// Run progressive analysis
+		const result = await this.progressiveAnalysisAdapter.analyzeJournalEntry(
+			journalEntry,
+			generalAnalysisAgent,
+			iterations,
+		);
 
-	//     return agent.executeAgentProgressively(journalEntry, iterations, analysisGoal);
-	// }
+		return result;
+	}
 
-	// /**
-	//  * Get only the final, most refined analysis
-	//  */
-	// async getFinalAnalysis(
-	//     journalEntry: string,
-	//     iterations: number = 3,
-	//     analysisGoal: string = "trading psychology analysis",
-	// ): Promise<IterativePromptResult> {
-	//     const agent: ProgressiveAnalysisAgent = this.agentFactory.getAgent(
-	//         AgentName.PROGRESSIVE_ANALYSIS,
-	//     );
+	/**
+	 * Get just the best analysis result for a journal entry
+	 *
+	 * @param journalEntry - The trading journal entry to analyze
+	 * @param iterations - Number of iterations to perform (default: 3)
+	 * @returns Only the best result from the progressive analysis
+	 */
+	async getBestAnalysis(journalEntry: string, iterations: number = 3) {
+		// Get the general analysis agent
+		const generalAnalysisAgent = this.agentFactory.getAgent(
+			AgentName.GENERAL_TRADING_ANALYSIS_AGENT,
+		);
 
-	//     return agent.getFinalAnalysis(journalEntry, iterations, analysisGoal);
-	// }
+		// Get the best analysis from the progressive analyzer
+		const bestResult = await this.progressiveAnalysisAdapter.getBestAnalysis(
+			journalEntry,
+			generalAnalysisAgent,
+			iterations,
+		);
 
-	// /**
-	//  * Get deepest possible analysis in a single call
-	//  * This is a convenience method that runs a single iteration with instructions
-	//  * that request the highest level of detail
-	//  */
-	// async getDeepAnalysis(
-	//     journalEntry: string,
-	//     analysisGoal: string = "trading psychology analysis"
-	// ): Promise<IterativePromptResult> {
-	//     // Use parameters that simulate a 4th iteration even though it's our first call
-	//     const params: IterativePromptParams = {
-	//         basePrompt: journalEntry,
-	//         previousResponses: [],
-	//         iterationNumber: 4,  // Pretend we're on the 4th iteration
-	//         analysisGoal
-	//     };
+		return bestResult;
+	}
 
-	//     const agent: ProgressiveAnalysisAgent = this.agentFactory.getAgent(
-	//         AgentName.PROGRESSIVE_ANALYSIS
-	//     );
+	/**
+	 * Progressively improve any agent's analysis
+	 *
+	 * @param agentName - The name of the agent to use
+	 * @param params - Parameters to pass to the agent
+	 * @param iterations - Number of iterations to perform
+	 * @returns The progressively improved analysis
+	 */
+	async progressivelyImprove(agentName: AgentName, params: any, iterations: number = 3) {
+		// Get the target agent
+		const targetAgent = this.agentFactory.getAgent(agentName);
 
-	//     return agent.execute(params);
-	// }
+		// Get the progressive analysis agent
+		const progressiveAnalysisAgent = this.agentFactory.getAgent(AgentName.PROGRESSIVE_ANALYSIS);
+
+		// Run progressive analysis
+		const result = await progressiveAnalysisAgent.execute({
+			targetAgent,
+			targetAgentParams: params,
+			iterations,
+		});
+
+		return result;
+	}
 }
