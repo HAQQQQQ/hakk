@@ -120,12 +120,8 @@ export const tradingPsychologyTrendsSchema = z.object({
 });
 
 export const trendAnalysisResponseSchema = z.object({
-	psychologyTrends: tradingPsychologyTrendsSchema.describe(
-		"Analysis of trading psychology trends over time",
-	),
-	strategyRisk: strategyRiskSchema.describe(
-		"Assessment of strategy adherence and risk management",
-	),
+	...tradingPsychologyTrendsSchema.shape,
+	...strategyRiskSchema.shape,
 });
 
 export type TrendAnalysisResponse = z.infer<typeof trendAnalysisResponseSchema>;

@@ -93,10 +93,8 @@ export const marketTradeSchema = z.object({
 });
 
 export const performanceAnalysisResponseSchema = z.object({
-	marketTrade: marketTradeSchema.describe("Market trade analysis results"),
-	performanceCorrelation: performanceCorrelationSchema.describe(
-		"Performance correlation analysis results",
-	),
+	...marketTradeSchema.shape,
+	...performanceCorrelationSchema.shape,
 });
 
 export type PerformanceAnalysisResponse = z.infer<typeof performanceAnalysisResponseSchema>;

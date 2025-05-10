@@ -111,12 +111,8 @@ export const additionalAnalysisSchema = z.object({
 });
 
 export const psychologicalIssuesResponseSchema = z.object({
-	additionalAnalysis: additionalAnalysisSchema.describe(
-		"Additional analysis of trading psychology",
-	),
-	psychologicalIssues: psychologicalIssuesAnalysisSchema.describe(
-		"Analysis of psychological issues",
-	),
+	...additionalAnalysisSchema.shape,
+	...psychologicalIssuesAnalysisSchema.shape,
 });
 
 export type PsychologicalIssuesResponse = z.infer<typeof psychologicalIssuesResponseSchema>;

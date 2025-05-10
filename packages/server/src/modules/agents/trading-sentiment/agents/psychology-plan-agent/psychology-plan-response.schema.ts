@@ -79,12 +79,8 @@ export const tradingPsychologyPlanSchema = z.object({
 });
 
 export const psychologyPlanResponseSchema = z.object({
-	psychologyPlan: tradingPsychologyPlanSchema.describe(
-		"Detailed trading psychology improvement plan",
-	),
-	recommendations: recommendationsSchema.describe(
-		"Actionable recommendations for improving trading psychology",
-	),
+	...tradingPsychologyPlanSchema.shape,
+	...recommendationsSchema.shape,
 });
 
 export type PsychologyPlanResponse = z.infer<typeof psychologyPlanResponseSchema>;
