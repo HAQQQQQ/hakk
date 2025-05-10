@@ -7,5 +7,5 @@ export enum AgentName {
 	PERFORMANCE_ANALYSIS = "performance_analysis",
 	PSYCHOLOGICAL_ANALYSIS = "psychological_analysis",
 	PSYCHOLOGY_PLAN = "psychology_plan",
-	PROGRESSIVE_ANALYSIS = "progressive_analysis",
+	// PROGRESSIVE_ANALYSIS = "progressive_analysis",
 }

@@ -5,7 +5,7 @@ import { TradingSentimentBaseAgent } from "../trading-sentiment-base.agent";
 import { ContextualSentimentPromptBuilder } from "./contextual-sentiment-prompt.builder";
 import { ContextualAnalysisParams } from "../../types/agent-params.types";
 import { CognitiveBiasAnalysis, cognitiveBiasSchema } from "./cognitive-bias.schema";
-import { ZodTypeAny } from "zod";
+import { z, ZodTypeAny } from "zod";
 import { AgentName } from "@/modules/agents/agent-name.enum";
 
 @Injectable()
@@ -26,7 +26,7 @@ export class ContextualSentimentAgent extends TradingSentimentBaseAgent<
 		);
 	}
 
-	getSchema(): ZodTypeAny {
+	getSchema(): z.ZodSchema<CognitiveBiasAnalysis> {
 		return cognitiveBiasSchema;
 	}
 }

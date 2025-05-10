@@ -6,6 +6,19 @@ import { OpenAIResponseStatus } from "@/modules/openai/openai.types";
 import type { PromptBuilder } from "./prompt-builder.interface";
 import { AgentName } from "./agent-name.enum";
 
+/**
+ * Base interface that all agent response types must implement
+ */
+export interface AgentResponse<TResult> {
+	// Common properties all agent responses must have
+	status: "success" | "partial" | "error";
+	completionTime: number; // in milliseconds
+	modelUsed: string;
+	version: string;
+	confidence?: number;
+	response: TResult;
+}
+
 export interface RetryOptions {
 	maxRetries: number;
 	initialDelayMs: number;
@@ -49,23 +62,31 @@ export abstract class BaseAgent<TParams, TResult> {
 	 * Abstract method that must be implemented by subclasses
 	 * Should return a Zod schema defining the expected output structure
 	 */
-	abstract getSchema(): z.ZodTypeAny;
+	abstract getSchema(): z.ZodSchema<TResult>; //z.ZodTypeAny;
 
 	/**
 	 * Execute the agent with the given prompt using structured outputs
 	 * @param prompt - The user's input prompt
 	 * @returns The structured response according to the agent's schema
 	 */
-	async _execute(prompt: string): Promise<TResult> {
+	async _execute(prompt: string): Promise<AgentResponse<TResult>> {
+		const startTime = Date.now();
 		const response = await this.openaiClient.executeStructuredOutput(
 			prompt,
 			this.getSchema() as z.ZodSchema<TResult>,
 			this.systemMessage,
 			this.schemaName,
 		);
+		const completionTime = Date.now() - startTime;
 
 		if (response.status === OpenAIResponseStatus.SUCCESS) {
-			return response.data;
+			return {
+				status: "success",
+				completionTime,
+				modelUsed: response.model || "unknown",
+				version: "1.0",
+				response: response.data as TResult,
+			};
 		} else {
 			throw new Error(
 				`Agent "${this.name}" failed: ${
@@ -78,9 +99,17 @@ export abstract class BaseAgent<TParams, TResult> {
 	/**
 	 * Execute method for all agents - builds prompt and calls _execute
 	 */
-	async execute(params: TParams): Promise<TResult> {
+	async execute(params: TParams): Promise<AgentResponse<TResult>> {
 		const prompt = this.buildPrompt(params);
 		return this._execute(prompt);
+	}
+
+	/**
+	 * Helper method to extract just the response data
+	 */
+	async executeAndGetResponse(params: TParams): Promise<TResult> {
+		const result = await this.execute(params);
+		return result.response;
 	}
 
 	/**
@@ -89,7 +118,7 @@ export abstract class BaseAgent<TParams, TResult> {
 	async executeWithRetry(
 		prompt: string,
 		retryOptions: RetryOptions = this.retryOptions,
-	): Promise<TResult> {
+	): Promise<AgentResponse<TResult>> {
 		return this.retry(() => this._execute(prompt), retryOptions);
 	}
 
@@ -100,9 +129,9 @@ export abstract class BaseAgent<TParams, TResult> {
 	 * @returns Result of the operation
 	 */
 	private async retry(
-		operation: () => Promise<TResult>,
+		operation: () => Promise<AgentResponse<TResult>>,
 		options: RetryOptions = DefaultRetryConfig,
-	): Promise<TResult> {
+	): Promise<AgentResponse<TResult>> {
 		let attempt = 0;
 		let delay = options.initialDelayMs;
 

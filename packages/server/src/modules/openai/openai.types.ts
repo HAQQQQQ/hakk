@@ -140,6 +140,7 @@ export interface OpenAISuccessResponse<T> {
 	status: OpenAIResponseStatus.SUCCESS;
 	data: T;
 	originalPrompt?: string;
+	model: OpenAIModel;
 }
 
 /**
@@ -149,6 +150,7 @@ export interface OpenAIErrorResponse {
 	status: OpenAIErrorStatus;
 	error: Error | string;
 	originalPrompt?: string;
+	model: OpenAIModel;
 }
 
 export type ToolSchemaParams = {

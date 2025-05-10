@@ -6,6 +6,7 @@ import { AgentFactory } from "./agent.factory";
 import { TradingSentimentService } from "./trading-sentiment/services/trading-sentiment.service";
 
 // Agents
+import { ProgressiveAnalysisAgent } from "./progressive-analysis/agents/progress-analysis-agent/progressive-analysis.agent";
 import { ContextualSentimentAgent } from "./trading-sentiment/agents/contextual-sentiment-agent/contextual-sentiment-analysis.agent";
 import { PerformanceAnalysisAgent } from "./trading-sentiment/agents/performance-analysis-agent/performance-analysis.agent";
 import { PsychologicalAnalysisAgent } from "./trading-sentiment/agents/psychological-issues-agent/psychological-issues-analysis.agent";
@@ -22,8 +23,7 @@ import { SentimentAnalysisPromptBuilder } from "./trading-sentiment/agents/senti
 import { TrendAnalysisPromptBuilder } from "./trading-sentiment/agents/trend-analysis-agent/trend-analysis-prompt.builder";
 import { GeneralAnalysisAgent } from "./trading-sentiment/agents/general-analysis-agent/general-analysis.agent";
 import { GeneralTradingAnalysisPromptBuilder } from "./trading-sentiment/agents/general-analysis-agent/general-analysis-prompt.builder";
-import { ProgressiveAnalysisAgent } from "./progressive-analysis/agents/progress-analysis-agent/iterative-prompt.agent";
-import { IterativePromptBuilder } from "./progressive-analysis/agents/progress-analysis-agent/iterative-prompt.builder";
+import { ProgressiveAnalysisPromptBuilder } from "./progressive-analysis/agents/progress-analysis-agent/progressive-analysis-prompt.builder";
 
 /**
  * Module that provides all LLM agents
@@ -32,6 +32,7 @@ import { IterativePromptBuilder } from "./progressive-analysis/agents/progress-a
 	imports: [OpenAIModule],
 	providers: [
 		// All agents
+		ProgressiveAnalysisAgent,
 		GeneralAnalysisAgent,
 		ContextualSentimentAgent,
 		PerformanceAnalysisAgent,
@@ -39,7 +40,6 @@ import { IterativePromptBuilder } from "./progressive-analysis/agents/progress-a
 		PsychologyPlanAgent,
 		SentimentAnalysisAgent,
 		TrendAnalysisAgent,
-		ProgressiveAnalysisAgent,
 
 		// All prompt builders
 		GeneralTradingAnalysisPromptBuilder,
@@ -49,7 +49,7 @@ import { IterativePromptBuilder } from "./progressive-analysis/agents/progress-a
 		PsychologyPlanPromptBuilder,
 		SentimentAnalysisPromptBuilder,
 		TrendAnalysisPromptBuilder,
-		IterativePromptBuilder,
+		ProgressiveAnalysisPromptBuilder,
 
 		// Main agent and service
 		TradingSentimentService,

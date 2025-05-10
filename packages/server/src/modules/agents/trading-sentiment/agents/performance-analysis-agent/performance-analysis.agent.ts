@@ -8,7 +8,7 @@ import {
 	performanceAnalysisResponseSchema,
 } from "./performance-analysis.schema";
 import { PerformanceAnalysisParams } from "../../types/agent-params.types";
-import { ZodTypeAny } from "zod";
+import { z, ZodTypeAny } from "zod";
 import { AgentName } from "@/modules/agents/agent-name.enum";
 
 @Injectable()
@@ -29,7 +29,7 @@ export class PerformanceAnalysisAgent extends TradingSentimentBaseAgent<
 		);
 	}
 
-	getSchema(): ZodTypeAny {
+	getSchema(): z.ZodSchema<PerformanceAnalysisResponse> {
 		return performanceAnalysisResponseSchema;
 	}
 }

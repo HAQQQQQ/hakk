@@ -1,13 +1,14 @@
 import { BadRequestException, Body, Controller, Post } from "@nestjs/common";
 import { TranscriptionService } from "./transcription.service";
 import { CoreSentimentAnalysis } from "../agents/trading-sentiment/agents/sentiment-analysis-agent/core-sentiment.schema";
+import { AgentResponse } from "../agents/base.agent";
 
 @Controller("transcription")
 export class TranscriptionController {
 	constructor(private readonly transcriptionService: TranscriptionService) {}
 
 	@Post("transcribe")
-	async transcribe(@Body("logs") logs: string): Promise<CoreSentimentAnalysis> {
+	async transcribe(@Body("logs") logs: string): Promise<AgentResponse<CoreSentimentAnalysis>> {
 		//Promise<{ reflection: JournalReflection }> {
 		console.log("In transcribe endpoint");
 		console.log("logs are:", logs);

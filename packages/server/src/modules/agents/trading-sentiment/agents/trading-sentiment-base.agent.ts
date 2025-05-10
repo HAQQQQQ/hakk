@@ -1,4 +1,4 @@
-import { BaseAgent } from "../../base.agent";
+import { BaseAgent, AgentResponse } from "../../base.agent";
 import { OpenAIClientService } from "../../../openai/openai-client.service";
 // Use 'import type' for interfaces used in constructor parameters
 import type { PromptBuilder } from "../../prompt-builder.interface";
@@ -42,9 +42,14 @@ Always consider the unique psychological aspects of day trading, including:
 Assume the trader is using this analysis to improve their performance and 
 psychological approach to trading.`;
 
-export abstract class TradingSentimentBaseAgent<TParams, TResult> extends BaseAgent<
+/**
+ * Base agent for trading sentiment analysis
+ * TParams: Type of parameters passed to the agent
+ * TResponseData: Type of the actual response data
+ */
+export abstract class TradingSentimentBaseAgent<TParams, TResponseData> extends BaseAgent<
 	TParams,
-	TResult
+	TResponseData
 > {
 	constructor(
 		protected readonly openaiClient: OpenAIClientService,

@@ -1,12 +1,23 @@
-// progressive-analysis/iterative-prompt.template.ts
-import { IterativePromptParams } from "./iterative-prompt.schema";
+// progressive-analysis/progressive-analysis-prompt.template.ts
 
-export function buildIterativePrompt(
+export function buildProgressivePrompt(
 	basePrompt: string,
 	previousResponses: string[] = [],
 	iterationNumber: number = 1,
 	analysisGoal: string = "comprehensive trading psychology analysis",
+	targetAgentName?: string,
 ): string {
+	// Handle progressive execution of another agent
+	if (targetAgentName) {
+		return buildTargetAgentProgressivePrompt(
+			basePrompt,
+			previousResponses,
+			iterationNumber,
+			analysisGoal,
+			targetAgentName,
+		);
+	}
+
 	// First iteration - basic prompt
 	if (iterationNumber === 1 || previousResponses.length === 0) {
 		return `
@@ -79,4 +90,76 @@ export function buildIterativePrompt(
     
     Based on everything above, provide the next level of ${analysisGoal}.
   `;
+}
+
+/**
+ * Build a prompt for progressive execution of a target agent
+ */
+function buildTargetAgentProgressivePrompt(
+	basePrompt: string,
+	previousResponses: string[] = [],
+	iterationNumber: number = 1,
+	analysisGoal: string = "comprehensive trading psychology analysis",
+	targetAgentName: string,
+): string {
+	// First iteration - just use the original basePrompt
+	if (iterationNumber === 1 || previousResponses.length === 0) {
+		return basePrompt;
+	}
+
+	// Determine enhancement focus based on iteration
+	let enhancementFocus = "";
+
+	if (iterationNumber === 2) {
+		enhancementFocus = `
+        Please enhance your previous analysis with a focus on:
+        - Expanding key insights with more details
+        - Identifying patterns that might have been missed
+        - Adding more nuanced emotional and behavioral analysis
+        `;
+	} else if (iterationNumber === 3) {
+		enhancementFocus = `
+        For this third analysis, please focus on:
+        - Adding specific examples from the trading journal
+        - Exploring root causes of the observed behaviors
+        - Providing more personalized recommendations
+        - Creating connections between different aspects of the analysis
+        `;
+	} else {
+		enhancementFocus = `
+        For this advanced analysis iteration, please focus on:
+        - Refining insights to focus on the most impactful ones
+        - Adding quantitative assessments where possible
+        - Creating highly specific and actionable recommendations
+        - Identifying connections between psychological patterns
+        - Addressing any contradictions or inconsistencies
+        - Adding deeper psychological context for better understanding
+        `;
+	}
+
+	// Add a section specifically about how to use the previous analysis
+	const previousAnalysisGuidance = `
+    Important guidance about the previous analysis:
+    - Use it as a foundation to build upon, not as a constraint
+    - Feel free to disagree with previous conclusions if you see better alternatives
+    - Don't just repeat the same insights - add depth, nuance, and new perspectives
+    - Maintain the valuable insights from previous analysis while adding new ones
+    `;
+
+	// For most recent previous analysis
+	const lastResponse = previousResponses[previousResponses.length - 1];
+
+	// Construct the enhanced prompt
+	return `
+    ${basePrompt}
+    
+    Previous Analysis (Iteration ${iterationNumber - 1}):
+    ${lastResponse}
+    
+    ${enhancementFocus}
+    
+    ${previousAnalysisGuidance}
+    
+    Please provide an enhanced ${analysisGoal} for iteration #${iterationNumber}.
+    `;
 }

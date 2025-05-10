@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
 import { TradingSentimentBaseAgent } from "../trading-sentiment-base.agent";
 import { JournalEntryParams } from "../../types/agent-params.types";
-import { ZodTypeAny } from "zod";
+import { z, ZodTypeAny } from "zod";
 import { AgentName } from "@/modules/agents/agent-name.enum";
 import { GeneralTradingAnalysis, generalTradingSchema } from "./general-analysis.schema";
 import { GeneralTradingAnalysisPromptBuilder } from "./general-analysis-prompt.builder";
@@ -26,7 +26,7 @@ export class GeneralAnalysisAgent extends TradingSentimentBaseAgent<
 		);
 	}
 
-	getSchema(): ZodTypeAny {
+	getSchema(): z.ZodSchema<GeneralTradingAnalysis> {
 		return generalTradingSchema;
 	}
 }

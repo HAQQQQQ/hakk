@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
 import { TradingSentimentBaseAgent } from "../trading-sentiment-base.agent";
 import { PsychologicalAnalysisPromptBuilder } from "./psychological-analysis-prompt.builder";
-import { ZodTypeAny } from "zod";
+import { z, ZodTypeAny } from "zod";
 import {
 	PsychologicalIssuesResponse,
 	psychologicalIssuesResponseSchema,
@@ -29,7 +29,7 @@ export class PsychologicalAnalysisAgent extends TradingSentimentBaseAgent<
 		);
 	}
 
-	getSchema(): ZodTypeAny {
+	getSchema(): z.ZodSchema<PsychologicalIssuesResponse> {
 		return psychologicalIssuesResponseSchema;
 	}
 }

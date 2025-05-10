@@ -2,8 +2,8 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import OpenAI from "openai";
 import {
-	ChatCompletionToolDefinition,
 	OpenAIErrorStatus,
+	OpenAIModel,
 	OpenAIResponse,
 	OpenAIResponseStatus,
 	OpenAITokens,
@@ -179,7 +179,12 @@ export class OpenAIClientService {
 
 	private successResponse<T>(data: T, prompt: string, operationName: string): OpenAIResponse<T> {
 		this.logger.debug(`Operation ${operationName} succeeded`);
-		return { status: OpenAIResponseStatus.SUCCESS, data, originalPrompt: prompt };
+		return {
+			status: OpenAIResponseStatus.SUCCESS,
+			data,
+			originalPrompt: prompt,
+			model: this.getModelUsed(),
+		};
 	}
 
 	private errorResponse<T>(
@@ -187,7 +192,7 @@ export class OpenAIClientService {
 		status: OpenAIErrorStatus,
 		prompt: string,
 	): OpenAIResponse<T> {
-		return { status, error, originalPrompt: prompt };
+		return { status, error, originalPrompt: prompt, model: this.getModelUsed() };
 	}
 
 	private getErrorStatus(err: unknown): OpenAIErrorStatus {
@@ -195,5 +200,9 @@ export class OpenAIClientService {
 		if (err instanceof ZodError) return OpenAIResponseStatus.SCHEMA_VALIDATION_FAILED;
 		if ((err as any).name === "OpenAIError") return OpenAIResponseStatus.API_ERROR;
 		return OpenAIResponseStatus.UNKNOWN_ERROR;
+	}
+
+	private getModelUsed(): OpenAIModel {
+		return this.configService.getConfig().model;
 	}
 }
