@@ -51,7 +51,6 @@ export abstract class TradingSentimentBaseAgent<TParams, TResult> extends BaseAg
 		protected readonly openaiClient: OpenAIClientService,
 		protected readonly promptBuilder: PromptBuilder<TParams>,
 		public readonly agentName: AgentName,
-		public readonly systemMessage: string,
 		public readonly schemaName: string = "trading_sentiment_analysis",
 		public readonly toolDescription: string = "You analyze day trading journal entries to extract detailed psychological insights, emotions, cognitive biases, and actionable recommendations to improve trading performance.",
 	) {
