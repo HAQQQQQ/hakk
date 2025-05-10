@@ -48,3 +48,5 @@ export const coreSentimentSchema = z.object({
 		})
 		.describe("Analysis of trader's mental and psychological state"),
 });
+
+export type CoreSentimentAnalysis = z.infer<typeof coreSentimentSchema>;

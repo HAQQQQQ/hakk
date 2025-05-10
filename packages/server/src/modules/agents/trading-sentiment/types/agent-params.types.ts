@@ -4,7 +4,7 @@ import {
 	JournalEntryWithMetadata,
 	TradingContext,
 	TradingSessionResults,
-} from "../types/trading-sentiment.types";
+} from "./trading-sentiment.types";
 
 // Base parameter interface for journal entries
 export interface JournalEntryParams {

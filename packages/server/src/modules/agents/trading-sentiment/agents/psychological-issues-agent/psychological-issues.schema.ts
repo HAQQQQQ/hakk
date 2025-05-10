@@ -118,3 +118,5 @@ export const psychologicalIssuesResponseSchema = z.object({
 		"Analysis of psychological issues",
 	),
 });
+
+export type PsychologicalIssuesResponse = z.infer<typeof psychologicalIssuesResponseSchema>;

@@ -1,16 +1,25 @@
 import { Module } from "@nestjs/common";
 import { OpenAIModule } from "../openai/openai.module";
 import { AgentFactory } from "./agent.factory";
-import { TradingSentimentAnalysisAgent } from "./trading-sentiment/base-trading-sentiment-agent";
-import { TradingPromptBuilderService } from "./trading-sentiment/services/prompt-builder.service";
-import {
-	BasePromptBuilder,
-	ContextualPromptBuilder,
-	IssuesPromptBuilder,
-	PsychologyPlanPromptBuilder,
-	ResultsAnalysisPromptBuilder,
-	TrendAnalysisPromptBuilder,
-} from "./trading-sentiment/prompts";
+
+// Services
+import { TradingSentimentService } from "./trading-sentiment/services/trading-sentiment.service";
+
+// Agents
+import { ContextualSentimentAgent } from "./trading-sentiment/agents/contextual-sentiment-agent/contextual-sentiment-analysis.agent";
+import { PerformanceAnalysisAgent } from "./trading-sentiment/agents/performance-analysis-agent/performance-analysis.agent";
+import { PsychologicalAnalysisAgent } from "./trading-sentiment/agents/psychological-issues-agent/psychological-issues-analysis.agent";
+import { PsychologyPlanAgent } from "./trading-sentiment/agents/psychology-plan-agent/psychology-plan-analysis.agent";
+import { SentimentAnalysisAgent } from "./trading-sentiment/agents/sentiment-analysis-agent/trading-sentiment-analysis.agent";
+import { TrendAnalysisAgent } from "./trading-sentiment/agents/trend-analysis-agent/trend-analysis.agent";
+
+// Prompt Builders
+import { ContextualSentimentPromptBuilder } from "./trading-sentiment/agents/contextual-sentiment-agent/contextual-sentiment-prompt.builder";
+import { PerformanceAnalysisPromptBuilder } from "./trading-sentiment/agents/performance-analysis-agent/performance-analysis-prompt.builder";
+import { PsychologicalAnalysisPromptBuilder } from "./trading-sentiment/agents/psychological-issues-agent/psychological-analysis-prompt.builder";
+import { PsychologyPlanPromptBuilder } from "./trading-sentiment/agents/psychology-plan-agent/psychology-plan-prompt.builder";
+import { SentimentAnalysisPromptBuilder } from "./trading-sentiment/agents/sentiment-analysis-agent/sentiment-analysis-prompt.builder";
+import { TrendAnalysisPromptBuilder } from "./trading-sentiment/agents/trend-analysis-agent/trend-analysis-prompt.builder";
 
 /**
  * Module that provides all LLM agents
@@ -19,21 +28,25 @@ import {
 	imports: [OpenAIModule],
 	providers: [
 		// Main agent and service
-		TradingSentimentAnalysisAgent,
-		TradingPromptBuilderService,
+		TradingSentimentService,
 		AgentFactory,
 
+		// All agents
+		ContextualSentimentAgent,
+		PerformanceAnalysisAgent,
+		PsychologicalAnalysisAgent,
+		PsychologyPlanAgent,
+		SentimentAnalysisAgent,
+		TrendAnalysisAgent,
+
 		// All prompt builders
-		BasePromptBuilder,
-		ContextualPromptBuilder,
-		TrendAnalysisPromptBuilder,
-		ResultsAnalysisPromptBuilder,
-		IssuesPromptBuilder,
+		ContextualSentimentPromptBuilder,
+		PerformanceAnalysisPromptBuilder,
+		PsychologicalAnalysisPromptBuilder,
 		PsychologyPlanPromptBuilder,
+		SentimentAnalysisPromptBuilder,
+		TrendAnalysisPromptBuilder,
 	],
-	exports: [
-		AgentFactory,
-		// Export any agents that should be accessible outside this module
-	],
+	exports: [AgentFactory, TradingSentimentService],
 })
 export class AgentsModule {}

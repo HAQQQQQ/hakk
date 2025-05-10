@@ -1,16 +1,20 @@
 // 5. PsychologicalAnalysisAgent
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { AgentName } from "../../agent.factory";
-import { TradingSentimentBaseAgent } from "../trading-sentiment-base.agent";
-import { PsychologicalIssuesParams } from "../../__trading-sentiment/analysis/agent-params.types";
-import { PsychologicalIssuesAnalysis } from "../../__trading-sentiment/types/trading-sentiment.types";
+import { AgentName } from "../../../agent.factory";
+import { TradingSentimentBaseAgent } from "../../trading-sentiment-base.agent";
 import { PsychologicalAnalysisPromptBuilder } from "./psychological-analysis-prompt.builder";
+import { ZodTypeAny } from "zod";
+import {
+	PsychologicalIssuesResponse,
+	psychologicalIssuesResponseSchema,
+} from "./psychological-issues.schema";
+import { PsychologicalIssuesParams } from "../../types/agent-params.types";
 
 @Injectable()
 export class PsychologicalAnalysisAgent extends TradingSentimentBaseAgent<
 	PsychologicalIssuesParams,
-	PsychologicalIssuesAnalysis
+	PsychologicalIssuesResponse
 > {
 	constructor(
 		openaiClient: OpenAIClientService,
@@ -23,5 +27,9 @@ export class PsychologicalAnalysisAgent extends TradingSentimentBaseAgent<
 			"psychological_analysis_tool", // Updated
 			"You identify and prioritize potential psychological issues affecting a trader based on their journal entries.",
 		);
+	}
+
+	getSchema(): ZodTypeAny {
+		return psychologicalIssuesResponseSchema;
 	}
 }

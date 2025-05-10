@@ -43,7 +43,6 @@ Always consider the unique psychological aspects of day trading, including:
 Assume the trader is using this analysis to improve their performance and 
 psychological approach to trading.`;
 
-@Injectable()
 export abstract class TradingSentimentBaseAgent<TParams, TResult> extends BaseAgent<
 	TParams,
 	TResult
@@ -51,9 +50,10 @@ export abstract class TradingSentimentBaseAgent<TParams, TResult> extends BaseAg
 	constructor(
 		protected readonly openaiClient: OpenAIClientService,
 		protected readonly promptBuilder: PromptBuilder<TParams>,
-		agentName: AgentName,
-		schemaName: string = "trading_sentiment_analysis",
-		toolDescription: string = "You analyze day trading journal entries to extract detailed psychological insights, emotions, cognitive biases, and actionable recommendations to improve trading performance.",
+		public readonly agentName: AgentName,
+		public readonly systemMessage: string,
+		public readonly schemaName: string = "trading_sentiment_analysis",
+		public readonly toolDescription: string = "You analyze day trading journal entries to extract detailed psychological insights, emotions, cognitive biases, and actionable recommendations to improve trading performance.",
 	) {
 		super(
 			openaiClient,
@@ -64,8 +64,4 @@ export abstract class TradingSentimentBaseAgent<TParams, TResult> extends BaseAg
 			toolDescription,
 		);
 	}
-
-	// getSchema() {
-	// 	return tradingSentimentSchema;
-	// }
 }

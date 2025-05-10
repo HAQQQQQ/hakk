@@ -1,14 +1,3 @@
-import { Injectable } from "@nestjs/common";
-import { PsychologyPlanParams } from "../../__trading-sentiment/analysis/agent-params.types";
-import { PromptBuilder } from "../../prompt-builder.interface";
-
-@Injectable()
-export class PsychologyPlanPromptBuilder implements PromptBuilder<PsychologyPlanParams> {
-	build(params: PsychologyPlanParams): string {
-		return psychologyPlanPromptTemplate(params.recentEntries);
-	}
-}
-
 export const psychologyPlanPromptTemplate = (recentEntries: string[]): string => {
 	const entriesFormatted = recentEntries
 		.map((entry, index) => `Entry ${index + 1}:\n"${entry}"`)

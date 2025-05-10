@@ -1,14 +1,4 @@
-import { Injectable } from "@nestjs/common";
-import { ContextualAnalysisParams } from "../../__trading-sentiment/analysis/agent-params.types";
-import { PromptBuilder } from "../../prompt-builder.interface";
-import { TradingContext } from "../../__trading-sentiment/types/trading-sentiment.types";
-
-@Injectable()
-export class ContextualSentimentPromptBuilder implements PromptBuilder<ContextualAnalysisParams> {
-	build(params: ContextualAnalysisParams): string {
-		return contextualSentimentPromptTemplate(params.journalEntry, params.context);
-	}
-}
+import { TradingContext } from "../../types/trading-sentiment.types";
 
 export const contextualSentimentPromptTemplate = (
 	journalEntry: string,

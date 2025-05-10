@@ -1,16 +1,3 @@
-import { Injectable } from "@nestjs/common";
-import { PsychologicalIssuesParams } from "../../__trading-sentiment/analysis/agent-params.types";
-import { PromptBuilder } from "../../prompt-builder.interface";
-
-@Injectable()
-export class PsychologicalAnalysisPromptBuilder
-	implements PromptBuilder<PsychologicalIssuesParams>
-{
-	build(params: PsychologicalIssuesParams): string {
-		return psychologicalAnalysisPromptTemplate(params.journalEntry);
-	}
-}
-
 export const psychologicalAnalysisPromptTemplate = (journalEntry: string): string => {
 	return `
     Trading Journal Entry: "${journalEntry}"

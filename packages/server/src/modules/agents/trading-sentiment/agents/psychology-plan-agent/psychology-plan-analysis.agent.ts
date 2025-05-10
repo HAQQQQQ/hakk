@@ -1,16 +1,20 @@
 // 6. PsychologyPlanAgent
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { TradingSentimentBaseAgent } from "../trading-sentiment-base.agent";
-import { PsychologyPlanParams } from "../../__trading-sentiment/analysis/agent-params.types";
-import { TradingPsychologyPlan } from "../../__trading-sentiment/types/trading-sentiment.types";
-import { AgentName } from "../../agent.factory";
+import { TradingSentimentBaseAgent } from "../../trading-sentiment-base.agent";
+import { AgentName } from "../../../agent.factory";
 import { PsychologyPlanPromptBuilder } from "./psychology-plan-prompt.builder";
+import {
+	PsychologyPlanResponse,
+	psychologyPlanResponseSchema,
+} from "./psychology-plan-response.schema";
+import { PsychologyPlanParams } from "../../types/agent-params.types";
+import { ZodTypeAny } from "zod";
 
 @Injectable()
 export class PsychologyPlanAgent extends TradingSentimentBaseAgent<
 	PsychologyPlanParams,
-	TradingPsychologyPlan
+	PsychologyPlanResponse
 > {
 	constructor(openaiClient: OpenAIClientService, promptBuilder: PsychologyPlanPromptBuilder) {
 		super(
@@ -20,5 +24,9 @@ export class PsychologyPlanAgent extends TradingSentimentBaseAgent<
 			"psychology_plan_tool", // Updated
 			"You create a personalized trading psychology plan based on analysis of recent trading journal entries.",
 		);
+	}
+
+	getSchema(): ZodTypeAny {
+		return psychologyPlanResponseSchema;
 	}
 }

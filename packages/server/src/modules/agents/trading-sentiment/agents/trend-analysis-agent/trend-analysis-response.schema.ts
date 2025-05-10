@@ -127,3 +127,5 @@ export const trendAnalysisResponseSchema = z.object({
 		"Assessment of strategy adherence and risk management",
 	),
 });
+
+export type TrendAnalysisResponse = z.infer<typeof trendAnalysisResponseSchema>;

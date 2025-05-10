@@ -1,14 +1,4 @@
-import { Injectable } from "@nestjs/common";
-import { TradingSessionResults } from "../../__trading-sentiment/types/trading-sentiment.types";
-import { PerformanceAnalysisParams } from "../../__trading-sentiment/analysis/agent-params.types";
-import { PromptBuilder } from "../../prompt-builder.interface";
-
-@Injectable()
-export class PerformanceAnalysisPromptBuilder implements PromptBuilder<PerformanceAnalysisParams> {
-	build(params: PerformanceAnalysisParams): string {
-		return performanceAnalysisPromptTemplate(params.journalEntry, params.results);
-	}
-}
+import { TradingSessionResults } from "../../types/trading-sentiment.types";
 
 export const performanceAnalysisPromptTemplate = (
 	journalEntry: string,

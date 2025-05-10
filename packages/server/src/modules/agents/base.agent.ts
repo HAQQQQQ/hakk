@@ -28,7 +28,6 @@ const DefaultRetryConfig: RetryOptions = {
 /**
  * Abstract base class for LLM agents using structured outputs
  */
-@Injectable()
 export abstract class BaseAgent<TParams, TResult> {
 	constructor(
 		protected readonly openaiClient: OpenAIClientService,

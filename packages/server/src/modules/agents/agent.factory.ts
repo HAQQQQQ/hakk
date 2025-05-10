@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { SentimentAnalysisAgent } from "./trading-sentiment/sentiment-analysis-agent/trading-sentiment-analysis.agent";
-import { ContextualSentimentAgent } from "./trading-sentiment/contextual-sentiment-agent/contextual-sentiment-analysis.agent";
-import { TrendAnalysisAgent } from "./trading-sentiment/trend-analysis-agent/trend-analysis.agent";
-import { PerformanceAnalysisAgent } from "./trading-sentiment/performance-analysis-agent/performance-analysis.agent";
-import { PsychologicalAnalysisAgent } from "./trading-sentiment/psychological-issues-agent/psychological-issues-analysis.agent";
-import { PsychologyPlanAgent } from "./trading-sentiment/psychology-plan-agent/psychology-plan-analysis.agent";
+import { SentimentAnalysisAgent } from "./trading-sentiment/agents/sentiment-analysis-agent/trading-sentiment-analysis.agent";
+import { ContextualSentimentAgent } from "./trading-sentiment/agents/contextual-sentiment-agent/contextual-sentiment-analysis.agent";
+import { TrendAnalysisAgent } from "./trading-sentiment/agents/trend-analysis-agent/trend-analysis.agent";
+import { PerformanceAnalysisAgent } from "./trading-sentiment/agents/performance-analysis-agent/performance-analysis.agent";
+import { PsychologicalAnalysisAgent } from "./trading-sentiment/agents/psychological-issues-agent/psychological-issues-analysis.agent";
+import { PsychologyPlanAgent } from "./trading-sentiment/agents/psychology-plan-agent/psychology-plan-analysis.agent";
 
 // Updated AgentName enum
 export enum AgentName {

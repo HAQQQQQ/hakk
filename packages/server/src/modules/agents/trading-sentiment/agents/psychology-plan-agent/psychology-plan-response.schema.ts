@@ -86,3 +86,5 @@ export const psychologyPlanResponseSchema = z.object({
 		"Actionable recommendations for improving trading psychology",
 	),
 });
+
+export type PsychologyPlanResponse = z.infer<typeof psychologyPlanResponseSchema>;

@@ -1,14 +1,4 @@
-import { Injectable } from "@nestjs/common";
-import { JournalEntryWithMetadata } from "../../__trading-sentiment/types/trading-sentiment.types";
-import { TrendAnalysisParams } from "../../__trading-sentiment/analysis/agent-params.types";
-import { PromptBuilder } from "../../prompt-builder.interface";
-
-@Injectable()
-export class TrendAnalysisPromptBuilder implements PromptBuilder<TrendAnalysisParams> {
-	build(params: TrendAnalysisParams): string {
-		return trendAnalysisPromptTemplate(params.journalEntries);
-	}
-}
+import { JournalEntryWithMetadata } from "../../types/trading-sentiment.types";
 
 export const trendAnalysisPromptTemplate = (journalEntries: JournalEntryWithMetadata[]): string => {
 	const sortedEntries = [...journalEntries].sort(
