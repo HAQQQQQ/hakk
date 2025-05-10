@@ -27,10 +27,6 @@ import { TrendAnalysisPromptBuilder } from "./trading-sentiment/agents/trend-ana
 @Module({
 	imports: [OpenAIModule],
 	providers: [
-		// Main agent and service
-		TradingSentimentService,
-		AgentFactory,
-
 		// All agents
 		ContextualSentimentAgent,
 		PerformanceAnalysisAgent,
@@ -46,6 +42,10 @@ import { TrendAnalysisPromptBuilder } from "./trading-sentiment/agents/trend-ana
 		PsychologyPlanPromptBuilder,
 		SentimentAnalysisPromptBuilder,
 		TrendAnalysisPromptBuilder,
+
+		// Main agent and service
+		TradingSentimentService,
+		AgentFactory,
 	],
 	exports: [AgentFactory, TradingSentimentService],
 })

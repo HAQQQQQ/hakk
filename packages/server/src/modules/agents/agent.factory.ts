@@ -5,16 +5,7 @@ import { TrendAnalysisAgent } from "./trading-sentiment/agents/trend-analysis-ag
 import { PerformanceAnalysisAgent } from "./trading-sentiment/agents/performance-analysis-agent/performance-analysis.agent";
 import { PsychologicalAnalysisAgent } from "./trading-sentiment/agents/psychological-issues-agent/psychological-issues-analysis.agent";
 import { PsychologyPlanAgent } from "./trading-sentiment/agents/psychology-plan-agent/psychology-plan-analysis.agent";
-
-// Updated AgentName enum
-export enum AgentName {
-	SENTIMENT_ANALYSIS = "sentiment_analysis",
-	CONTEXTUAL_SENTIMENT_ANALYSIS = "contextual_sentiment_analysis",
-	TREND_ANALYSIS = "trend_analysis",
-	PERFORMANCE_ANALYSIS = "performance_analysis",
-	PSYCHOLOGICAL_ANALYSIS = "psychological_analysis",
-	PSYCHOLOGY_PLAN = "psychology_plan",
-}
+import { AgentName } from "./agent-name.enum";
 
 // Updated AgentTypeMap with new AgentName enums
 type AgentTypeMap = {

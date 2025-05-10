@@ -1,7 +1,6 @@
 // 5. PsychologicalAnalysisAgent
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { AgentName } from "../../../agent.factory";
 import { TradingSentimentBaseAgent } from "../../trading-sentiment-base.agent";
 import { PsychologicalAnalysisPromptBuilder } from "./psychological-analysis-prompt.builder";
 import { ZodTypeAny } from "zod";
@@ -10,6 +9,7 @@ import {
 	psychologicalIssuesResponseSchema,
 } from "./psychological-issues.schema";
 import { PsychologicalIssuesParams } from "../../types/agent-params.types";
+import { AgentName } from "@/modules/agents/agent-name.enum";
 
 @Injectable()
 export class PsychologicalAnalysisAgent extends TradingSentimentBaseAgent<

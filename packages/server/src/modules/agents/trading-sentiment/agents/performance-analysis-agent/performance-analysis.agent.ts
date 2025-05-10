@@ -1,7 +1,6 @@
 // 4. PerformanceAnalysisAgent
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { AgentName } from "../../../agent.factory";
 import { TradingSentimentBaseAgent } from "../../trading-sentiment-base.agent";
 import { PerformanceAnalysisPromptBuilder } from "./performance-analysis-prompt.builder";
 import {
@@ -10,6 +9,7 @@ import {
 } from "./performance-analysis.schema";
 import { PerformanceAnalysisParams } from "../../types/agent-params.types";
 import { ZodTypeAny } from "zod";
+import { AgentName } from "@/modules/agents/agent-name.enum";
 
 @Injectable()
 export class PerformanceAnalysisAgent extends TradingSentimentBaseAgent<

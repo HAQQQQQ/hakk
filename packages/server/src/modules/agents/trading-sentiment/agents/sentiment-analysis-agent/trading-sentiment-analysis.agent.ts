@@ -1,12 +1,12 @@
 // 1. SentimentAnalysisAgent
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { AgentName } from "../../../agent.factory";
 import { TradingSentimentBaseAgent } from "../../trading-sentiment-base.agent";
 import { JournalEntryParams } from "../../types/agent-params.types";
 import { SentimentAnalysisPromptBuilder } from "./sentiment-analysis-prompt.builder";
 import { CoreSentimentAnalysis, coreSentimentSchema } from "./core-sentiment.schema";
 import { ZodTypeAny } from "zod";
+import { AgentName } from "@/modules/agents/agent-name.enum";
 
 @Injectable()
 export class SentimentAnalysisAgent extends TradingSentimentBaseAgent<

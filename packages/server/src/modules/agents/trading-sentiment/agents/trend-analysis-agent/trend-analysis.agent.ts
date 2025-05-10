@@ -1,7 +1,6 @@
 // 3. TrendAnalysisAgent
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { AgentName } from "../../../agent.factory";
 import { TradingSentimentBaseAgent } from "../../trading-sentiment-base.agent";
 import { TrendAnalysisParams } from "../../types/agent-params.types";
 import { TrendAnalysisPromptBuilder } from "./trend-analysis-prompt.builder";
@@ -10,6 +9,7 @@ import {
 	trendAnalysisResponseSchema,
 } from "./trend-analysis-response.schema";
 import { ZodTypeAny } from "zod";
+import { AgentName } from "@/modules/agents/agent-name.enum";
 
 @Injectable()
 export class TrendAnalysisAgent extends TradingSentimentBaseAgent<

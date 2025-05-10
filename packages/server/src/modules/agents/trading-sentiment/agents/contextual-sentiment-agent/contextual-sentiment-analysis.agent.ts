@@ -1,12 +1,12 @@
 // 2. ContextualSentimentAgent
 import { Injectable } from "@nestjs/common";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { AgentName } from "../../../agent.factory";
 import { TradingSentimentBaseAgent } from "../../trading-sentiment-base.agent";
 import { ContextualSentimentPromptBuilder } from "./contextual-sentiment-prompt.builder";
 import { ContextualAnalysisParams } from "../../types/agent-params.types";
 import { CognitiveBiasAnalysis, cognitiveBiasSchema } from "./cognitive-bias.schema";
 import { ZodTypeAny } from "zod";
+import { AgentName } from "@/modules/agents/agent-name.enum";
 
 @Injectable()
 export class ContextualSentimentAgent extends TradingSentimentBaseAgent<

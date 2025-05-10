@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { BaseAgent } from "../base.agent";
 import { OpenAIClientService } from "../../openai/openai-client.service";
-import { AgentName } from "../agent.factory";
 // Use 'import type' for interfaces used in constructor parameters
 import type { PromptBuilder } from "../prompt-builder.interface";
+import { AgentName } from "../agent-name.enum";
 
 const TRADING_SYSTEM_MESSAGE = `You are an expert trading psychologist and sentiment analyst specializing in day trading.
 You analyze traders' journal entries to extract insights about their psychological state, 
