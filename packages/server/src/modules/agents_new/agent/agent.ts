@@ -1,5 +1,5 @@
 /**
- * Updated Agent implementation with refactored processQueryWithSchema function
+ * Updated Agent implementation with optimized code structure
  */
 import { Message } from "../core/types";
 import { EventBus, AgentEventType } from "../core/events";
@@ -44,7 +44,8 @@ interface ErrorHandlingResult {
 }
 
 /**
- * Main Agent class
+ * Main Agent class - Responsible for orchestrating interactions between
+ * the language model, tools, and memory system
  */
 export class Agent {
 	private name: string;
@@ -55,6 +56,7 @@ export class Agent {
 	private eventBus: EventBus;
 	private middlewares: AgentMiddleware[];
 	private openaiClient: OpenAIClientService;
+	private responseCache: Map<string, OpenAIResponse<any>> = new Map();
 
 	constructor(config: AgentConfig, dependencies: AgentDependencies) {
 		this.name = config.name;
@@ -72,6 +74,11 @@ export class Agent {
 
 	/**
 	 * Process a query using a specific schema
+	 *
+	 * @param query - User query to process
+	 * @param schema - Zod schema for validating and structuring the response
+	 * @param onMessage - Callback function to handle messages during processing
+	 * @returns Structured response data or null if processing failed
 	 */
 	async processQueryWithSchema<T>(
 		query: string,
@@ -127,7 +134,10 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 	}
 
 	/**
-	 * Prepare the query context
+	 * Prepare the query context before sending to LLM
+	 *
+	 * @param query - User query to process
+	 * @param onMessage - Callback for message handling
 	 */
 	private async prepareQueryContext(query: string, onMessage: MessageCallback): Promise<void> {
 		// Create user message
@@ -144,23 +154,44 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 	}
 
 	/**
-	 * Execute the LLM request with schema
+	 * Execute the LLM request with schema validation
+	 *
+	 * @param query - Query to send to the LLM
+	 * @param schema - Schema for validating the response
+	 * @returns OpenAI response object
 	 */
 	private async executeLLMRequest<T>(
 		query: string,
 		schema: ZodSchema<T>,
 	): Promise<OpenAIResponse<T>> {
+		// Check cache first (for development and testing purposes)
+		const cacheKey = `${query}_${schema.description || "schema"}`;
+		if (this.responseCache.has(cacheKey)) {
+			return this.responseCache.get(cacheKey) as OpenAIResponse<T>;
+		}
+
 		// Generate response from the OpenAI client with the specified schema
-		return await this.openaiClient.executeStructuredOutput(
+		const response = await this.openaiClient.executeStructuredOutput(
 			query,
 			schema,
 			this.systemPrompt,
 			"response_schema", // Schema name parameter
 		);
+
+		// Cache successful responses
+		if (response.status === OpenAIResponseStatus.SUCCESS) {
+			this.responseCache.set(cacheKey, response);
+		}
+
+		return response;
 	}
 
 	/**
-	 * Process the LLM response
+	 * Process the LLM response and handle success/failure
+	 *
+	 * @param response - OpenAI response to process
+	 * @param onMessage - Callback for message handling
+	 * @returns Structured data from the response or null
 	 */
 	private async processLLMResponse<T>(
 		response: OpenAIResponse<T>,
@@ -177,7 +208,11 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 	}
 
 	/**
-	 * Handle a successful response
+	 * Handle a successful LLM response
+	 *
+	 * @param data - Structured data from the response
+	 * @param onMessage - Callback for message handling
+	 * @returns The structured data
 	 */
 	private async handleSuccessfulResponse<T>(data: T, onMessage: MessageCallback): Promise<T> {
 		// Create assistant message with the response
@@ -197,7 +232,10 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 	}
 
 	/**
-	 * Handle an error response
+	 * Handle an error response from the LLM
+	 *
+	 * @param response - Error response from OpenAI
+	 * @param onMessage - Callback for message handling
 	 */
 	private async handleErrorResponse(
 		response: OpenAIResponse<any>,
@@ -223,7 +261,10 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 	}
 
 	/**
-	 * Handle processing error
+	 * Handle processing errors
+	 *
+	 * @param error - Error that occurred during processing
+	 * @param onMessage - Callback for message handling
 	 */
 	private async handleProcessingError(error: unknown, onMessage: MessageCallback): Promise<void> {
 		// Format error message
@@ -244,7 +285,10 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 	}
 
 	/**
-	 * Extract error message from response
+	 * Extract error message from an OpenAI response
+	 *
+	 * @param response - OpenAI response object
+	 * @returns Formatted error message
 	 */
 	private extractErrorMessage(response: OpenAIResponse<any>): string {
 		return "error" in response && response.error instanceof Error
@@ -255,7 +299,10 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 	}
 
 	/**
-	 * Publish error event
+	 * Publish an error event to the event bus
+	 *
+	 * @param message - Error message
+	 * @param error - Error object or details
 	 */
 	private publishErrorEvent(message: string, error: unknown): void {
 		this.eventBus.publish({
@@ -267,6 +314,8 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 
 	/**
 	 * Apply middleware chain to a message
+	 *
+	 * @param message - Message to process with middleware
 	 */
 	private async applyMiddleware(message: Message): Promise<void> {
 		let index = 0;
@@ -283,6 +332,8 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 
 	/**
 	 * Add a middleware to the agent
+	 *
+	 * @param middleware - Middleware to add
 	 */
 	addMiddleware(middleware: AgentMiddleware): void {
 		this.middlewares.push(middleware);
@@ -292,6 +343,9 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 
 	/**
 	 * Remove a middleware by name
+	 *
+	 * @param name - Name of the middleware to remove
+	 * @returns True if middleware was removed, false otherwise
 	 */
 	removeMiddleware(name: string): boolean {
 		const initialLength = this.middlewares.length;
@@ -301,6 +355,10 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 
 	/**
 	 * Subscribe to agent events
+	 *
+	 * @param eventType - Type of event to subscribe to
+	 * @param handler - Handler function for the event
+	 * @returns Subscription object with unsubscribe method
 	 */
 	on<T>(
 		eventType: AgentEventType,
@@ -310,10 +368,11 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 	}
 
 	/**
-	 * Clear agent memory
+	 * Clear agent memory and cache
 	 */
 	clearMemory(): void {
 		this.memory.clear();
+		this.responseCache.clear();
 
 		// Reinitialize with system prompt
 		const systemMessage: Message = {

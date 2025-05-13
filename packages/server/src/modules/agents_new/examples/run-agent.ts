@@ -1,9 +1,10 @@
 /**
- * Example of running an agent with schema
+ * Example of running an agent with schema (optimized)
  */
 import { createExampleAgent } from "./create-agent";
-import { Message } from "../core/types";
+import { Message, ResponseFormatter } from "../core/types";
 import { z } from "zod";
+import { Agent } from "../agent/agent";
 
 /**
  * Schema for assistant responses
@@ -30,51 +31,138 @@ export const exampleResponseSchema = z.object({
 export type ExampleResponse = z.infer<typeof exampleResponseSchema>;
 
 /**
- * Example of using the agent in an application
+ * Options for running the agent example
  */
-export async function runAgentExample(): Promise<void> {
+interface RunAgentOptions {
+	query?: string;
+	schema?: z.ZodSchema<any>;
+	verbose?: boolean;
+	timeoutMs?: number;
+}
+
+/**
+ * Run the agent with a query and schema
+ */
+export async function runAgentWithSchema<T>(
+	agent: Agent,
+	query: string,
+	schema: z.ZodSchema<T>,
+	options: { verbose?: boolean; timeoutMs?: number } = {},
+): Promise<{ result: T | null; messages: Message[] }> {
+	const messages: Message[] = [];
+
+	// Create a promise that will be resolved when processing is complete
+	let resolvePromise: (value: T | null) => void;
+	const resultPromise = new Promise<T | null>((resolve) => {
+		resolvePromise = resolve;
+	});
+
+	// Create a timeout promise if timeoutMs is provided
+	let timeoutId: NodeJS.Timeout | undefined;
+	if (options.timeoutMs) {
+		timeoutId = setTimeout(() => {
+			console.log(`Query execution timed out after ${options.timeoutMs}ms`);
+			resolvePromise(null);
+		}, options.timeoutMs);
+	}
+
+	// Process the query
 	try {
-		const agent = await createExampleAgent();
-
-		console.log("Agent created successfully!");
-
-		// Example query that might trigger tool usage
-		const query = "What's 135 * 28? And after that, what's the weather in Paris?";
-		console.log(`User: ${query}`);
-
-		// Process the query with schema
-		const messages: Message[] = [];
-		const result = await agent.processQueryWithSchema<ExampleResponse>(
+		const result = await agent.processQueryWithSchema<T>(
 			query,
-			exampleResponseSchema,
+			schema,
 			async (message: Message) => {
 				messages.push(message);
-				if (message.role === "assistant") {
-					try {
-						// Try to parse as JSON if possible
-						const content = JSON.parse(message.content);
-						console.log(`Assistant: ${JSON.stringify(content, null, 2)}`);
-					} catch {
-						// If not valid JSON, just show the content
-						console.log(`Assistant: ${message.content}`);
+
+				if (options.verbose) {
+					if (message.role === "assistant") {
+						try {
+							// Try to parse and pretty-print as JSON
+							const content = JSON.parse(message.content);
+							console.log(`Assistant: ${JSON.stringify(content, null, 2)}`);
+						} catch {
+							// If not valid JSON, just show the content
+							console.log(`Assistant: ${message.content}`);
+						}
+					} else if (message.role === "tool") {
+						console.log(`[Tool ${message.name}]: ${message.content}`);
+					} else {
+						console.log(`${message.role.toUpperCase()}: ${message.content}`);
 					}
-				} else if (message.role === "tool") {
-					console.log(`[Tool ${message.name}]: ${message.content}`);
 				}
 			},
 		);
 
+		// Clear the timeout if it was set
+		if (timeoutId) {
+			clearTimeout(timeoutId);
+		}
+
+		return { result, messages };
+	} catch (error) {
+		// Clear the timeout if it was set
+		if (timeoutId) {
+			clearTimeout(timeoutId);
+		}
+
+		console.error("Error running agent:", error);
+		return { result: null, messages };
+	}
+}
+
+/**
+ * Example of using the agent in an application
+ */
+export async function runAgentExample(options: RunAgentOptions = {}): Promise<void> {
+	try {
+		// Create the agent
+		const agent = await createExampleAgent();
+		console.log("Agent created successfully!");
+
+		// Set up the query and schema
+		const query =
+			options.query || "What's 135 * 28? And after that, what's the weather in Paris?";
+		const schema = options.schema || exampleResponseSchema;
+
+		console.log(`User: ${query}`);
+
+		// Process the query with schema
+		const { result, messages } = await runAgentWithSchema(agent, query, schema, {
+			verbose: options.verbose !== false,
+			timeoutMs: options.timeoutMs || 30000,
+		});
+
+		// Display the result
 		if (result) {
 			console.log("\n--- Result Summary ---");
-			if (result.calculations) {
-				console.log(`Calculation result: ${Object.values(result.calculations)[0]}`);
+
+			// Handle calculation results
+			if ("calculations" in result && result.calculations) {
+				const calculations = result.calculations as Record<string, any>;
+				Object.entries(calculations).forEach(([key, value]) => {
+					console.log(`${key}: ${value}`);
+				});
 			}
-			if (result.weatherData) {
+
+			// Handle weather data
+			if ("weatherData" in result && result.weatherData) {
+				const weather = result.weatherData as any;
 				console.log(
-					`Weather in ${result.weatherData.location}: ${result.weatherData.temperature}°${result.weatherData.unit.charAt(0).toUpperCase()} (${result.weatherData.condition})`,
+					`Weather in ${weather.location}: ${weather.temperature}°${weather.unit.charAt(0).toUpperCase()} (${weather.condition})`,
 				);
 			}
-			console.log(`Confidence: ${result.confidence * 100}%`);
+
+			// Handle confidence level
+			if ("confidence" in result && typeof result.confidence === "number") {
+				console.log(`Confidence: ${(result.confidence * 100).toFixed(1)}%`);
+			}
+
+			// Handle answer field
+			if ("answer" in result && typeof result.answer === "string") {
+				console.log(`Answer: ${result.answer}`);
+			}
+		} else {
+			console.log("\n--- No result returned ---");
 		}
 
 		console.log("Agent example completed!");

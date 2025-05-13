@@ -23,90 +23,53 @@ export interface ToolCall {
 export interface ToolResult {
 	result: unknown;
 	error?: string;
+	cached?: boolean; // Indicates whether the result was retrieved from the cache
+	cachedAt?: string; // Optional timestamp for when the result was cached
 }
-
-// Possible response types from the LLM
-export type LLMResponse = string | ToolCall;
 
 /**
  * Type guard to check if a response is a tool call
  */
-export function isToolCall(response: LLMResponse): response is ToolCall {
-	return typeof response !== "string" && "name" in response && "id" in response;
+export function isToolCall(response: unknown): response is ToolCall {
+	return (
+		typeof response !== "string" &&
+		response !== null &&
+		typeof response === "object" &&
+		"name" in response &&
+		"id" in response
+	);
 }
 
 /**
- * OpenAI types definition file
+ * Response formatter for consistent message formatting
  */
-
-/**
- * Represents possible model types
- */
-export type OpenAIModel = string;
-
-/**
- * OpenAI API token constants
- */
-export enum OpenAITokens {
-	CLIENT = "OPENAI_CLIENT",
-}
-
-/**
- * Represents possible states for OpenAI API responses
- */
-export enum OpenAIResponseStatus {
+export class ResponseFormatter {
 	/**
-	 * Success - response was valid and matched expected schema
+	 * Format a response object as a JSON string with pretty printing
 	 */
-	SUCCESS = "SUCCESS",
+	static formatJson(data: unknown): string {
+		return JSON.stringify(data, null, 2);
+	}
 
 	/**
-	 * JSON parsing error - response was not valid JSON
+	 * Extract plain text from a potentially JSON string
 	 */
-	INVALID_JSON = "INVALID_JSON",
+	static extractText(content: string): string {
+		try {
+			const parsed = JSON.parse(content);
+			if (typeof parsed === "object" && parsed !== null) {
+				// Try to find a main message field
+				if ("message" in parsed) return String(parsed.message);
+				if ("content" in parsed) return String(parsed.content);
+				if ("text" in parsed) return String(parsed.text);
 
-	/**
-	 * Schema validation error - JSON was valid but didn't match expected structure
-	 */
-	SCHEMA_VALIDATION_FAILED = "SCHEMA_VALIDATION_FAILED",
-
-	/**
-	 * API error - OpenAI API returned an error
-	 */
-	API_ERROR = "API_ERROR",
-
-	/**
-	 * Unknown error occurred
-	 */
-	UNKNOWN_ERROR = "UNKNOWN_ERROR",
-}
-
-/**
- * Status values representing error cases (excluding SUCCESS)
- */
-export type OpenAIErrorStatus = Exclude<OpenAIResponseStatus, OpenAIResponseStatus.SUCCESS>;
-
-/**
- * Unified response type for OpenAI API operations
- */
-export type OpenAIResponse<T> = OpenAISuccessResponse<T> | OpenAIErrorResponse;
-
-/**
- * Successful API response with data
- */
-export interface OpenAISuccessResponse<T> {
-	status: OpenAIResponseStatus.SUCCESS;
-	data: T;
-	originalPrompt?: string;
-	model: OpenAIModel;
-}
-
-/**
- * Error API response
- */
-export interface OpenAIErrorResponse {
-	status: OpenAIErrorStatus;
-	error: Error;
-	originalPrompt?: string;
-	model?: OpenAIModel;
+				// Fallback to simple stringification
+				return JSON.stringify(parsed);
+			}
+			return String(parsed);
+		} catch {
+			// If not JSON, return as is
+			return content;
+		}
+	}
 }

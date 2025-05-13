@@ -1,7 +1,7 @@
 /**
  * Simple in-memory implementation
  */
-import { Message } from "../core/types";
+import { Message } from "../core";
 import { BaseMemorySystem } from "./base-memory";
 
 /**

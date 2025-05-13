@@ -1,27 +1,30 @@
 /**
- * Updated Agent builder implementation with OpenAI client support
+ * Updated Agent builder implementation with optimized code structure
  */
-import { AgentConfig, Agent } from "./agent";
+import { AgentConfig, Agent, AgentDependencies } from "./agent";
 import { ToolExecutor, ToolDefinition } from "../tools/tool-executor";
 import { MemorySystemInterface } from "../memory/interfaces";
 import { SimpleMemorySystem } from "../memory/simple-memory";
 import { EventBus } from "../core/events";
 import { AgentMiddleware } from "../core/middleware";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-//import { LanguageModelInterface } from "../llm/interfaces";
 
 /**
  * Builder pattern for creating agents
  */
 export class AgentBuilder {
 	private config: AgentConfig;
-	// private llm?: LanguageModelInterface;
 	private toolExecutor?: ToolExecutor;
 	private memory?: MemorySystemInterface;
 	private eventBus?: EventBus;
 	private middlewares: AgentMiddleware[] = [];
 	private openaiClient?: OpenAIClientService;
 
+	/**
+	 * Create a new agent builder
+	 *
+	 * @param name - Name of the agent
+	 */
 	constructor(name: string) {
 		this.config = {
 			name,
@@ -31,6 +34,8 @@ export class AgentBuilder {
 
 	/**
 	 * Set the agent description
+	 *
+	 * @param description - Description of the agent
 	 */
 	withDescription(description: string): AgentBuilder {
 		this.config.description = description;
@@ -39,6 +44,8 @@ export class AgentBuilder {
 
 	/**
 	 * Set a custom system prompt
+	 *
+	 * @param prompt - System prompt for the agent
 	 */
 	withSystemPrompt(prompt: string): AgentBuilder {
 		this.config.systemPrompt = prompt;
@@ -47,6 +54,8 @@ export class AgentBuilder {
 
 	/**
 	 * Set the tool executor
+	 *
+	 * @param toolExecutor - Tool executor to use
 	 */
 	withToolExecutor(toolExecutor: ToolExecutor): AgentBuilder {
 		this.toolExecutor = toolExecutor;
@@ -55,6 +64,8 @@ export class AgentBuilder {
 
 	/**
 	 * Add tools to the executor
+	 *
+	 * @param tools - Array of tool definitions to add
 	 */
 	withTools(tools: ToolDefinition[]): AgentBuilder {
 		if (!this.toolExecutor) {
@@ -67,6 +78,8 @@ export class AgentBuilder {
 
 	/**
 	 * Set the memory system
+	 *
+	 * @param memory - Memory system to use
 	 */
 	withMemory(memory: MemorySystemInterface): AgentBuilder {
 		this.memory = memory;
@@ -75,6 +88,8 @@ export class AgentBuilder {
 
 	/**
 	 * Set the event bus
+	 *
+	 * @param eventBus - Event bus to use
 	 */
 	withEventBus(eventBus: EventBus): AgentBuilder {
 		this.eventBus = eventBus;
@@ -83,6 +98,8 @@ export class AgentBuilder {
 
 	/**
 	 * Add middleware to the agent
+	 *
+	 * @param middleware - Middleware to add
 	 */
 	withMiddleware(middleware: AgentMiddleware): AgentBuilder {
 		this.middlewares.push(middleware);
@@ -91,6 +108,8 @@ export class AgentBuilder {
 
 	/**
 	 * Set the OpenAI client service
+	 *
+	 * @param client - OpenAI client service to use
 	 */
 	withOpenAIClient(client: OpenAIClientService): AgentBuilder {
 		this.openaiClient = client;
@@ -98,14 +117,26 @@ export class AgentBuilder {
 	}
 
 	/**
-	 * Build the agent
+	 * Validate that all required dependencies are provided
+	 *
+	 * @throws Error if any required dependencies are missing
+	 */
+	private validateDependencies(): void {
+		if (!this.openaiClient) {
+			throw new Error("OpenAI client is required. Use withOpenAIClient() before building.");
+		}
+	}
+
+	/**
+	 * Build the agent with all provided configuration
+	 *
+	 * @returns Fully configured Agent instance
 	 */
 	build(): Agent {
-		// Set defaults if not provided
-		// if (!this.llm) {
-		//     throw new Error("Language model is required");
-		// }
+		// Validate dependencies
+		this.validateDependencies();
 
+		// Set defaults if not provided
 		if (!this.toolExecutor) {
 			this.toolExecutor = new ToolExecutor();
 		}
@@ -118,20 +149,15 @@ export class AgentBuilder {
 			this.eventBus = new EventBus();
 		}
 
-		if (!this.openaiClient) {
-			throw new Error("OpenAI client is required. Use withOpenAIClient() before building.");
-		}
-
 		// Update config with middlewares
 		this.config.middlewares = this.middlewares;
 
 		// Create and return the agent
 		return new Agent(this.config, {
-			// llm: this.llm,
 			toolExecutor: this.toolExecutor,
 			memory: this.memory,
 			eventBus: this.eventBus,
-			openaiClient: this.openaiClient,
+			openaiClient: this.openaiClient!,
 		});
 	}
 }

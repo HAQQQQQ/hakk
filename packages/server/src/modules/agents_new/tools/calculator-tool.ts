@@ -1,14 +1,63 @@
 /**
- * Calculator tool implementation
+ * Enhanced calculator tool implementation with validation
  */
-import { ToolDefinition } from "./tool-executor";
+import { ToolCategory, ToolFactory } from "./tool-registry";
+import { ExtendedToolDefinition } from "./tool-registry";
+import { z } from "zod";
 
 /**
- * Calculator tool for performing arithmetic calculations
+ * Schema for calculator tool parameters
  */
-export const calculatorTool: ToolDefinition = {
+const calculatorSchema = z.object({
+	expression: z.string().min(1).describe('The math expression to evaluate (e.g., "2 + 2")'),
+});
+
+/**
+ * Type for calculator parameters
+ */
+type CalculatorParams = z.infer<typeof calculatorSchema>;
+
+/**
+ * Safe math expression evaluation
+ *
+ * @param expression - Expression to evaluate
+ * @returns Evaluation result or error
+ */
+function safeEvaluate(expression: string): { result: number | null; error?: string } {
+	try {
+		// Remove any potential code execution
+		const sanitized = expression
+			.replace(/[^0-9+\-*/().%\s]/g, "")
+			.replace(/\b[a-zA-Z_][a-zA-Z0-9_]*\b/g, "");
+
+		// Check if the expression is empty after sanitization
+		if (!sanitized.trim()) {
+			return { result: null, error: "Invalid expression after sanitization" };
+		}
+
+		// Use Function instead of eval for better sandboxing
+		// This is still not 100% safe but better than direct eval
+		const result = new Function(`return ${sanitized}`)();
+
+		if (typeof result !== "number" || !isFinite(result)) {
+			return { result: null, error: "Result is not a valid number" };
+		}
+
+		return { result };
+	} catch (e) {
+		return {
+			result: null,
+			error: e instanceof Error ? e.message : String(e),
+		};
+	}
+}
+
+/**
+ * Enhanced calculator tool with validation
+ */
+export const calculatorTool: ExtendedToolDefinition = ToolFactory.createUtilityTool({
 	name: "calculator",
-	description: "Perform arithmetic calculations",
+	description: "Perform arithmetic calculations safely",
 	parameters: {
 		type: "object",
 		properties: {
@@ -19,19 +68,31 @@ export const calculatorTool: ToolDefinition = {
 		},
 		required: ["expression"],
 	},
-	execute: async ({ expression }) => {
-		// Simple evaluation (in a real app, use a safer method)
+	execute: async (args: Record<string, unknown>) => {
+		// Validate arguments with zod
 		try {
-			// This is just an example - a real implementation would use a safer eval
-			// return { result: eval(expression as string) };
+			const { expression } = calculatorSchema.parse(args);
 
-			// A safer implementation might use a math library
+			// Evaluate the expression safely
+			const { result, error } = safeEvaluate(expression);
+
+			if (error) {
+				throw new Error(`Could not evaluate expression: ${error}`);
+			}
+
 			return {
-				result: `Result of ${expression}`,
-				// In a real implementation, calculate the actual result
+				result,
+				expression,
+				message: `The result of ${expression} is ${result}`,
 			};
 		} catch (e) {
-			throw new Error(`Could not evaluate expression: ${e.message}`);
+			if (e instanceof z.ZodError) {
+				throw new Error(
+					`Invalid arguments: ${e.errors.map((err) => `${err.path.join(".")}: ${err.message}`).join(", ")}`,
+				);
+			}
+			throw e;
 		}
 	},
-};
+	version: "1.0.0",
+});
