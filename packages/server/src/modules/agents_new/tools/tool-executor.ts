@@ -1,6 +1,7 @@
 /**
  * Tool executor implementation
  */
+
 import { ToolResult } from "../core/types";
 
 /**
@@ -18,11 +19,9 @@ export interface ToolDefinition {
  */
 export class ToolExecutor {
 	private tools: Map<string, ToolDefinition>;
-	private validator: any; // Would be a proper JSON schema validator
 
 	constructor(tools: ToolDefinition[] = []) {
 		this.tools = new Map();
-		this.validator = {}; // Initialize schema validator
 
 		// Register initial tools
 		tools.forEach((tool) => this.registerTool(tool));
@@ -62,15 +61,6 @@ export class ToolExecutor {
 			};
 		}
 
-		// Validate arguments against schema
-		const isValid = this.validateArgs(tool.parameters, args);
-		if (!isValid.valid) {
-			return {
-				result: null,
-				error: `Invalid arguments: ${isValid.errors}`,
-			};
-		}
-
 		try {
 			const result = await tool.execute(args);
 			return { result };
@@ -80,17 +70,5 @@ export class ToolExecutor {
 				error: `Execution error: ${error.message}`,
 			};
 		}
-	}
-
-	/**
-	 * Validate arguments against JSON schema
-	 */
-	private validateArgs(
-		schema: object,
-		args: Record<string, unknown>,
-	): { valid: boolean; errors?: string } {
-		// This would use a proper JSON schema validator
-		// For now, we'll assume all args are valid
-		return { valid: true };
 	}
 }

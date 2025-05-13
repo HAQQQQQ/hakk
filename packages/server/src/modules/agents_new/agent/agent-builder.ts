@@ -1,22 +1,21 @@
 /**
  * Updated Agent builder implementation with OpenAI client support
  */
-import { AgentConfig, Agent, AgentDependencies } from "./agent";
-import { LanguageModelInterface, LLMConfig } from "../llm/interfaces";
-import { createLanguageModel } from "../llm/factory";
+import { AgentConfig, Agent } from "./agent";
 import { ToolExecutor, ToolDefinition } from "../tools/tool-executor";
 import { MemorySystemInterface } from "../memory/interfaces";
 import { SimpleMemorySystem } from "../memory/simple-memory";
 import { EventBus } from "../core/events";
 import { AgentMiddleware } from "../core/middleware";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
+//import { LanguageModelInterface } from "../llm/interfaces";
 
 /**
  * Builder pattern for creating agents
  */
 export class AgentBuilder {
 	private config: AgentConfig;
-	private llm?: LanguageModelInterface;
+	// private llm?: LanguageModelInterface;
 	private toolExecutor?: ToolExecutor;
 	private memory?: MemorySystemInterface;
 	private eventBus?: EventBus;
@@ -43,22 +42,6 @@ export class AgentBuilder {
 	 */
 	withSystemPrompt(prompt: string): AgentBuilder {
 		this.config.systemPrompt = prompt;
-		return this;
-	}
-
-	/**
-	 * Set the language model
-	 */
-	withLanguageModel(llm: LanguageModelInterface): AgentBuilder {
-		this.llm = llm;
-		return this;
-	}
-
-	/**
-	 * Configure and create a language model
-	 */
-	withLanguageModelConfig(config: LLMConfig): AgentBuilder {
-		this.llm = createLanguageModel(config);
 		return this;
 	}
 
@@ -119,9 +102,9 @@ export class AgentBuilder {
 	 */
 	build(): Agent {
 		// Set defaults if not provided
-		if (!this.llm) {
-			throw new Error("Language model is required");
-		}
+		// if (!this.llm) {
+		//     throw new Error("Language model is required");
+		// }
 
 		if (!this.toolExecutor) {
 			this.toolExecutor = new ToolExecutor();
@@ -144,7 +127,7 @@ export class AgentBuilder {
 
 		// Create and return the agent
 		return new Agent(this.config, {
-			llm: this.llm,
+			// llm: this.llm,
 			toolExecutor: this.toolExecutor,
 			memory: this.memory,
 			eventBus: this.eventBus,
