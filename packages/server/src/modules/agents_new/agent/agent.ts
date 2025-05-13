@@ -119,7 +119,7 @@ export class Agent {
 		onMessage: MessageCallback,
 	): Promise<AgentResponse<T>> {
 		const startTime = Date.now();
-		const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+		const requestId = this.createRequestId();
 
 		try {
 			// Step 1: Prepare the query context
@@ -162,6 +162,10 @@ export class Agent {
 		});
 	}
 
+	private createRequestId(): string {
+		return `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+	}
+
 	/**
 	 * Create the default system prompt
 	 */
@@ -169,9 +173,9 @@ export class Agent {
 		const tools = this.toolExecutor.listTools();
 
 		return `You are ${this.name}, ${this.description}.
-When you need to use a tool, respond with a tool call.
-Available tools:
-${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
+            When you need to use a tool, respond with a tool call.
+            Available tools:
+            ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 	}
 
 	/**
@@ -206,7 +210,7 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 		schema: ZodSchema<T>,
 	): Promise<OpenAIResponse<T>> {
 		// Check cache first (for development and testing purposes)
-		const cacheKey = `${query}_${schema.description || "schema"}`;
+		const cacheKey = this.getCacheKey(query, schema.description);
 		if (this.responseCache.has(cacheKey)) {
 			return this.responseCache.get(cacheKey) as OpenAIResponse<T>;
 		}
@@ -225,6 +229,10 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 		}
 
 		return response;
+	}
+
+	private getCacheKey(query: string, description?: string): string {
+		return `${query}_${description || "schema"}`;
 	}
 
 	/**

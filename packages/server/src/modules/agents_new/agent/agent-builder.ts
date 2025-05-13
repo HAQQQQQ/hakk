@@ -1,7 +1,7 @@
 /**
  * Updated Agent builder implementation with optimized code structure
  */
-import { AgentConfig, Agent, AgentDependencies } from "./agent";
+import { AgentConfig, Agent } from "./agent";
 import { ToolExecutor, ToolDefinition } from "../tools/tool-executor";
 import { MemorySystemInterface } from "../memory/interfaces";
 import { SimpleMemorySystem } from "../memory/simple-memory";

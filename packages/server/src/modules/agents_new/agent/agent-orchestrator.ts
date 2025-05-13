@@ -108,7 +108,7 @@ export class AgentOrchestrator {
 	 * @param options - Options for workflow execution
 	 * @returns Map of step results by agent ID
 	 */
-	async executeWorkflow<T = BasicResponse, S = T>(
+	async executeWorkflow<T = BasicResponse>(
 		workflowSteps: Array<WorkflowStep<T>>,
 		defaultSchema: ZodSchema<any> = basicResponseSchema,
 		options?: Partial<WorkflowExecutionOptions>,

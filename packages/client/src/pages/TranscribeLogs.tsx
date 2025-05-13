@@ -169,9 +169,23 @@ const TranscribeLogs: React.FC = () => {
 
 					{response && (
 						<Box mt={4}>
-							<Typography variant="h6" gutterBottom>
-								Analysis Results:
-							</Typography>
+							<Box display="flex" justifyContent="space-between" alignItems="center">
+								<Typography variant="h6" gutterBottom>
+									Analysis Results:
+								</Typography>
+								<Button
+									variant="outlined"
+									size="small"
+									onClick={() =>
+										navigator.clipboard.writeText(
+											JSON.stringify(response, null, 2),
+										)
+									}
+								>
+									Copy
+								</Button>
+							</Box>
+
 							<Paper
 								elevation={1}
 								sx={{
