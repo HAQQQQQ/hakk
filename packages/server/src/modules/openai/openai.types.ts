@@ -141,6 +141,7 @@ export interface OpenAISuccessResponse<T> {
 	data: T;
 	originalPrompt?: string;
 	model: OpenAIModel;
+	tokenUsage?: TokenUsage; // Add token usage to success responses
 }
 
 /**
@@ -151,6 +152,16 @@ export interface OpenAIErrorResponse {
 	error: Error | string;
 	originalPrompt?: string;
 	model: OpenAIModel;
+	tokenUsage?: TokenUsage; // Add token usage to error responses as well
+}
+
+/**
+ * Token usage information from OpenAI API
+ */
+export interface TokenUsage {
+	promptTokens: number;
+	completionTokens: number;
+	totalTokens: number;
 }
 
 export type ToolSchemaParams = {

@@ -1,10 +1,10 @@
-import { JournalEntryWithMetadata } from "@/modules/agents/trading-sentiment/types/trading-sentiment.types";
-import { Agent, AgentBuilder } from "../agent";
+import { Agent, AgentBuilder, AgentResponse } from "../agent";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
 import { EventBus, LoggingMiddleware, Message } from "../core";
 
 import { z } from "zod";
 import { AgentImpl } from "./agent-impl";
+import { JournalEntryWithMetadata } from "./interfaces";
 
 export const strategyRiskSchema = z.object({
 	// Trading strategy assessment
@@ -201,7 +201,7 @@ export class TrendAnalysisAgent extends AgentImpl {
 	async analyzeTrends(
 		journalEntries: JournalEntryWithMetadata[],
 		onMessage?: (message: Message) => void | Promise<void>,
-	): Promise<TrendAnalysisResponse | null> {
+	): Promise<AgentResponse<TrendAnalysisResponse> | null> {
 		// Generate the prompt from the template
 		const prompt = trendAnalysisPromptTemplate(journalEntries);
 

@@ -9,7 +9,40 @@ import { MemorySystemInterface } from "../memory/interfaces";
 
 import { ZodSchema } from "zod";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
-import { OpenAIResponse, OpenAIResponseStatus } from "@/modules/openai/openai.types";
+import { OpenAIResponse, OpenAIResponseStatus, TokenUsage } from "@/modules/openai/openai.types";
+
+/**
+ * Standard response format for all agent responses
+ */
+export interface AgentResponse<T> {
+	// Core response data
+	response: T | null;
+	status: "success" | "partial" | "error";
+
+	// Timing and performance metrics
+	startTime: number; // UNIX timestamp when processing started
+	completionTime: number; // UNIX timestamp when processing completed
+	executionTimeMs: number; // Total execution time in milliseconds
+
+	// Model information
+	modelUsed: string; // The specific LLM model used
+	modelVersion: string; // Version of the model
+
+	// Request/response metadata
+	requestId: string; // Unique ID for this request
+	tokenUsage?: TokenUsage;
+
+	// Error information (if applicable)
+	error?: {
+		message: string;
+		code?: string;
+		details?: unknown;
+	};
+
+	// Caching information
+	// cached: boolean;           // Whether this response was retrieved from cache
+	// cachedAt?: number;         // When the response was originally cached
+}
 
 /**
  * Configuration for the agent
@@ -78,13 +111,16 @@ export class Agent {
 	 * @param query - User query to process
 	 * @param schema - Zod schema for validating and structuring the response
 	 * @param onMessage - Callback function to handle messages during processing
-	 * @returns Structured response data or null if processing failed
+	 * @returns Structured response data with metadata
 	 */
 	async processQueryWithSchema<T>(
 		query: string,
 		schema: ZodSchema<T>,
 		onMessage: MessageCallback,
-	): Promise<T | null> {
+	): Promise<AgentResponse<T>> {
+		const startTime = Date.now();
+		const requestId = `req_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+
 		try {
 			// Step 1: Prepare the query context
 			await this.prepareQueryContext(query, onMessage);
@@ -93,11 +129,16 @@ export class Agent {
 			const response = await this.executeLLMRequest(query, schema);
 
 			// Step 3: Process the response
-			return await this.processLLMResponse(response, onMessage);
+			const result = await this.processLLMResponse(response, onMessage);
+
+			// Step 4: Prepare the agent response
+			return this.createSuccessResponse(result, startTime, requestId, response);
 		} catch (error) {
 			// Step 4: Handle any errors that occur during processing
 			await this.handleProcessingError(error, onMessage);
-			return null;
+
+			// Create and return error response
+			return this.createErrorResponse(error, startTime, requestId);
 		}
 	}
 
@@ -205,6 +246,70 @@ ${tools.map((tool) => `- ${tool.name}: ${tool.description}`).join("\n")}`;
 			await this.handleErrorResponse(response, onMessage);
 			return null;
 		}
+	}
+
+	/**
+	 * Create a success response object
+	 *
+	 * @param data - The processed data
+	 * @param startTime - When processing began
+	 * @param requestId - Unique request ID
+	 * @param openAIResponse - Original OpenAI response
+	 * @returns Formatted agent response
+	 */
+	private createSuccessResponse<T>(
+		data: T | null,
+		startTime: number,
+		requestId: string,
+		openAIResponse: OpenAIResponse<T>,
+	): AgentResponse<T> {
+		const completionTime = Date.now();
+
+		return {
+			response: data,
+			status: data !== null ? "success" : "partial",
+			startTime,
+			completionTime,
+			executionTimeMs: completionTime - startTime,
+			modelUsed: this.openaiClient.getModelName() || "unknown",
+			modelVersion: this.openaiClient.getModelVersion() || "unknown",
+			requestId,
+			tokenUsage: openAIResponse.tokenUsage,
+		};
+	}
+
+	/**
+	 * Create an error response object
+	 *
+	 * @param error - The error that occurred
+	 * @param startTime - When processing began
+	 * @param requestId - Unique request ID
+	 * @returns Formatted agent response with error details
+	 */
+	private createErrorResponse<T>(
+		error: unknown,
+		startTime: number,
+		requestId: string,
+		openAIResponse?: OpenAIResponse<any>, // Optional OpenAI response
+	): AgentResponse<T> {
+		const completionTime = Date.now();
+		const errorMessage = error instanceof Error ? error.message : String(error);
+
+		return {
+			response: null,
+			status: "error",
+			startTime,
+			completionTime,
+			executionTimeMs: completionTime - startTime,
+			modelUsed: this.openaiClient.getModelName() || "unknown",
+			modelVersion: this.openaiClient.getModelVersion() || "unknown",
+			requestId,
+			tokenUsage: openAIResponse?.tokenUsage, // Conditionally include token usage if available
+			error: {
+				message: errorMessage,
+				details: error,
+			},
+		};
 	}
 
 	/**

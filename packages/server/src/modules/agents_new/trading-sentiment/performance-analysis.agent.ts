@@ -1,10 +1,10 @@
-import { TradingSessionResults } from "@/modules/agents/trading-sentiment/types/trading-sentiment.types";
-import { Agent, AgentBuilder } from "../agent";
+import { Agent, AgentBuilder, AgentResponse } from "../agent";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
 import { EventBus, LoggingMiddleware, Message } from "../core";
 
 import { z } from "zod";
 import { AgentImpl } from "./agent-impl";
+import { TradingSessionResults } from "./interfaces";
 
 export const performanceCorrelationSchema = z.object({
 	sentimentPerformanceAlignment: z
@@ -176,7 +176,7 @@ export class PerformanceAnalysisAgent extends AgentImpl {
 		journalEntry: string,
 		results: TradingSessionResults,
 		onMessage?: (message: Message) => void | Promise<void>,
-	): Promise<PerformanceAnalysisResponse | null> {
+	): Promise<AgentResponse<PerformanceAnalysisResponse> | null> {
 		// Generate the prompt from the template
 		const prompt = performanceAnalysisPromptTemplate(journalEntry, results);
 

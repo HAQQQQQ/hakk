@@ -1,9 +1,9 @@
-import { TradingContext } from "@/modules/agents/trading-sentiment/types/trading-sentiment.types";
 import { z } from "zod";
-import { Agent, AgentBuilder } from "../agent";
+import { Agent, AgentBuilder, AgentResponse } from "../agent";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
 import { EventBus, LoggingMiddleware, Message } from "../core";
 import { AgentImpl } from "./agent-impl";
+import { TradingContext } from "./interfaces";
 
 export const cognitiveBiasSchema = z.object({
 	// Cognitive biases analysis
@@ -96,7 +96,7 @@ export class ContextualSentimentAgent extends AgentImpl {
 		journalEntry: string,
 		context: TradingContext,
 		onMessage?: (message: Message) => void | Promise<void>,
-	): Promise<CognitiveBiasAnalysis | null> {
+	): Promise<AgentResponse<CognitiveBiasAnalysis> | null> {
 		// Generate the prompt from the template
 		const prompt = contextualSentimentPromptTemplate(journalEntry, context);
 

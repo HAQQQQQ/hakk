@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Agent, AgentBuilder } from "../agent";
+import { Agent, AgentBuilder, AgentResponse } from "../agent";
 import { OpenAIClientService } from "@/modules/openai/openai-client.service";
 import { EventBus, LoggingMiddleware, Message } from "../core";
 import { AgentImpl } from "./agent-impl";
@@ -171,7 +171,7 @@ export class PsychologicalAnalysisAgent extends AgentImpl {
 	async analyzePsychologicalIssues(
 		journalEntry: string,
 		onMessage?: (message: Message) => void | Promise<void>,
-	): Promise<PsychologicalIssuesResponse | null> {
+	): Promise<AgentResponse<PsychologicalIssuesResponse> | null> {
 		// Generate the prompt from the template
 		const prompt = psychologicalAnalysisPromptTemplate(journalEntry);
 

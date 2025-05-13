@@ -2,24 +2,19 @@
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import OpenAI from "openai";
 import {
+	OpenAIErrorResponse,
 	OpenAIErrorStatus,
 	OpenAIModel,
 	OpenAIResponse,
 	OpenAIResponseStatus,
+	OpenAISuccessResponse,
 	OpenAITokens,
+	TokenUsage,
 } from "./openai.types";
 import { ZodError, ZodSchema } from "zod";
 import type { ChatCompletion } from "openai/resources.mjs";
 import { OpenAIConfigService } from "./openai-config.service";
 import { zodResponseFormat } from "openai/helpers/zod";
-
-// type StructuredCompletionResponse<T> = OpenAI.Chat.Completions.ChatCompletion & {
-//     choices: Array<{
-//         message: OpenAI.Chat.Completions.ChatCompletionMessage & {
-//             parsed: T;
-//         };
-//     }>;
-// };
 
 @Injectable()
 export class OpenAIClientService {
@@ -52,10 +47,6 @@ export class OpenAIClientService {
 				cfg,
 			);
 
-			// With structured outputs, the response is already validated
-			// const typedResponse = response as StructuredCompletionResponse<T>;
-			// const data = typedResponse.choices[0].message.parsed;
-
 			// Extract the content and parse it
 			const content = response.choices[0].message.content;
 
@@ -70,47 +61,48 @@ export class OpenAIClientService {
 				throw new Error("No parsed data in response");
 			}
 
-			return this.successResponse(data, prompt, schemaName);
+			// Extract token usage using the helper method
+			const tokenUsage = this.extractTokenUsage(response);
+
+			// Pass token usage directly to the success response builder
+			return this.successResponse(data, prompt, schemaName, tokenUsage);
 		} catch (err) {
 			const status = this.getErrorStatus(err);
 			this.logger.error(
 				`Structured output call failed (${status}): ${(err as Error).message}`,
 			);
+			// We generally don't have token usage for error responses,
+			// but could pass it if available in some situations
 			return this.errorResponse(err as Error, status, prompt);
 		}
 	}
 
+	getModelName(): OpenAIModel {
+		return this.configService.getConfig().model;
+	}
+
+	getModelVersion(): string {
+		// Extract version information or return current version
+		return "1.0.0"; // This would come from the actual model information
+	}
+
 	/**
-	 * Call OpenAI with function-calling (deprecated in favor of structured outputs)
-	 * Maintained for backward compatibility
+	 * Extract token usage information from the OpenAI API response
+	 *
+	 * @param response - Raw OpenAI API response
+	 * @returns Formatted token usage data or undefined if not available
 	 */
-	// async executeToolCall<T>(
-	//     prompt: string,
-	//     tool: ToolSchema,
-	//     validator: ZodSchema<T>,
-	//     overrideSystemMessage?: string,
-	// ): Promise<OpenAIResponse<T>> {
-	//     // For backward compatibility, you can route this to structured outputs
-	//     if (this.configService.settings.useStructuredOutput !== false) {
-	//         this.logger.warn("Routing tool call to structured output. Consider using executeStructuredOutput directly.");
-	//         return this.executeStructuredOutput(prompt, validator, overrideSystemMessage, tool.name);
-	//     }
+	private extractTokenUsage(response: ChatCompletion): TokenUsage | undefined {
+		if (!response.usage) {
+			return undefined;
+		}
 
-	//     // Keep original implementation for when structured outputs are disabled
-	//     const cfg = this.configService.settings;
-	//     const systemMessage = overrideSystemMessage ?? cfg.systemMessage;
-	//     const toolDef = this.buildToolDefinition(tool);
-
-	//     try {
-	//         const response = await this.callOpenAI(prompt, systemMessage, toolDef, cfg);
-	//         const data = this.parseAndValidate(response, validator);
-	//         return this.successResponse(data, prompt, tool.name);
-	//     } catch (err) {
-	//         const status = this.getErrorStatus(err);
-	//         this.logger.error(`Tool call failed (${status}): ${(err as Error).message}`);
-	//         return this.errorResponse(err as Error, status, prompt);
-	//     }
-	// }
+		return {
+			promptTokens: response.usage.prompt_tokens,
+			completionTokens: response.usage.completion_tokens,
+			totalTokens: response.usage.total_tokens,
+		};
+	}
 
 	private async callOpenAIWithStructuredOutput<T>(
 		prompt: string,
@@ -138,61 +130,53 @@ export class OpenAIClientService {
 		return response as ChatCompletion;
 	}
 
-	// ... rest of the methods remain the same ...
-
-	// private buildToolDefinition(tool: ToolSchema): ChatCompletionToolDefinition {
-	//     return { type: "function", function: tool };
-	// }
-
-	// private async callOpenAI(
-	//     prompt: string,
-	//     systemMessage: string,
-	//     toolDef: ChatCompletionToolDefinition,
-	//     cfg: { model: string; temperature: number },
-	// ): Promise<ChatCompletion> {
-	//     const start = Date.now();
-	//     const response = await this.openai.chat.completions.create({
-	//         model: cfg.model,
-	//         messages: [
-	//             { role: "system", content: systemMessage },
-	//             { role: "user", content: prompt },
-	//         ],
-	//         tools: [toolDef],
-	//         tool_choice: "auto",
-	//         temperature: cfg.temperature,
-	//     });
-	//     this.logger.debug(`API call took ${Date.now() - start}ms`);
-	//     return response as ChatCompletion;
-	// }
-
-	// private parseAndValidate<T>(response: ChatCompletion, validator: ZodSchema<T>): T {
-	//     const call = response.choices[0].message.tool_calls?.[0];
-	//     if (!call) throw new Error("No function call in response");
-	//     const args = JSON.parse(call.function.arguments);
-	//     try {
-	//         return validator.parse(args);
-	//     } catch (e) {
-	//         if (e instanceof ZodError) throw e;
-	//         throw new Error(`Validation error: ${(e as Error).message}`);
-	//     }
-	// }
-
-	private successResponse<T>(data: T, prompt: string, operationName: string): OpenAIResponse<T> {
+	/**
+	 * Create a successful response with token usage
+	 *
+	 * @param data - The response data
+	 * @param prompt - Original prompt
+	 * @param operationName - Name of the operation (for logging)
+	 * @param tokenUsage - Optional token usage metrics
+	 * @returns Complete success response
+	 */
+	private successResponse<T>(
+		data: T,
+		prompt: string,
+		operationName: string,
+		tokenUsage?: TokenUsage,
+	): OpenAISuccessResponse<T> {
 		this.logger.debug(`Operation ${operationName} succeeded`);
 		return {
 			status: OpenAIResponseStatus.SUCCESS,
 			data,
 			originalPrompt: prompt,
-			model: this.getModelUsed(),
+			model: this.getModelName(),
+			tokenUsage, // Include token usage directly in the response
 		};
 	}
 
-	private errorResponse<T>(
+	/**
+	 * Create an error response
+	 *
+	 * @param error - The error that occurred
+	 * @param status - Error status code
+	 * @param prompt - Original prompt
+	 * @param tokenUsage - Optional token usage metrics
+	 * @returns Complete error response
+	 */
+	private errorResponse(
 		error: Error,
 		status: OpenAIErrorStatus,
 		prompt: string,
-	): OpenAIResponse<T> {
-		return { status, error, originalPrompt: prompt, model: this.getModelUsed() };
+		tokenUsage?: TokenUsage,
+	): OpenAIErrorResponse {
+		return {
+			status,
+			error,
+			originalPrompt: prompt,
+			model: this.getModelName(),
+			tokenUsage, // Include token usage directly in the response
+		};
 	}
 
 	private getErrorStatus(err: unknown): OpenAIErrorStatus {
@@ -200,9 +184,5 @@ export class OpenAIClientService {
 		if (err instanceof ZodError) return OpenAIResponseStatus.SCHEMA_VALIDATION_FAILED;
 		if ((err as any).name === "OpenAIError") return OpenAIResponseStatus.API_ERROR;
 		return OpenAIResponseStatus.UNKNOWN_ERROR;
-	}
-
-	private getModelUsed(): OpenAIModel {
-		return this.configService.getConfig().model;
 	}
 }

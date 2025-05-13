@@ -3,14 +3,14 @@ import { OpenAIClientService } from "@/modules/openai/openai-client.service";
 import { EventBus } from "../core/events";
 import { Message } from "../core/types";
 import { LoggingMiddleware } from "../core/middleware";
-import { Agent, AgentBuilder } from "../agent";
-import { coreSentimentSchema } from "@/modules/agents/trading-sentiment/agents/sentiment-analysis-agent/core-sentiment.schema";
-import { cognitiveBiasSchema } from "@/modules/agents/trading-sentiment/agents/contextual-sentiment-agent/cognitive-bias.schema";
-import { marketTradeSchema } from "@/modules/agents/trading-sentiment/agents/performance-analysis-agent/performance-analysis.schema";
-import { strategyRiskSchema } from "@/modules/agents/trading-sentiment/agents/trend-analysis-agent/trend-analysis-response.schema";
-import { additionalAnalysisSchema } from "@/modules/agents/trading-sentiment/agents/psychological-issues-agent/psychological-issues.schema";
-import { recommendationsSchema } from "@/modules/agents/trading-sentiment/agents/psychology-plan-agent/psychology-plan-response.schema";
+import { Agent, AgentBuilder, AgentResponse } from "../agent";
 import { AgentImpl } from "./agent-impl";
+import { coreSentimentSchema } from "./trading-sentiment-analysis.agent";
+import { cognitiveBiasSchema } from "./contextual-sentiment-analysis.agent";
+import { marketTradeSchema } from "./performance-analysis.agent";
+import { strategyRiskSchema } from "./trend-analysis.agent";
+import { additionalAnalysisSchema } from "./psychological-issues-analysis.agent";
+import { recommendationsSchema } from "./psychology-plan-analysis.agent";
 
 /**
  * Schema for trading journal sentiment analysis
@@ -76,7 +76,7 @@ export class GeneralAnalysisAgent extends AgentImpl {
 	async analyzeSentiment(
 		journalEntry: string,
 		onMessage?: (message: Message) => void | Promise<void>,
-	): Promise<GeneralTradingAnalysis | null> {
+	): Promise<AgentResponse<GeneralTradingAnalysis> | null> {
 		// Generate the prompt from the template
 		const prompt = generalTradingAnalysisPromptTemplate(journalEntry);
 
