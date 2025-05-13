@@ -108,151 +108,261 @@ export class AgentOrchestrator {
 	 * @param options - Options for workflow execution
 	 * @returns Map of step results by agent ID
 	 */
-	async executeWorkflow<T = BasicResponse>(
+	async executeWorkflow<T = BasicResponse, S = T>(
 		workflowSteps: Array<WorkflowStep<T>>,
 		defaultSchema: ZodSchema<any> = basicResponseSchema,
 		options?: Partial<WorkflowExecutionOptions>,
 	): Promise<Map<string, StepExecutionResult>> {
 		// Merge options with defaults
-		const execOptions: WorkflowExecutionOptions = {
-			...this.defaultOptions,
-			...(options || {}),
-		};
+		const execOptions: WorkflowExecutionOptions = this.mergeOptions(options);
 
 		const completedSteps = new Map<string, StepExecutionResult>();
 		const failedSteps = new Set<string>();
 
 		// Process steps until all are completed or workflow is aborted
-		while (completedSteps.size + failedSteps.size < workflowSteps.length) {
-			// Step 1: Find eligible steps to execute in this iteration
+		while (this.hasRemainingSteps(workflowSteps, completedSteps, failedSteps)) {
+			// Find eligible steps to execute in this iteration
 			const eligibleSteps = this.findEligibleSteps(
 				workflowSteps,
 				completedSteps,
 				failedSteps,
 			);
 
-			// Step 2: Verify we have steps to execute
+			// Check for workflow completion or circular dependencies
 			if (eligibleSteps.length === 0) {
-				if (execOptions.logProgress) {
-					console.log(
-						`[Workflow] No eligible steps found. Completed: ${completedSteps.size}, Failed: ${failedSteps.size}`,
-					);
-				}
-
-				if (completedSteps.size + failedSteps.size < workflowSteps.length) {
-					throw new Error("Circular dependency or missing steps in workflow");
-				}
-
+				this.handleNoEligibleSteps(workflowSteps, completedSteps, failedSteps, execOptions);
 				break;
 			}
 
-			if (execOptions.logProgress) {
-				console.log(
-					`[Workflow] Executing ${eligibleSteps.length} steps: ${eligibleSteps.map((s) => s.agentId).join(", ")}`,
-				);
-			}
+			this.logStepExecution(eligibleSteps, execOptions);
 
-			// Step 3: Execute eligible steps (in parallel or sequentially)
+			// Execute eligible steps (in parallel or sequentially)
 			if (execOptions.parallelExecution) {
-				// Execute all eligible steps in parallel
-				const results = await Promise.allSettled(
-					eligibleSteps.map((step) =>
-						this.executeWorkflowStepWithTimeout(
-							step,
-							completedSteps,
-							defaultSchema,
-							step.timeoutMs || execOptions.defaultTimeout!,
-							step.maxRetries || execOptions.defaultRetries!,
-						),
-					),
+				await this.executeStepsInParallel(
+					eligibleSteps,
+					completedSteps,
+					failedSteps,
+					defaultSchema,
+					execOptions,
 				);
-
-				// Process the results
-				for (let i = 0; i < results.length; i++) {
-					const result = results[i];
-					const step = eligibleSteps[i];
-
-					if (result.status === "fulfilled") {
-						// Step completed successfully
-						completedSteps.set(step.agentId, result.value);
-
-						if (execOptions.logProgress) {
-							console.log(`[Workflow] Step ${step.agentId} completed successfully`);
-						}
-					} else {
-						// Step failed
-						failedSteps.add(step.agentId);
-
-						if (execOptions.logProgress) {
-							console.error(
-								`[Workflow] Step ${step.agentId} failed: ${result.reason}`,
-							);
-						}
-
-						// Publish error event
-						this.eventBus.publish({
-							type: AgentEventType.ERROR,
-							payload: {
-								message: `Workflow step ${step.agentId} failed`,
-								error: result.reason,
-							},
-							timestamp: Date.now(),
-						});
-
-						// Abort workflow if configured to do so
-						if (execOptions.abortOnFailure) {
-							throw new Error(
-								`Workflow aborted due to step failure: ${step.agentId}`,
-							);
-						}
-					}
-				}
 			} else {
-				// Execute steps sequentially
-				for (const step of eligibleSteps) {
-					try {
-						const result = await this.executeWorkflowStepWithTimeout(
-							step,
-							completedSteps,
-							defaultSchema,
-							step.timeoutMs || execOptions.defaultTimeout!,
-							step.maxRetries || execOptions.defaultRetries!,
-						);
-
-						completedSteps.set(step.agentId, result);
-
-						if (execOptions.logProgress) {
-							console.log(`[Workflow] Step ${step.agentId} completed successfully`);
-						}
-					} catch (error) {
-						failedSteps.add(step.agentId);
-
-						if (execOptions.logProgress) {
-							console.error(`[Workflow] Step ${step.agentId} failed:`, error);
-						}
-
-						// Publish error event
-						this.eventBus.publish({
-							type: AgentEventType.ERROR,
-							payload: {
-								message: `Workflow step ${step.agentId} failed`,
-								error,
-							},
-							timestamp: Date.now(),
-						});
-
-						// Abort workflow if configured to do so
-						if (execOptions.abortOnFailure) {
-							throw new Error(
-								`Workflow aborted due to step failure: ${step.agentId}`,
-							);
-						}
-					}
-				}
+				await this.executeStepsSequentially(
+					eligibleSteps,
+					completedSteps,
+					failedSteps,
+					defaultSchema,
+					execOptions,
+				);
 			}
 		}
 
 		return completedSteps;
+	}
+
+	/**
+	 * Merge user options with default options
+	 *
+	 * @param options - User provided options
+	 * @returns Merged options
+	 */
+	private mergeOptions(options?: Partial<WorkflowExecutionOptions>): WorkflowExecutionOptions {
+		return {
+			...this.defaultOptions,
+			...(options || {}),
+		};
+	}
+
+	/**
+	 * Check if there are remaining steps to execute
+	 *
+	 * @param workflowSteps - All workflow steps
+	 * @param completedSteps - Map of completed steps
+	 * @param failedSteps - Set of failed step IDs
+	 * @returns Whether there are remaining steps
+	 */
+	private hasRemainingSteps<T>(
+		workflowSteps: Array<WorkflowStep<T>>,
+		completedSteps: Map<string, StepExecutionResult>,
+		failedSteps: Set<string>,
+	): boolean {
+		return completedSteps.size + failedSteps.size < workflowSteps.length;
+	}
+
+	/**
+	 * Handle the case when no eligible steps are found
+	 *
+	 * @param workflowSteps - All workflow steps
+	 * @param completedSteps - Map of completed steps
+	 * @param failedSteps - Set of failed step IDs
+	 * @param execOptions - Execution options
+	 */
+	private handleNoEligibleSteps<T>(
+		workflowSteps: Array<WorkflowStep<T>>,
+		completedSteps: Map<string, StepExecutionResult>,
+		failedSteps: Set<string>,
+		execOptions: WorkflowExecutionOptions,
+	): void {
+		if (execOptions.logProgress) {
+			console.log(
+				`[Workflow] No eligible steps found. Completed: ${completedSteps.size}, Failed: ${failedSteps.size}`,
+			);
+		}
+
+		if (this.hasRemainingSteps(workflowSteps, completedSteps, failedSteps)) {
+			throw new Error("Circular dependency or missing steps in workflow");
+		}
+	}
+
+	/**
+	 * Log information about steps to be executed
+	 *
+	 * @param eligibleSteps - Steps to be executed
+	 * @param execOptions - Execution options
+	 */
+	private logStepExecution<T>(
+		eligibleSteps: Array<WorkflowStep<T>>,
+		execOptions: WorkflowExecutionOptions,
+	): void {
+		if (execOptions.logProgress) {
+			console.log(
+				`[Workflow] Executing ${eligibleSteps.length} steps: ${eligibleSteps.map((s) => s.agentId).join(", ")}`,
+			);
+		}
+	}
+
+	/**
+	 * Execute steps in parallel
+	 *
+	 * @param eligibleSteps - Steps to execute
+	 * @param completedSteps - Map to store completed steps
+	 * @param failedSteps - Set to store failed steps
+	 * @param defaultSchema - Default schema to use
+	 * @param execOptions - Execution options
+	 */
+	private async executeStepsInParallel<T>(
+		eligibleSteps: Array<WorkflowStep<T>>,
+		completedSteps: Map<string, StepExecutionResult>,
+		failedSteps: Set<string>,
+		defaultSchema: ZodSchema<any>,
+		execOptions: WorkflowExecutionOptions,
+	): Promise<void> {
+		// Execute all eligible steps in parallel
+		const results = await Promise.allSettled(
+			eligibleSteps.map((step) =>
+				this.executeWorkflowStepWithTimeout(
+					step,
+					completedSteps,
+					defaultSchema,
+					step.timeoutMs || execOptions.defaultTimeout!,
+					step.maxRetries || execOptions.defaultRetries!,
+				),
+			),
+		);
+
+		// Process the results
+		for (let i = 0; i < results.length; i++) {
+			const result = results[i];
+			const step = eligibleSteps[i];
+
+			if (result.status === "fulfilled") {
+				this.handleSuccessfulStep(step, result.value, completedSteps, execOptions);
+			} else {
+				this.handleFailedStep(step, result.reason, failedSteps, execOptions);
+			}
+		}
+	}
+
+	/**
+	 * Execute steps sequentially
+	 *
+	 * @param eligibleSteps - Steps to execute
+	 * @param completedSteps - Map to store completed steps
+	 * @param failedSteps - Set to store failed steps
+	 * @param defaultSchema - Default schema to use
+	 * @param execOptions - Execution options
+	 */
+	private async executeStepsSequentially<T>(
+		eligibleSteps: Array<WorkflowStep<T>>,
+		completedSteps: Map<string, StepExecutionResult>,
+		failedSteps: Set<string>,
+		defaultSchema: ZodSchema<any>,
+		execOptions: WorkflowExecutionOptions,
+	): Promise<void> {
+		for (const step of eligibleSteps) {
+			try {
+				const result = await this.executeWorkflowStepWithTimeout(
+					step,
+					completedSteps,
+					defaultSchema,
+					step.timeoutMs || execOptions.defaultTimeout!,
+					step.maxRetries || execOptions.defaultRetries!,
+				);
+
+				this.handleSuccessfulStep(step, result, completedSteps, execOptions);
+			} catch (error) {
+				this.handleFailedStep(step, error, failedSteps, execOptions);
+			}
+		}
+	}
+
+	/**
+	 * Handle a successful step execution
+	 *
+	 * @param step - The executed step
+	 * @param result - Execution result
+	 * @param completedSteps - Map to store completed steps
+	 * @param execOptions - Execution options
+	 */
+	private handleSuccessfulStep<T>(
+		step: WorkflowStep<T>,
+		result: StepExecutionResult,
+		completedSteps: Map<string, StepExecutionResult>,
+		execOptions: WorkflowExecutionOptions,
+	): void {
+		// Step completed successfully
+		completedSteps.set(step.agentId, result);
+
+		if (execOptions.logProgress) {
+			console.log(`[Workflow] Step ${step.agentId} completed successfully`);
+		}
+	}
+
+	/**
+	 * Handle a failed step execution
+	 *
+	 * @param step - The failed step
+	 * @param error - Error that occurred
+	 * @param failedSteps - Set to store failed steps
+	 * @param execOptions - Execution options
+	 * @throws Error if configured to abort on failure
+	 */
+	private handleFailedStep<T>(
+		step: WorkflowStep<T>,
+		error: unknown,
+		failedSteps: Set<string>,
+		execOptions: WorkflowExecutionOptions,
+	): void {
+		// Step failed
+		failedSteps.add(step.agentId);
+
+		if (execOptions.logProgress) {
+			console.error(`[Workflow] Step ${step.agentId} failed:`, error);
+		}
+
+		// Publish error event
+		this.eventBus.publish({
+			type: AgentEventType.ERROR,
+			payload: {
+				message: `Workflow step ${step.agentId} failed`,
+				error,
+			},
+			timestamp: Date.now(),
+		});
+
+		// Abort workflow if configured to do so
+		if (execOptions.abortOnFailure) {
+			throw new Error(`Workflow aborted due to step failure: ${step.agentId}`);
+		}
 	}
 
 	/**

@@ -4,9 +4,9 @@ import { TradingSentimentService } from "../agents/trading-sentiment/services/tr
 import { AgentResponse } from "../agents/base.agent";
 import { OpenAIClientService } from "../openai/openai-client.service";
 import {
+	GeneralAnalysisAgent,
 	GeneralTradingAnalysis,
-	TradingSentimentAnalyzer,
-} from "../agents_new/trading-sentiment/trading-sentiment-analyzer";
+} from "../agents_new/trading-sentiment/general-analysis.agent";
 
 @Injectable()
 export class TranscriptionService {
@@ -24,7 +24,7 @@ export class TranscriptionService {
 	}
 
 	async generalAnalysis(journalEntry: string): Promise<GeneralTradingAnalysis | null> {
-		const newAgent = new TradingSentimentAnalyzer(this.openaiClient);
+		const newAgent = new GeneralAnalysisAgent(this.openaiClient);
 		return newAgent.analyzeSentiment(journalEntry);
 	}
 }

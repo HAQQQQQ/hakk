@@ -1,6 +1,5 @@
 /**
  * Planning agent implementation
- * Refactored into smaller, more readable functions
  */
 import { Message } from "../core/types";
 import { Agent, AgentConfig, AgentDependencies } from "./agent";

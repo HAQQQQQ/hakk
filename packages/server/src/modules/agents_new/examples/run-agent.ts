@@ -2,7 +2,7 @@
  * Example of running an agent with schema (optimized)
  */
 import { createExampleAgent } from "./create-agent";
-import { Message, ResponseFormatter } from "../core/types";
+import { Message } from "../core/types";
 import { z } from "zod";
 import { Agent } from "../agent/agent";
 

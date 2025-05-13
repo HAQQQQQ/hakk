@@ -2,7 +2,7 @@ import { BadRequestException, Body, Controller, Post } from "@nestjs/common";
 import { TranscriptionService } from "./transcription.service";
 import { CoreSentimentAnalysis } from "../agents/trading-sentiment/agents/sentiment-analysis-agent/core-sentiment.schema";
 import { AgentResponse } from "../agents/base.agent";
-import { GeneralTradingAnalysis } from "../agents_new/trading-sentiment/trading-sentiment-analyzer";
+import { GeneralTradingAnalysis } from "../agents_new/trading-sentiment/general-analysis.agent";
 
 @Controller("transcription")
 export class TranscriptionController {
